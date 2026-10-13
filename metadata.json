@@ -1,0 +1,6 @@
+{
+  "name": "AquaTech Impermeabilizaciones",
+  "description": "Especialistas técnicos en impermeabilización de techos, terrazas y filtraciones en Córdoba con garantía escrita de hasta 10 años.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
