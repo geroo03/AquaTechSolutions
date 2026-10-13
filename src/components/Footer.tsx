@@ -1,5 +1,8 @@
 import React from 'react';
-import { ASSETS, PHONE_NUMBER, PHONE_DISPLAY, EMAIL_CONTACT } from '../data/mockData';
+import { Clock, MapPin } from 'lucide-react';
+import { PHONE_DISPLAY, INSTAGRAM_URL, INSTAGRAM_HANDLE, OPENING_HOURS, SERVICES } from '../data/mockData';
+import { Logo, WhatsAppIcon, InstagramIcon } from './Brand';
+import { waLink } from './ui';
 
 interface FooterProps {
   onOpenWarrantyModal: () => void;
@@ -7,121 +10,98 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
   return (
-    <footer className="w-full bg-[#e6e8ea] pt-16 pb-12 text-[#191c1e]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Col 1 */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <img 
-                alt="Logo AquaTech" 
-                className="h-8 w-auto object-contain" 
-                src={ASSETS.logo}
-                referrerPolicy="no-referrer"
-              />
-              <span className="font-['Montserrat',sans-serif] text-xl font-bold text-[#00263f]">
-                AquaTech
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-[#42474e] leading-relaxed">
-              Empresa líder especializada en impermeabilización de techos, terrazas, losas y muros en Córdoba. Soluciones técnicas definitivas con garantía certificada por escrito.
+    <footer className="bg-ink text-white pt-20 pb-28 sm:pb-10">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-14 border-b border-white/10">
+          <div className="lg:col-span-4">
+            <Logo tone="light" />
+            <p className="mt-6 text-sm text-white/55 leading-relaxed max-w-xs">
+              Soluciones integrales en impermeabilización y control de humedad en Córdoba. Calidad garantizada.
             </p>
-            <div className="flex items-center gap-2 text-[#0284C7] bg-[#E0F2FE] px-3 py-1.5 rounded-lg w-fit text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-[#25D366]" />
-              <span>Presupuestos técnicos en 24h</span>
+            <div className="mt-6 flex gap-2">
+              <a
+                href={waLink('Hola AquaTech')}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors"
+              >
+                <WhatsAppIcon size={17} />
+              </a>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors"
+              >
+                <InstagramIcon size={17} />
+              </a>
             </div>
           </div>
 
-          {/* Col 2 */}
-          <div className="space-y-4">
-            <h4 className="font-['Montserrat',sans-serif] text-base font-bold text-[#00263f]">
-              Contacto Directo
-            </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-[#42474e]">
-              <li className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-[#006399] text-[20px]">call</span>
-                <a className="hover:text-[#00263f] transition-colors" href={`https://wa.me/${PHONE_NUMBER}`}>
-                  WhatsApp: {PHONE_DISPLAY}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-[#006399] text-[20px]">mail</span>
-                <a className="hover:text-[#00263f] transition-colors" href={`mailto:${EMAIL_CONTACT}`}>
-                  {EMAIL_CONTACT}
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-[#006399] text-[20px]">share</span>
-                <span>Instagram: @aqua.tech.solutions</span>
-              </li>
-              <li className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-[#006399] text-[20px]">thumb_up</span>
-                <span>Facebook: AquaTech Córdoba</span>
+          <div className="lg:col-span-3">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Servicios</h4>
+            <ul className="space-y-3 text-sm text-white/75">
+              {SERVICES.map((s) => (
+                <li key={s.id}>
+                  <a href="#servicios" className="hover:text-white transition-colors">{s.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Empresa</h4>
+            <ul className="space-y-3 text-sm text-white/75">
+              <li><a href="#trabajos" className="hover:text-white transition-colors">Trabajos</a></li>
+              <li><a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a></li>
+              <li><a href="#zonas" className="hover:text-white transition-colors">Zonas</a></li>
+              <li><a href="#preguntas" className="hover:text-white transition-colors">Preguntas</a></li>
+              <li>
+                <button onClick={onOpenWarrantyModal} className="hover:text-white transition-colors">
+                  Garantía
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Col 3 */}
-          <div className="space-y-4">
-            <h4 className="font-['Montserrat',sans-serif] text-base font-bold text-[#00263f]">
-              Cobertura Provincial
-            </h4>
-            <p className="text-xs sm:text-sm text-[#42474e]">
-              Servicio técnico integral en Córdoba Capital y Gran Córdoba:
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                'Córdoba Capital',
-                'Villa Allende',
-                'Mendiolaza',
-                'Río Ceballos',
-                'Villa Carlos Paz',
-                'Malagueño',
-                'Toda la Provincia',
-              ].map((loc, i) => (
-                <span 
-                  key={i} 
-                  className="bg-white px-2.5 py-1 rounded text-[11px] font-semibold text-[#42474e] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+          <div className="lg:col-span-3">
+            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Contacto</h4>
+            <ul className="space-y-4 text-sm text-white/75">
+              <li>
+                <a
+                  href={waLink('Hola AquaTech')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 hover:text-white transition-colors"
                 >
-                  {loc}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Col 4 */}
-          <div className="space-y-4">
-            <h4 className="font-['Montserrat',sans-serif] text-base font-bold text-[#00263f]">
-              Atención Técnica
-            </h4>
-            <div className="bg-white p-4 rounded-xl shadow-[0_1px_6px_rgba(0,0,0,0.03)] space-y-2 border border-[#e2e8f0]">
-              <div className="flex items-center gap-2 text-[#00263f] text-xs sm:text-sm font-semibold">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span>Horarios de Atención</span>
-              </div>
-              <p className="text-xs text-[#42474e]">Lunes a Sábados: 8:00 a 19:00 hs</p>
-              <p className="text-[11px] text-[#72777e]">Guardias y relevamientos de urgencia programados</p>
-            </div>
+                  <WhatsAppIcon size={16} className="shrink-0" /> {PHONE_DISPLAY}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 hover:text-white transition-colors"
+                >
+                  <InstagramIcon size={16} className="shrink-0" /> {INSTAGRAM_HANDLE}
+                </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <MapPin size={16} strokeWidth={1.8} className="shrink-0" /> Córdoba, Argentina
+              </li>
+              <li className="flex items-center gap-3">
+                <Clock size={16} strokeWidth={1.8} className="shrink-0" /> {OPENING_HOURS}
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom copyright */}
-        <div className="pt-8 mt-8 border-t border-[#c2c7ce]/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#42474e]">
-          <p className="text-center md:text-left">
-            © {new Date().getFullYear()} AquaTech Impermeabilizaciones. Todos los derechos reservados.
-          </p>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={onOpenWarrantyModal} 
-              className="hover:text-[#00263f] underline transition-colors"
-            >
-              Términos de Garantía
-            </button>
-            <span aria-hidden="true">·</span>
-            <span>Normas IRAM 1555 / 1570</span>
-            <span aria-hidden="true">·</span>
-            <span>Córdoba, Argentina</span>
-          </div>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/40">
+          <p>© {new Date().getFullYear()} AquaTech Solutions. Todos los derechos reservados.</p>
+          <p className="tracking-[0.2em] uppercase text-[11px]">Impermeabilizaciones que perduran</p>
         </div>
       </div>
     </footer>

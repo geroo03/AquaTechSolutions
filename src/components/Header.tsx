@@ -1,175 +1,158 @@
 import React, { useState, useEffect } from 'react';
-import { ASSETS, PHONE_NUMBER, PHONE_DISPLAY } from '../data/mockData';
+import { Menu, X, Calculator, Camera } from 'lucide-react';
+import { Logo, WhatsAppIcon } from './Brand';
+import { waLink } from './ui';
 
 interface HeaderProps {
   onOpenQuote: () => void;
   onOpenDiagnostic: () => void;
-  onOpenWarranty: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic, onOpenWarranty }) => {
+const NAV_LINKS = [
+  { label: 'Servicios', id: 'servicios' },
+  { label: 'Trabajos', id: 'trabajos' },
+  { label: 'Proceso', id: 'proceso' },
+  { label: 'Garantía', id: 'garantia' },
+  { label: 'Zonas', id: 'zonas' },
+  { label: 'Preguntas', id: 'preguntas' },
+];
+
+export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('inicio');
+  const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
 
-      const sections = ['inicio', 'servicios', 'trabajos', 'garantia', 'zonas', 'preguntas', 'contacto'];
-      const scrollPosition = window.scrollY + 100;
+    // Marca en el menú la sección que ocupa el centro de la pantalla
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    ['inicio', ...NAV_LINKS.map((l) => l.id)].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
 
-      for (const section of sections) {
-        const el = document.getElementById(section === 'inicio' ? 'root' : section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      observer.disconnect();
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { label: 'Inicio', href: '#', id: 'inicio' },
-    { label: 'Servicios', href: '#servicios', id: 'servicios' },
-    { label: 'Trabajos', href: '#trabajos', id: 'trabajos' },
-    { label: 'Garantía', href: '#garantia', id: 'garantia' },
-    { label: 'Zonas', href: '#zonas', id: 'zonas' },
-    { label: 'Preguntas', href: '#preguntas', id: 'preguntas' },
-    { label: 'Contacto', href: '#contacto', id: 'contacto' },
-  ];
+  const solid = isScrolled || mobileMenuOpen;
 
   return (
-    <header 
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-xl shadow-[0_1px_12px_rgba(0,0,0,0.06)]' 
-          : 'bg-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]'
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        solid ? 'bg-white border-b border-line' : 'bg-transparent border-b border-transparent'
       }`}
     >
-      <div className="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
-        {/* Brand Lockup */}
-        <a href="#" className="flex items-center gap-3 shrink-0 focus-visible:outline-none">
-          <img 
-            alt="Logo AquaTech" 
-            className="h-8 w-auto object-contain" 
-            src={ASSETS.logo}
-            referrerPolicy="no-referrer"
-          />
-          <div className="flex flex-col">
-            <span className="font-['Montserrat',sans-serif] text-xl font-bold text-[#00263f] leading-none tracking-tight">
-              AquaTech
-            </span>
-            <span className="font-['Inter',sans-serif] text-[11px] font-bold text-[#006399] uppercase tracking-wider">
-              Impermeabilizaciones
-            </span>
-          </div>
+      <div className="h-[72px] max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-6">
+        <a href="#inicio" aria-label="AquaTech Solutions, inicio" className="shrink-0">
+          <Logo tone={solid ? 'dark' : 'light'} />
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-1">
-          {navLinks.map((link) => {
+        <nav className="hidden lg:flex items-center gap-1" aria-label="Secciones">
+          {NAV_LINKS.map((link) => {
             const isActive = activeSection === link.id;
             return (
               <a
                 key={link.id}
-                href={link.href}
-                className={`py-2 px-3 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${
-                  isActive
-                    ? 'bg-[#0b3c5d] text-[#ffffff] shadow-sm'
-                    : 'text-[#42474e] hover:text-[#00263f] hover:bg-[#eceef0]/60'
+                href={`#${link.id}`}
+                className={`relative px-3.5 py-2 text-[13.5px] font-medium transition-colors ${
+                  solid
+                    ? isActive ? 'text-ink' : 'text-muted hover:text-ink'
+                    : isActive ? 'text-white' : 'text-white/70 hover:text-white'
                 }`}
               >
                 {link.label}
+                <span
+                  className={`absolute left-3.5 right-3.5 -bottom-0.5 h-px transition-opacity ${
+                    solid ? 'bg-ink' : 'bg-white'
+                  } ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                />
               </a>
             );
           })}
         </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Cotizador Button */}
+        <div className="flex items-center gap-2">
           <button
             onClick={onOpenQuote}
-            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-[#00263f] bg-[#cde5ff] hover:bg-[#95ccff] rounded-lg transition-colors shadow-sm"
-            title="Calcular presupuesto online aproximado"
+            className={`hidden md:inline-flex items-center gap-2 h-10 px-4 rounded-full text-[13px] font-semibold transition-colors ${
+              solid ? 'text-ink hover:bg-mist' : 'text-white hover:bg-white/10'
+            }`}
           >
-            <span className="material-symbols-outlined text-[16px]">calculate</span>
-            <span>Cotizador</span>
+            <Calculator size={16} strokeWidth={1.9} />
+            Cotizador
           </button>
 
-          {/* WhatsApp Primary Button */}
           <a
-            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ebe57] text-white text-xs sm:text-sm font-semibold py-2.5 px-3.5 sm:px-4 rounded-lg shadow-[0_4px_12px_rgba(37,211,102,0.25)] transition-all shrink-0 hover:shadow-[0_6px_16px_rgba(37,211,102,0.35)]"
-            href={`https://wa.me/${PHONE_NUMBER}?text=Hola%20AquaTech,%20quiero%20pedir%20un%20presupuesto%20para%20impermeabilizaci%C3%B3n`}
-            rel="noopener noreferrer"
+            href={waLink('Hola AquaTech, quiero pedir un presupuesto de impermeabilización')}
             target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 h-10 px-4 sm:px-5 rounded-full text-[13px] font-semibold transition-all ${
+              solid ? 'bg-ink text-white hover:bg-graphite' : 'bg-white text-ink hover:bg-white/90'
+            }`}
           >
-            <span className="material-symbols-outlined text-[18px] text-white">chat</span>
+            <WhatsAppIcon size={16} />
             <span className="hidden sm:inline">Pedí presupuesto</span>
             <span className="sm:hidden">Consultar</span>
           </a>
 
-          {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden w-9 h-9 rounded-lg bg-[#eceef0] text-[#00263f] flex items-center justify-center transition-colors hover:bg-[#e0e3e5]"
-            aria-label="Abrir menú"
+            className={`lg:hidden w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+              solid ? 'text-ink hover:bg-mist' : 'text-white hover:bg-white/10'
+            }`}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={mobileMenuOpen}
           >
-            <span className="material-symbols-outlined text-[20px]">
-              {mobileMenuOpen ? 'close' : 'menu'}
-            </span>
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-t border-[#c2c7ce]/30 bg-white shadow-xl px-6 py-5 transition-all">
-          <div className="flex flex-col gap-2 mb-4">
-            {navLinks.map((link) => (
+        <div className="lg:hidden bg-white border-t border-line px-5 sm:px-8 pb-6 pt-3 animate-fade-in">
+          <nav className="flex flex-col">
+            {NAV_LINKS.map((link) => (
               <a
                 key={link.id}
-                href={link.href}
+                href={`#${link.id}`}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`py-2 px-3 text-sm font-semibold rounded-lg ${
-                  activeSection === link.id
-                    ? 'bg-[#0b3c5d] text-white'
-                    : 'text-[#42474e] hover:bg-[#eceef0]'
-                }`}
+                className="py-3.5 text-base font-medium text-ink border-b border-line last:border-0"
               >
                 {link.label}
               </a>
             ))}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[#eceef0]">
+          </nav>
+          <div className="grid grid-cols-2 gap-2 mt-4">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenQuote();
               }}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-[#cde5ff] text-[#00263f] font-semibold text-xs rounded-lg"
+              className="inline-flex items-center justify-center gap-2 h-11 rounded-full border border-line text-sm font-semibold text-ink"
             >
-              <span className="material-symbols-outlined text-[16px]">calculate</span>
-              <span>Cotizador Online</span>
+              <Calculator size={16} /> Cotizador
             </button>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenDiagnostic();
               }}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-[#eceef0] text-[#00263f] font-semibold text-xs rounded-lg"
+              className="inline-flex items-center justify-center gap-2 h-11 rounded-full border border-line text-sm font-semibold text-ink"
             >
-              <span className="material-symbols-outlined text-[16px]">photo_camera</span>
-              <span>Enviar Fotos</span>
+              <Camera size={16} /> Enviar fotos
             </button>
           </div>
         </div>

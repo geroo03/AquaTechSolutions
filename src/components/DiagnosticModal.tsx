@@ -1,147 +1,112 @@
 import React, { useState } from 'react';
-import { PHONE_NUMBER } from '../data/mockData';
+import { Camera, ImagePlus } from 'lucide-react';
+import { WhatsAppIcon } from './Brand';
+import { Modal, Select, waLink } from './ui';
 
 interface DiagnosticModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({ isOpen, onClose }) => {
-  const [problemType, setProblemType] = useState('Gotera activa cuando llueve fuerte');
-  const [propertyType, setPropertyType] = useState('Casa particular');
-  const [addressArea, setAddressArea] = useState('Córdoba Capital');
-  const [urgency, setUrgency] = useState('Esta semana');
-  const [hasPhotoAttached, setHasPhotoAttached] = useState(false);
+const PROBLEMS = [
+  'Gotera activa cuando llueve fuerte',
+  'Manchas de humedad en cielorraso o paredes',
+  'Membrana vieja levantada o con bolsas de agua',
+  'Fisuras en losa o juntas de dilatación',
+  'Humedad en zócalos y cimientos (salitre)',
+  'Pérdida de agua en pileta o tanque',
+];
 
-  if (!isOpen) return null;
+const PROPERTIES = ['Casa', 'Dúplex o PH', 'Edificio / consorcio', 'Galpón / industria', 'Comercio / oficina'];
+
+const fieldClass =
+  'w-full h-12 px-4 rounded-2xl bg-paper ring-1 ring-line text-sm text-ink placeholder:text-muted outline-none focus:ring-2 focus:ring-ink';
+
+const Label: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-muted mb-2.5">{children}</span>
+);
+
+export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({ isOpen, onClose }) => {
+  const [problem, setProblem] = useState(PROBLEMS[0]);
+  const [property, setProperty] = useState(PROPERTIES[0]);
+  const [place, setPlace] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const msg = `Hola AquaTech! Les envío datos para un diagnóstico técnico de impermeabilización:
-- Problema: ${problemType}
-- Tipo de propiedad: ${propertyType}
-- Ubicación: ${addressArea}
-- Urgencia: ${urgency}
-Adjunto a continuación las fotos del techo para que las revise un técnico.`;
-
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+    const msg = `Hola AquaTech! Quiero un diagnóstico por fotos:
+- Problema: ${problem}
+- Inmueble: ${property}
+- Barrio o localidad: ${place || 'a confirmar'}
+Ahora les mando las fotos.`;
+    window.open(waLink(msg), '_blank', 'noopener');
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-[#cbd5e1] p-6 sm:p-8 relative text-[#191c1e]">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-lg bg-[#f1f5f9] text-[#475569] hover:bg-[#e2e8f0] flex items-center justify-center transition-colors"
-          aria-label="Cerrar modal"
-        >
-          <span className="material-symbols-outlined text-[20px]">close</span>
-        </button>
-
-        {/* Modal Header */}
-        <div className="flex items-center gap-3 pb-4 border-b border-[#e2e8f0] mb-5">
-          <div className="w-12 h-12 rounded-xl bg-[#cde5ff] text-[#006399] flex items-center justify-center">
-            <span className="material-symbols-outlined text-[26px]">photo_camera</span>
+    <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-lg" label="Diagnóstico por fotos">
+      <div className="p-7 sm:p-9">
+        <div className="flex items-center gap-4 pb-6 mb-7 border-b border-line pr-10">
+          <div className="w-12 h-12 rounded-2xl bg-ink text-white flex items-center justify-center shrink-0">
+            <Camera size={22} strokeWidth={1.6} />
           </div>
           <div>
-            <h3 className="font-['Montserrat',sans-serif] text-xl font-bold text-[#00263f]">
-              Diagnóstico Exprés por Fotos
-            </h3>
-            <p className="text-xs text-[#64748b]">
-              Mandanos fotos de tu techo por WhatsApp y te decimos qué sistema conviene.
-            </p>
+            <h3 className="font-headline text-2xl font-bold text-ink">Diagnóstico por fotos</h3>
+            <p className="text-[13px] text-muted">Contanos el problema y te decimos qué conviene.</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-xs font-bold text-[#00263f] uppercase tracking-wider mb-1.5">
-              ¿Qué problema estás experimentando?
-            </label>
-            <select
-              value={problemType}
-              onChange={(e) => setProblemType(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0f172a] bg-white outline-none focus:border-[#4cb2ff]"
-            >
-              <option value="Gotera activa cuando llueve fuerte">Gotera activa cuando llueve fuerte</option>
-              <option value="Manchas de humedad en cielorraso o paredes">Manchas de humedad en cielorraso o paredes</option>
-              <option value="Membrana asfáltica vieja levantada o con bolsas de agua">Membrana asfáltica vieja levantada o con bolsas de agua</option>
-              <option value="Fisuras visibles en losa o junta de dilatación">Fisuras visibles en losa o junta de dilatación</option>
-              <option value="Humedad en zócalos y cimientos (salitre)">Humedad en zócalos y cimientos (salitre)</option>
-              <option value="Pérdida de agua en pileta o tanque">Pérdida de agua en pileta o tanque</option>
-            </select>
+            <Label>¿Qué problema tenés?</Label>
+            <div className="grid gap-2">
+              {PROBLEMS.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setProblem(p)}
+                  className={`px-4 py-3 rounded-2xl text-[13.5px] text-left transition-colors ${
+                    problem === p ? 'bg-ink text-white' : 'bg-paper ring-1 ring-line text-graphite hover:bg-mist'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-[#00263f] uppercase tracking-wider mb-1.5">
-                Tipo de inmueble
-              </label>
-              <select
-                value={propertyType}
-                onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full p-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0f172a] bg-white outline-none focus:border-[#4cb2ff]"
-              >
-                <option value="Casa particular">Casa particular</option>
-                <option value="Dúplex o PH">Dúplex o PH</option>
-                <option value="Edificio / Consorcio">Edificio / Consorcio</option>
-                <option value="Galpón / Industria">Galpón / Industria</option>
-                <option value="Comercio / Oficina">Comercio / Oficina</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[#00263f] uppercase tracking-wider mb-1.5">
-                Barrio o localidad
-              </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label>
+              <Label>Inmueble</Label>
+              <Select value={property} onChange={(e) => setProperty(e.target.value)} options={PROPERTIES} />
+            </label>
+            <label>
+              <Label>Barrio o localidad</Label>
               <input
                 type="text"
-                value={addressArea}
-                onChange={(e) => setAddressArea(e.target.value)}
-                placeholder="Ej: Cerro, Villa Allende..."
-                className="w-full p-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0f172a] bg-white outline-none focus:border-[#4cb2ff]"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
+                placeholder="Ej: Cerro, Villa Allende"
+                className={fieldClass}
               />
-            </div>
-          </div>
-
-          {/* Photo dropzone simulation */}
-          <div>
-            <label className="block text-xs font-bold text-[#00263f] uppercase tracking-wider mb-1.5">
-              Fotos del techo o gotera
             </label>
-            <div 
-              onClick={() => setHasPhotoAttached(!hasPhotoAttached)}
-              className={`p-5 rounded-xl border-2 border-dashed transition-all cursor-pointer text-center ${
-                hasPhotoAttached
-                  ? 'border-[#00bb56] bg-[#f0fdf4]'
-                  : 'border-[#cbd5e1] hover:border-[#006399] bg-[#f8fafc]'
-              }`}
-            >
-              <span className={`material-symbols-outlined text-[32px] mb-1 ${hasPhotoAttached ? 'text-[#00bb56]' : 'text-[#64748b]'}`}>
-                {hasPhotoAttached ? 'check_circle' : 'add_a_photo'}
-              </span>
-              <p className="text-xs font-bold text-[#0f172a]">
-                {hasPhotoAttached ? '¡Listo! Foto lista para enviar por WhatsApp' : 'Tocá acá para seleccionar fotos'}
-              </p>
-              <p className="text-[11px] text-[#64748b] mt-0.5">
-                O bien envialas directamente desde el chat de WhatsApp a nuestro asesor técnico.
-              </p>
-            </div>
           </div>
 
-          <div className="pt-2">
-            <button
-              type="submit"
-              className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe57] text-white font-bold text-sm py-3.5 px-6 rounded-xl transition-all shadow-md"
-            >
-              <span className="material-symbols-outlined text-[22px]">chat</span>
-              <span>Abrir WhatsApp con diagnóstico</span>
-            </button>
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-paper ring-1 ring-line">
+            <ImagePlus size={20} strokeWidth={1.7} className="text-ink shrink-0 mt-0.5" />
+            <p className="text-[13px] text-graphite leading-relaxed">
+              Al abrirse WhatsApp, adjuntá <strong className="text-ink">2 o 3 fotos</strong> del problema: una general y
+              otras de cerca. Con eso te damos un primer diagnóstico.
+            </p>
           </div>
+
+          <button
+            type="submit"
+            className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 rounded-full bg-ink text-white text-sm font-semibold hover:bg-graphite transition-colors"
+          >
+            <WhatsAppIcon size={18} /> Continuar en WhatsApp
+          </button>
         </form>
       </div>
-    </div>
+    </Modal>
   );
 };

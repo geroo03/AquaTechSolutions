@@ -5,6 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Rutas relativas: la demo funciona igual en GitHub Pages (/AquaTechSolutions/) y en local
+    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

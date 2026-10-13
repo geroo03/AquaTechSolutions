@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ServicesSection } from './components/ServicesSection';
@@ -27,7 +27,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] font-['Inter',sans-serif] text-[#191c1e] flex flex-col selection:bg-[#4cb2ff]/20 selection:text-[#00263f]">
+    <div className="min-h-screen flex flex-col">
       {/* Fixed Header */}
       <Header 
         onOpenQuote={() => {
@@ -35,18 +35,16 @@ export default function App() {
           setIsQuoteOpen(true);
         }}
         onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
-        onOpenWarranty={() => setIsWarrantyOpen(true)}
       />
 
       {/* Main Content Area */}
-      <main className="w-full pt-20 flex-1">
+      <main className="w-full flex-1">
         {/* 1. Hero Section */}
         <Hero 
           onOpenQuote={() => {
             setQuoteInitialService(undefined);
             setIsQuoteOpen(true);
           }}
-          onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
         />
 
         {/* 2. Services Section */}

@@ -1,27 +1,41 @@
+import {
+  House,
+  Building2,
+  Droplets,
+  CloudRain,
+  Waves,
+  Wrench,
+  Camera,
+  MapPin,
+  ReceiptText,
+  BadgeCheck,
+} from 'lucide-react';
 import { ServiceItem, CaseStudy, FaqItem, ReviewItem, ZoneItem } from '../types';
 
+const img = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
+
 export const ASSETS = {
-  logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBb_a2-XDZwd5SLTcBBX8lSeAD_eTEz1bdCRVZ0WiA3isAU14RJB5w4X6K2bSVXfsqW9hEg-9rYhSCrrmQ-vKXCf1nPUGkn3H8xYLjJn-SlNi_E2JSORRO9pvbRL9_9_3sznhHANQf5J4V5Bc1dIyXabC7Sgbhp5MHWP7084q2O5GxLaISvy-WYXODqjz1f5NoXpwrfO_fi5qRXNfOyDSopT7Gios0gH-w0DOKuMDXV27dqxyEHsjtZ-A',
-  heroBg: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBKoiMijvGan-HtYiUJBt8cjaJCSzEl7a5Mv3oXeyZBOUitngvcc1Xby1qBnM2eKHwUCLv_kOf4rH5PHzpCk7YCm4UFVGqW7wycRfTqg5NLkWpLsTtqdDjRJy86Rq8Upk6AcMTnfe_Bm1R0HZm_0oBxSyZU_tbJcJqGCLAMeSsw9fphtIDl32ne8fSICUSJKqyxciU5IhFZ5kcMN0T2Jpbo6TtFiKk4_CcfUaJJ1fsoXXIxX0xrLeNKOQ',
-  case1Before: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBD9uxeV4uIZ_EWNMunvonRCrrjzvDq9C2vx1Nkg8bYevfAy6rBP_Z-zT3G4iH1DIR75jZ4i29boG1rC-CN9PzuN4_9XNlq3jkOTO_tSrF8Dsh57xc0JDp3ZVR7lcCzazDs6xRPa4uX1B3xu2p7y8XBiYwY4ybSxKkZ0e8-VYp_e24RIQ9cxwF5OSud1tQp8xpT0fCf1NLNQfZDGz8-ax-b9XjmUQOscQHCdJU95ybq3zouzPSsl066Dg',
-  case1After: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDjKvc0OJ5tQlJfAf-pJS9rPgQJk3h59ium3T2I1apkWREdQhokPdKd1M2F9GebqSua0uy_cqjUMA9gCBYaJz_eWuFSlUIhpxNsgAP5ZTxSxj8TM7o8-z3G92FxvEe61W_weR3DHOuMZB0e3fUKx5Ccdrl3LFRCiC-wkI1TkiQQAG22oJbkTvCPKGjSk7u_7ir_GHfZgaLLBCsV5RJx3BF9_-7jKwHg_4fMHv7FW7wnmF17a5_ueT2bYw',
-  case2Before: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBRuGq_43GOcmnXSlR2oHZmoJyTnQWowPJsdGJvTNq_36yIxqGlAe0VVn5qsTeMDhtJEq3zsi_rhDP2XbzqZW6GDg-oKLJfvzZYUif21E-y7Mm-s2Knh-2kITE1ucyimuWYqO0-x9C_udqKa0Y5_f-yoMGzCxGzcQgGrRdWaahawRlrvclAei5ehPiNE6rrRN1sCe5jhlABx9FXTk_3AAHiZLcMCp7Iyj8067N6QwaTjqu7ro5R-y4jdQ',
-  case2After: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBpPXMJ0bmnks_sTQ_7dXqkmdQPe5DXyLpVLv4k5L_NsjUfvEfQThMB1D2wQbzjB0KZMu6q9rSalWpGmzXokYRbV86PgdOeRUIH739ARDHDBWPdKEMyBuYJHwCWg-yECGT71doiecLrT5HNgZD_pZK5Y1ITCxI9Q0fnM4PYvb0Q1YJ240Cj413g07hlLMVdDRl-Lobp3Mvn9PPHBLRNuaIifsX3d_JQI4krwlpimVBpFuKSEcOLlRvk-w',
-  case3Before: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAkcz_mchmQN4aXi-IFRGLwyaapx6R1TiSu8XIho70m0mwm2Thk78YtNcCOl6S9ndw2ZpKKkYRpEUyuztJ2JoyHK1va-9QNERToHlk8KZy1QYiNkFpK5V8OTszjgJmyjVHXzHmjBc7Ri1A3Hq_kSsmyBkTR1LiKKLG742RNwsNQkHnBr4lIfKiKR3czitfqe8Dzprp-OlTtPKC0Q0CPfZTZC73eSzk1fP_DV4aTwNpX0ge4Ztiyic9qrQ',
-  case3After: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDuLgjfz5OJ8BT5S7Lkkiqbclq1ZJhTNMPnKfdC0OY90DBEQwkcH9mC8vczs3k65RJZE2GNdPPD_gdNYDo_Q3cKDmOmkCRXBDzoumjNYK78B-4pId42ue4ina8N6zS_uIIstUFEosaKnlfrIP4FIe8ROd9cyxkq7FzlZvGMwxVQ4GRKJrIgQbIlX-X8EeyvwAHGHnbnTQttTX8_SyQkXiHSfDI8MVkqz2x_3yAeVdj4R_nQT4vHZaKlBQ',
-  mapCordoba: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD4nszmOxyEXXqzFnuL4XgPF-LhSiW0kKPNBlJ1AjyGnonuKBLOrgYGDvIIHDMds0jsF0XGxU9nuqgMRCxYQnLIwJggLyoexq8y3FuaOuNJ1a86mgguUeRhS8FhJfVu02_f7LDBZxX5U9yOCn6M9XnZP4GIQAHKS2yGTGBYkooTeGj6LCOXmFaW10kcEE8mwLSdPAR5ecGY4H1pd2llALeGDfhj2MmlLCNh4fCpyRCurVNAawt8SqU4oA'
+  heroBg: img('hero.jpg'),
+  case1Before: img('case1-before.jpg'),
+  case1After: img('case1-after.jpg'),
+  case2Before: img('case2-before.jpg'),
+  case2After: img('case2-after.jpg'),
+  case3Before: img('case3-before.jpg'),
+  case3After: img('case3-after.jpg'),
 };
 
 export const PHONE_NUMBER = '5493516134658';
 export const PHONE_DISPLAY = '351 613-4658';
-export const EMAIL_CONTACT = 'contacto@aquatech.com.ar';
+export const OPENING_HOURS = 'Lunes a sábado, de 8 a 19 h';
+export const INSTAGRAM_URL = 'https://www.instagram.com/aqua.tech.solutions/';
+export const INSTAGRAM_HANDLE = '@aqua.tech.solutions';
 
 export const SERVICES: ServiceItem[] = [
   {
     id: 'techos',
     title: 'Techos',
     shortDesc: 'Impermeabilización de losas de hormigón, techos de chapa y tejas con sistemas multicapa y sellado térmico.',
-    icon: 'roofing',
+    icon: House,
     features: [
       'Membrana asfáltica 4mm con alma de poliéster y geotextil',
       'Sellado elasto-térmico para techos de chapa galvanizada y sinusoidal',
@@ -36,7 +50,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'terrazas',
     title: 'Terrazas y balcones',
     shortDesc: 'Membranas transitables, poliuretano de alta resistencia a la intemperie y sellado de juntas de dilatación.',
-    icon: 'deck',
+    icon: Building2,
     features: [
       'Poliuretano líquido transitable de secado rápido (sin juntas)',
       'Sellado de juntas de dilatación con masillas elastoméricas PU',
@@ -51,7 +65,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'cimientos',
     title: 'Humedad de cimientos',
     shortDesc: 'Inyección de resinas hidrófugas y barreras químicas para erradicar la humedad ascendente desde la base.',
-    icon: 'foundation',
+    icon: Droplets,
     features: [
       'Inyección a presión controlada de siliconas y siloxanos hidrofugantes',
       'Bloqueo definitivo de capilaridad ascendente en muros de ladrillo',
@@ -66,7 +80,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'filtraciones',
     title: 'Filtraciones',
     shortDesc: 'Detección precisa del origen de goteras, sellado de grietas estructurales y babetas perimetrales.',
-    icon: 'water_damage',
+    icon: CloudRain,
     features: [
       'Inspección técnica de puntos críticos (encuentros, babetas, cañerías)',
       'Sellado elástico de fisuras activas con bandas de expansión',
@@ -81,7 +95,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'tanques',
     title: 'Tanques y piletas',
     shortDesc: 'Revestimientos impermeables de grado sanitario para depósitos de agua potable y piscinas de hormigón.',
-    icon: 'pool',
+    icon: Waves,
     features: [
       'Morteros poliméricos bicomponentes certificados para agua potable',
       'Resistencia a contrapresión hidrostática positiva y negativa',
@@ -96,7 +110,7 @@ export const SERVICES: ServiceItem[] = [
     id: 'mantenimiento',
     title: 'Mantenimiento preventivo',
     shortDesc: 'Planes anuales para consorcios, empresas y viviendas particulares antes de cada temporada de lluvias.',
-    icon: 'engineering',
+    icon: Wrench,
     features: [
       'Limpieza profunda y desobstrucción de rejillas, canaletas y embudos',
       'Reaplicación de capas de sacrificio y pintura reflectiva UV',
@@ -117,9 +131,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     location: 'Zona Sur, Córdoba Capital',
     system: 'Membrana asfáltica 4mm + geotextil + poliuretano elástico continuo. Se regularizó la pendiente y sellaron las babetas de hormigón.',
     surface: '450 m² recuperados',
-    warranty: '10 Años Escrita',
+    warranty: '10 años, por escrito',
     time: '5 jornadas de trabajo',
-    status: '100% Estanco',
+    status: 'Sin filtraciones',
     beforeImg: ASSETS.case1Before,
     afterImg: ASSETS.case1After,
     beforeCaption: 'ANTES: Filtraciones activas y membrana resquebrajada con acumulación de agua estancada.',
@@ -139,9 +153,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     location: 'Nueva Córdoba, B° Güemes',
     system: 'Membrana líquida poliuretánica transitable de alto tránsito en terraza común del consorcio con sellado de juntas de dilatación.',
     surface: '280 m² transitables',
-    warranty: '7 Años Escrita',
+    warranty: '7 años, por escrito',
     time: '4 jornadas',
-    status: 'Factura A + ART Aprobada',
+    status: 'Estanqueidad total',
     beforeImg: ASSETS.case2Before,
     afterImg: ASSETS.case2After,
     beforeCaption: 'ANTES: Desprendimiento, baldosas rotas y filtraciones a los departamentos del último piso.',
@@ -151,7 +165,7 @@ export const CASE_STUDIES: CaseStudy[] = [
       'Calafateo de 95 metros lineales de juntas de dilatación con poliuretano Sikaflex',
       'Incorporación de malla de fibra de vidrio de refuerzo tridimensional',
       'Acabado antideslizante con microesferas para seguridad de consorcistas',
-      'Emisión formal de Factura A y certificados de ART para la administración'
+      'Entrega de informe final con fotos para la administración'
     ]
   },
   {
@@ -161,9 +175,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     location: 'Villa Allende Golf, Sierras Chicas',
     system: 'Reemplazo y sellado de cubierta de tejas coloniales, renovación de zinguería y aplicación de sellador polimérico hidrófugo de penetración profunda.',
     surface: '190 m² de cubierta',
-    warranty: '5 Años Escrita',
+    warranty: '5 años, por escrito',
     time: '3 jornadas',
-    status: 'Cero Humedad',
+    status: 'Cero humedad',
     beforeImg: ASSETS.case3Before,
     afterImg: ASSETS.case3After,
     beforeCaption: 'ANTES: Goteras en cumbreras y canaletas oxidadas con filtración a tirantería de madera.',
@@ -183,53 +197,50 @@ export const WORK_PROCESS = [
     step: '1',
     title: 'Nos mandás fotos por WhatsApp',
     description: 'Envianos fotos o videos de tu techo o del problema de humedad para un primer diagnóstico rápido y sin vueltas.',
-    icon: 'photo_camera',
+    icon: Camera,
     tag: 'Desde tu celular'
   },
   {
     step: '2',
     title: 'Visita técnica sin cargo',
     description: 'Coordinamos una inspección en tu domicilio o consorcio en Córdoba para evaluar la superficie, pendientes y fisuras.',
-    icon: 'location_on',
+    icon: MapPin,
     tag: 'Córdoba y Gran Córdoba'
   },
   {
     step: '3',
     title: 'Presupuesto en 24 h',
     description: 'Recibís un desglose técnico formal con opciones de materiales normalizados, plazos de ejecución y formas de pago.',
-    icon: 'receipt_long',
+    icon: ReceiptText,
     tag: 'Sin sorpresas ni extras'
   },
   {
     step: '4',
     title: 'Trabajo con garantía escrita',
     description: 'Ejecución limpia, supervisión técnica continua y entrega de tu certificado de garantía formal firmado.',
-    icon: 'verified',
+    icon: BadgeCheck,
     tag: 'Hasta 10 años firmado'
   }
 ];
 
 export const ZONES: ZoneItem[] = [
-  { id: '1', name: 'Córdoba Capital', department: 'Capital (Todos los barrios)', dispatchTime: '24 hs hábiles', mobileTeam: 'Móvil 01 & 02', status: 'Alta disponibilidad' },
-  { id: '2', name: 'Villa Allende', department: 'Sierras Chicas', dispatchTime: '24 hs hábiles', mobileTeam: 'Móvil 03 (Zona Norte)', status: 'Rutas diarias' },
-  { id: '3', name: 'Mendiolaza', department: 'Sierras Chicas', dispatchTime: '24 hs hábiles', mobileTeam: 'Móvil 03 (Zona Norte)', status: 'Rutas diarias' },
-  { id: '4', name: 'Río Ceballos', department: 'Sierras Chicas', dispatchTime: '24 a 48 hs', mobileTeam: 'Móvil 03 (Zona Norte)', status: 'Rutas diarias' },
-  { id: '5', name: 'Villa Carlos Paz', department: 'Valle de Punilla', dispatchTime: '24 a 48 hs', mobileTeam: 'Móvil 04 (Punilla)', status: 'Rutas diarias' },
-  { id: '6', name: 'Malagueño', department: 'Santa María', dispatchTime: '24 hs hábiles', mobileTeam: 'Móvil 02 (Autopista)', status: 'Alta disponibilidad' },
-  { id: '7', name: 'La Calera', department: 'Colón', dispatchTime: '24 hs hábiles', mobileTeam: 'Móvil 01 (Oeste)', status: 'Alta disponibilidad' },
-  { id: '8', name: 'Alta Gracia', department: 'Santa María', dispatchTime: '48 hs hábiles', mobileTeam: 'Móvil 05 (Sur)', status: 'Guardia activa' },
-  { id: '9', name: 'Jesús María', department: 'Colón', dispatchTime: '48 hs hábiles', mobileTeam: 'Móvil 03 (Ruta 9)', status: 'Guardia activa' },
-  { id: '10', name: 'Unquillo & Salsipuedes', department: 'Sierras Chicas', dispatchTime: '24 a 48 hs', mobileTeam: 'Móvil 03 (Norte)', status: 'Rutas diarias' },
-  { id: '11', name: 'Cosquín & Valle Hermoso', department: 'Valle de Punilla', dispatchTime: '48 hs hábiles', mobileTeam: 'Móvil 04 (Punilla)', status: 'Guardia activa' },
-  { id: '12', name: 'Toda la Provincia de Córdoba', department: 'Obras mayores / Consorcios', dispatchTime: 'A coordinar', mobileTeam: 'Equipo Especial', status: 'Alta disponibilidad' }
+  { id: 'capital', name: 'Córdoba Capital', area: 'Todos los barrios', response: 'Visita en 24 h hábiles', x: 52, y: 50 },
+  { id: 'villa-allende', name: 'Villa Allende', area: 'Sierras Chicas', response: 'Visita en 24 h hábiles', x: 38, y: 36 },
+  { id: 'mendiolaza', name: 'Mendiolaza', area: 'Sierras Chicas', response: 'Visita en 24 h hábiles', x: 36, y: 27 },
+  { id: 'rio-ceballos', name: 'Río Ceballos', area: 'Sierras Chicas', response: 'Visita en 24 a 48 h', x: 32, y: 17 },
+  { id: 'la-calera', name: 'La Calera', area: 'Departamento Colón', response: 'Visita en 24 h hábiles', x: 30, y: 46 },
+  { id: 'carlos-paz', name: 'Villa Carlos Paz', area: 'Valle de Punilla', response: 'Visita en 24 a 48 h', x: 16, y: 58 },
+  { id: 'malagueno', name: 'Malagueño', area: 'Departamento Santa María', response: 'Visita en 24 h hábiles', x: 33, y: 64 },
+  { id: 'alta-gracia', name: 'Alta Gracia', area: 'Departamento Santa María', response: 'Visita en 48 h hábiles', x: 40, y: 86 },
+  { id: 'jesus-maria', name: 'Jesús María', area: 'Departamento Colón', response: 'Visita en 48 h hábiles', x: 62, y: 10 },
 ];
 
 export const TESTIMONIALS: ReviewItem[] = [
   {
     id: 'rev-1',
-    name: 'Arq. Lucas Benítez',
-    role: 'Administración de Consorcio',
-    location: 'Córdoba — Güemes & Nva Córdoba',
+    name: 'Lucas B.',
+    role: 'Administración de consorcio',
+    location: 'Güemes, Córdoba',
     comment: 'Excelente trabajo en el techo del edificio en Güemes. Teníamos goteras históricas que ningún techista solucionaba. Impecable la atención y la garantía.',
     rating: 5,
     date: 'Hace 2 semanas'
@@ -237,34 +248,34 @@ export const TESTIMONIALS: ReviewItem[] = [
   {
     id: 'rev-2',
     name: 'Mariana R.',
-    role: 'Propietaria de Vivienda',
-    location: 'Mendiolaza — B° Los Cigarrales',
+    role: 'Propietaria de vivienda',
+    location: 'Mendiolaza',
     comment: 'Mandé las fotos un lunes, el martes vinieron a ver la casa en Mendiolaza y el jueves ya estaba presupuestado. Cumplieron los plazos al pie de la letra.',
     rating: 5,
     date: 'Hace 1 mes'
   },
   {
     id: 'rev-3',
-    name: 'Ing. Carlos Ferrero',
-    role: 'Planta Logística Industrial',
-    location: 'Malagueño — Parque Industrial',
+    name: 'Carlos F.',
+    role: 'Nave industrial',
+    location: 'Malagueño',
     comment: 'Hicieron la impermeabilización de 300 m² de nave industrial en Malagueño. Muy profesionales y con factura y garantía como corresponde.',
     rating: 5,
     date: 'Hace 3 semanas'
   },
   {
     id: 'rev-4',
-    name: 'Dra. Silvina Godoy',
-    role: 'Propietaria Dúplex',
-    location: 'Villa Allende — Golf',
+    name: 'Silvina G.',
+    role: 'Propietaria de dúplex',
+    location: 'Villa Allende',
     comment: 'Se nos llovía la losa cada vez que caían tormentas de verano. La solución de membrana geotextil y pintura térmica dejó el techo impecable y además redujo el calor en la planta alta.',
     rating: 5,
     date: 'Hace 1 mes'
   },
   {
     id: 'rev-5',
-    name: 'Esteban M. Olmedo',
-    role: 'Administrador de Inmuebles',
+    name: 'Esteban O.',
+    role: 'Administrador de inmuebles',
     location: 'Cerro de las Rosas, Córdoba',
     comment: 'Trabajamos con AquaTech en 4 consorcios de la zona norte. Cero reclamos de filtraciones en el último invierno lluvioso. Muy prolijos y respetuosos con las normas del edificio.',
     rating: 5,
@@ -312,11 +323,9 @@ export const FAQS: FaqItem[] = [
 ];
 
 export const CERTIFICATE_DATA = {
-  policyNumber: 'GAR-2025-CBA-9418',
-  technicalDirector: 'Ing. M. Santillán (Mat. Profesional CPIA 8421)',
-  standards: 'IRAM 1555 / 1570 / 1568',
-  watertightTest: 'Aprobada — Inundación controlada 48 hs sin descensos de nivel',
-  coveragePeriod: 'Hasta 10 Años Escrita',
-  registeredSeal: 'Dirección Técnica AquaTech Soluciones SRL',
-  address: 'Av. Rafael Núñez 4200, Córdoba, Argentina'
+  policyNumber: 'MODELO-0001',
+  technicalDirector: 'Dirección Técnica AquaTech',
+  standards: 'Normas IRAM de impermeabilización',
+  watertightTest: 'Prueba de inundación controlada aprobada',
+  coveragePeriod: 'Según sistema, hasta 10 años',
 };

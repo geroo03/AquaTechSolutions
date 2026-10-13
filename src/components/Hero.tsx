@@ -1,112 +1,106 @@
 import React from 'react';
-import { ASSETS, PHONE_NUMBER } from '../data/mockData';
+import { motion } from 'motion/react';
+import { ArrowDown, Calculator, ClipboardCheck, ShieldCheck, MapPin } from 'lucide-react';
+import { ASSETS } from '../data/mockData';
+import { LogoMark, WhatsAppIcon } from './Brand';
+import { waLink } from './ui';
 
 interface HeroProps {
   onOpenQuote: () => void;
-  onOpenDiagnostic: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenQuote, onOpenDiagnostic }) => {
+const BENEFITS = [
+  { icon: ClipboardCheck, title: 'Presupuesto sin cargo', text: 'Respuesta en el día' },
+  { icon: ShieldCheck, title: 'Garantía escrita', text: 'En cada trabajo terminado' },
+  { icon: MapPin, title: 'Toda la provincia', text: 'Capital, Sierras Chicas y Punilla' },
+];
+
+export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
   return (
-    <section className="relative -mt-20 w-full overflow-hidden bg-[#00263f] text-white">
-      {/* Background with technical layered gradient */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center mix-blend-overlay opacity-30 transform scale-105 transition-transform duration-1000 ease-out" 
-          style={{ backgroundImage: `url('${ASSETS.heroBg}')` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#00263f]/95 via-[#0b3c5d]/90 to-[#00263f]" />
-        {/* Subtle architectural blueprint grid texture */}
-        <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]" />
+    <section id="inicio" className="relative isolate overflow-hidden bg-ink text-white">
+      {/* Foto de obra en blanco y negro, con degradé para que el texto siempre se lea */}
+      <div className="absolute inset-0 -z-10">
+        <img src={ASSETS.heroBg} alt="" className="w-full h-full object-cover grayscale opacity-45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/60" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-36 pb-20 lg:pt-44 lg:pb-28">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#006399]/30 border border-[#4cb2ff]/20 backdrop-blur-md text-[#cde5ff] shadow-sm mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#4cb2ff] animate-pulse" />
-            <span className="text-xs sm:text-sm font-semibold tracking-wide">
-              📍 Especialistas Técnicos en Córdoba y Gran Córdoba
+      {/* Isotipo gigante como marca de agua */}
+      <LogoMark
+        size={620}
+        className="absolute -right-24 top-1/2 -translate-y-1/2 -z-10 text-white/[0.035] hidden md:block"
+      />
+
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-36 pb-16 sm:pt-44 lg:pt-48 lg:pb-24">
+        <motion.div
+          className="max-w-3xl"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex items-center gap-3 mb-7">
+            <span className="h-px w-10 bg-white/60" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/75">
+              Córdoba · Argentina
             </span>
           </div>
 
-          {/* H1 Headline */}
-          <h1 className="font-['Montserrat',sans-serif] text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-white tracking-tight font-extrabold mb-6 leading-[1.15]">
-            Impermeabilizaciones <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#95ccff] via-[#4cb2ff] to-[#cde5ff]">
-              que perduran
+          <h1 className="font-headline text-[clamp(1.75rem,7.6vw,4.75rem)] leading-[1.05] font-bold tracking-tight">
+            Impermeabilizaciones
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#d9d9dd] to-[#9a9aa0]">
+              que perduran.
             </span>
           </h1>
 
-          {/* Subheading */}
-          <p className="text-base sm:text-lg text-[#cee5ff] mb-10 max-w-2xl leading-relaxed">
-            Techos, terrazas y humedad en Córdoba. Soluciones definitivas con garantía escrita en cada trabajo y materiales de primera línea.
+          <p className="mt-7 text-base sm:text-lg text-white/70 max-w-xl leading-relaxed">
+            Techos, terrazas, humedad, tanques y piletas. Soluciones definitivas con materiales de primera línea y
+            garantía escrita en cada trabajo.
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-14">
-            <a 
-              className="inline-flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1ebe57] text-white font-bold text-sm sm:text-base px-6 sm:px-7 py-4 rounded-xl shadow-[0_10px_25px_rgba(37,211,102,0.35)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-center" 
-              href={`https://wa.me/${PHONE_NUMBER}?text=Hola%20AquaTech,%20quiero%20mandar%20fotos%20de%20mi%20techo%20para%20un%20diagn%C3%B3stico`}
-              rel="noopener noreferrer" 
+          <div className="mt-10 flex flex-col sm:flex-row gap-3">
+            <a
+              href={waLink('Hola AquaTech, quiero mandar fotos de mi techo para un diagnóstico')}
               target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2.5 h-14 px-7 rounded-full bg-white text-ink text-[15px] font-semibold hover:bg-white/90 transition-all"
             >
-              <span className="material-symbols-outlined text-[24px] text-white">chat</span>
-              <span>Mandá fotos de tu techo por WhatsApp</span>
+              <WhatsAppIcon size={19} />
+              Mandá fotos de tu techo
             </a>
-
-            <div className="flex items-center gap-2 sm:gap-3">
-              <button 
-                onClick={onOpenQuote}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-4 rounded-xl font-semibold text-xs sm:text-sm text-[#cde5ff] bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-sm transition-all"
-              >
-                <span className="material-symbols-outlined text-[18px]">calculate</span>
-                <span>Cotizar online</span>
-              </button>
-
-              <a 
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-4 rounded-xl font-semibold text-xs sm:text-sm text-[#cde5ff] bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-sm transition-all" 
-                href="#trabajos"
-              >
-                <span>Ver trabajos</span>
-                <span className="material-symbols-outlined text-[18px]">arrow_downward</span>
-              </a>
-            </div>
+            <button
+              onClick={onOpenQuote}
+              className="inline-flex items-center justify-center gap-2.5 h-14 px-7 rounded-full border border-white/25 text-white text-[15px] font-semibold hover:bg-white/10 transition-all"
+            >
+              <Calculator size={18} strokeWidth={1.8} />
+              Cotizar online
+            </button>
           </div>
+        </motion.div>
 
-          {/* 3 Micro-Benefits Strip */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
-            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#0b3c5d]/50 border border-white/5 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-lg bg-[#006399]/30 flex items-center justify-center shrink-0 text-[#4cb2ff]">
-                <span className="material-symbols-outlined text-[22px]">assignment_turned_in</span>
-              </div>
+        <motion.div
+          className="mt-16 lg:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px rounded-2xl overflow-hidden bg-white/10 ring-1 ring-white/10"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {BENEFITS.map(({ icon: Icon, title, text }) => (
+            <div key={title} className="flex items-center gap-4 p-5 sm:p-6 bg-ink/70 backdrop-blur-md">
+              <Icon size={22} strokeWidth={1.6} className="text-white/80 shrink-0" />
               <div>
-                <div className="text-xs sm:text-sm font-bold text-white">Presupuesto sin cargo</div>
-                <div className="text-xs text-[#7fa7cd]">Respuesta en el día con asesoramiento</div>
+                <div className="text-sm font-semibold text-white">{title}</div>
+                <div className="text-[13px] text-white/55 mt-0.5">{text}</div>
               </div>
             </div>
+          ))}
+        </motion.div>
 
-            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#0b3c5d]/50 border border-white/5 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-lg bg-[#006399]/30 flex items-center justify-center shrink-0 text-[#4cb2ff]">
-                <span className="material-symbols-outlined text-[22px]">verified</span>
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-white">Garantía escrita</div>
-                <div className="text-xs text-[#7fa7cd]">Certificado técnico hasta por 10 años</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-[#0b3c5d]/50 border border-white/5 backdrop-blur-sm">
-              <div className="w-10 h-10 rounded-lg bg-[#006399]/30 flex items-center justify-center shrink-0 text-[#4cb2ff]">
-                <span className="material-symbols-outlined text-[22px]">map</span>
-              </div>
-              <div>
-                <div className="text-xs sm:text-sm font-bold text-white">Toda la provincia</div>
-                <div className="text-xs text-[#7fa7cd]">Capital, Sierras Chicas y Punilla</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <a
+          href="#servicios"
+          className="mt-10 hidden lg:inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors"
+        >
+          <ArrowDown size={14} /> Conocé nuestros servicios
+        </a>
       </div>
     </section>
   );

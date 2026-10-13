@@ -1,8 +1,10 @@
+import type { LucideIcon } from 'lucide-react';
+
 export interface ServiceItem {
   id: string;
   title: string;
   shortDesc: string;
-  icon: string;
+  icon: LucideIcon;
   features: string[];
   materials: string[];
   recommendedFor: string;
@@ -46,21 +48,10 @@ export interface ReviewItem {
 export interface ZoneItem {
   id: string;
   name: string;
-  department: string;
-  dispatchTime: string;
-  mobileTeam: string;
-  status: 'Alta disponibilidad' | 'Rutas diarias' | 'Guardia activa';
+  area: string;
+  response: string;
+  /** Posición en el mapa de cobertura (0–100) */
+  x: number;
+  y: number;
 }
 
-export interface QuoteCalculation {
-  surfaceType: string;
-  squareMeters: number;
-  condition: string;
-  zone: string;
-  requiresRemoval: boolean;
-  recommendedSystem: string;
-  estimatedDays: number;
-  warrantyYears: number;
-  estimatedPriceMin: number;
-  estimatedPriceMax: number;
-}

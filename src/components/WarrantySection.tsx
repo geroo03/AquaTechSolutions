@@ -1,121 +1,101 @@
 import React from 'react';
-import { PHONE_NUMBER } from '../data/mockData';
+import { Award, ClipboardCheck, Headset, ArrowUpRight } from 'lucide-react';
+import { CERTIFICATE_DATA } from '../data/mockData';
+import { LogoMark, WhatsAppIcon } from './Brand';
+import { IconTile, Reveal, SectionHeader, waLink } from './ui';
 
 interface WarrantySectionProps {
   onOpenWarrantyModal: () => void;
 }
 
+const BADGES = [
+  { icon: Award, title: 'Hasta 10 años', text: 'De cobertura escrita' },
+  { icon: ClipboardCheck, title: 'Primeras marcas', text: 'Sika, Megaflex, Ormiflex' },
+  { icon: Headset, title: 'Respaldo post-obra', text: 'Seguimiento directo' },
+];
+
 export const WarrantySection: React.FC<WarrantySectionProps> = ({ onOpenWarrantyModal }) => {
   return (
-    <section className="w-full py-20 lg:py-24 bg-[#00263f] text-white relative overflow-hidden" id="garantia">
-      {/* Decorative background glow */}
-      <div className="absolute -right-32 -bottom-32 w-96 h-96 rounded-full bg-[#006399]/20 blur-3xl pointer-events-none" />
-      <div className="absolute -left-32 -top-32 w-96 h-96 rounded-full bg-[#4cb2ff]/10 blur-3xl pointer-events-none" />
+    <section className="relative overflow-hidden py-24 lg:py-32 bg-ink text-white" id="garantia">
+      <div className="absolute inset-0 bg-dots pointer-events-none" />
+      <div className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full bg-white/[0.04] blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#006399]/30 text-[#cde5ff] text-xs font-bold uppercase tracking-wider mb-4 border border-[#4cb2ff]/20">
-              Respaldo Certificado
-            </div>
-            <h2 className="font-['Montserrat',sans-serif] text-2xl sm:text-3xl lg:text-4xl text-white font-bold mb-6">
-              Tranquilidad total: respaldo técnico con garantía por escrito
-            </h2>
-            <p className="text-base sm:text-lg text-[#cee5ff] mb-8 leading-relaxed">
-              No hacemos parches provisorios. En AquaTech trabajamos exclusivamente con materiales normalizados de primera marca (Sika, Megaflex, Ormiflex) aplicados bajo normas IRAM. Cada obra finalizada cuenta con una póliza de garantía extendida firmada.
-            </p>
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+        <div className="lg:col-span-7">
+          <SectionHeader
+            tone="light"
+            eyebrow="Garantía"
+            title="Tranquilidad total, con respaldo por escrito"
+            description="No hacemos parches provisorios. Trabajamos con materiales normalizados de primera marca y cada obra terminada se entrega con su certificado de garantía firmado."
+          />
 
-            {/* 3 Badges/Sellos */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-              <div className="p-4 rounded-xl bg-[#0b3c5d]/70 border border-white/10 backdrop-blur-sm">
-                <span className="material-symbols-outlined text-[#4cb2ff] text-[28px] mb-2">workspace_premium</span>
-                <div className="text-sm font-bold text-white">Hasta 10 años</div>
-                <div className="text-xs text-[#7fa7cd]">De cobertura formal</div>
-              </div>
-              <div className="p-4 rounded-xl bg-[#0b3c5d]/70 border border-white/10 backdrop-blur-sm">
-                <span className="material-symbols-outlined text-[#4cb2ff] text-[28px] mb-2">fact_check</span>
-                <div className="text-sm font-bold text-white">100% Normalizados</div>
-                <div className="text-xs text-[#7fa7cd]">Sika, Megaflex, Ormiflex</div>
-              </div>
-              <div className="p-4 rounded-xl bg-[#0b3c5d]/70 border border-white/10 backdrop-blur-sm">
-                <span className="material-symbols-outlined text-[#4cb2ff] text-[28px] mb-2">support_agent</span>
-                <div className="text-sm font-bold text-white">Respaldo Post-Obra</div>
-                <div className="text-xs text-[#7fa7cd]">Seguimiento técnico directo</div>
-              </div>
-            </div>
-
-            {/* WhatsApp & Inspect Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <a 
-                className="inline-flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1ebe57] text-white font-bold text-sm sm:text-base px-8 py-4 rounded-xl shadow-[0_8px_20px_rgba(37,211,102,0.3)] transition-all transform hover:-translate-y-0.5" 
-                href={`https://wa.me/${PHONE_NUMBER}?text=Hola%20AquaTech,%20quiero%20asesoramiento%20y%20conocer%20los%20t%C3%A9rminos%20de%20la%20garant%C3%ADa%20escrita`}
-                rel="noopener noreferrer" 
-                target="_blank"
-              >
-                <span className="material-symbols-outlined text-[24px] text-white">chat</span>
-                <span>Pedí asesoramiento y garantía</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={onOpenWarrantyModal}
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-sm text-[#cde5ff] bg-white/10 hover:bg-white/15 border border-white/10 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">verified</span>
-                <span>Inspeccionar Póliza Modelo</span>
-              </button>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10">
+            {BADGES.map(({ icon, title, text }, i) => (
+              <Reveal key={title} delay={i * 0.06} className="h-full">
+                <div className="h-full p-5 rounded-2xl bg-white/[0.04] ring-1 ring-white/10">
+                  <IconTile icon={icon} tone="light" size="sm" />
+                  <div className="mt-4 text-sm font-semibold">{title}</div>
+                  <div className="text-[13px] text-white/55 mt-0.5">{text}</div>
+                </div>
+              </Reveal>
+            ))}
           </div>
 
-          {/* Graphic Certificate Preview Card */}
-          <div className="lg:col-span-5">
-            <div 
-              onClick={onOpenWarrantyModal}
-              className="bg-white text-[#191c1e] rounded-2xl p-6 sm:p-8 shadow-2xl relative border border-[#e2e8f0] cursor-pointer group hover:scale-[1.01] transition-transform duration-300"
+          <Reveal className="mt-10 flex flex-col sm:flex-row gap-3">
+            <a
+              href={waLink('Hola AquaTech, quiero conocer los términos de la garantía escrita')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2.5 py-3.5 px-7 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors"
             >
-              <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#eceef0]">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#00263f] text-white flex items-center justify-center font-bold">
-                    AQ
-                  </div>
-                  <div>
-                    <div className="font-['Montserrat',sans-serif] text-lg font-bold text-[#00263f]">AquaTech</div>
-                    <div className="text-xs font-bold text-[#006399]">Certificado de Cobertura</div>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined text-[#0284c7] text-[36px] group-hover:rotate-12 transition-transform">
-                  shield_lock
-                </span>
-              </div>
-
-              <div className="space-y-3 mb-6 divide-y divide-[#eceef0] text-xs sm:text-sm">
-                <div className="flex justify-between py-2">
-                  <span className="text-[#72777e]">Póliza Técnica:</span>
-                  <span className="font-bold text-[#00263f]">GAR-2025-CBA</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-[#72777e]">Normas Aplicadas:</span>
-                  <span className="font-semibold text-[#00263f]">IRAM 1555 / 1570</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-[#72777e]">Prueba de Estanqueidad:</span>
-                  <span className="font-bold text-[#00bb56]">Aprobada 48 hs</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-[#72777e]">Plazo de Garantía:</span>
-                  <span className="font-bold text-[#006399]">Hasta 10 Años Escrita</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-[#f2f4f6] flex items-center gap-3 text-xs text-[#42474e]">
-                <span className="material-symbols-outlined text-[#006399] text-[24px] shrink-0">verified_user</span>
-                <p>
-                  Documento contractual vinculante entregado al finalizar cada obra. Tocá para ver la póliza completa.
-                </p>
-              </div>
-            </div>
-          </div>
+              <WhatsAppIcon size={17} /> Consultar por la garantía
+            </a>
+            <button
+              type="button"
+              onClick={onOpenWarrantyModal}
+              className="inline-flex items-center justify-center gap-2 py-3.5 px-7 rounded-full ring-1 ring-white/25 text-sm font-semibold hover:bg-white/10 transition-colors"
+            >
+              Ver certificado modelo
+            </button>
+          </Reveal>
         </div>
+
+        <Reveal className="lg:col-span-5" delay={0.1}>
+          <button
+            type="button"
+            onClick={onOpenWarrantyModal}
+            className="group w-full text-left bg-white text-ink rounded-[28px] p-7 sm:p-9 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] hover:-translate-y-1 transition-transform duration-300"
+          >
+            <div className="flex items-center justify-between pb-6 mb-6 border-b border-line">
+              <div className="flex items-center gap-3">
+                <LogoMark size={30} />
+                <div>
+                  <div className="font-headline text-[15px] font-bold tracking-[0.04em]">AQUATECH</div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Certificado de garantía</div>
+                </div>
+              </div>
+              <ArrowUpRight size={20} className="text-muted group-hover:text-ink transition-colors" />
+            </div>
+
+            <dl className="divide-y divide-line text-sm">
+              {[
+                ['Certificado', CERTIFICATE_DATA.policyNumber],
+                ['Normativa', CERTIFICATE_DATA.standards],
+                ['Estanqueidad', 'Prueba aprobada'],
+                ['Plazo', CERTIFICATE_DATA.coveragePeriod],
+              ].map(([label, value]) => (
+                <div key={label} className="flex items-center justify-between gap-4 py-3.5">
+                  <dt className="text-muted">{label}</dt>
+                  <dd className="font-semibold text-right">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-6 p-4 rounded-2xl bg-paper text-[13px] text-muted leading-relaxed">
+              Documento que se entrega al terminar cada obra. Tocá para ver el modelo completo.
+            </p>
+          </button>
+        </Reveal>
       </div>
     </section>
   );

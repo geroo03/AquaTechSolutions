@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { CASE_STUDIES, PHONE_NUMBER } from '../data/mockData';
-import { CaseStudy } from '../types';
+import React, { useRef, useState } from 'react';
+import { ArrowUpRight, ChevronsLeftRight, Check, ChevronDown } from 'lucide-react';
+import { CASE_STUDIES } from '../data/mockData';
+import { Reveal, SectionHeader, waLink } from './ui';
 
 interface ComparisonSliderProps {
   beforeImg: string;
@@ -9,279 +10,161 @@ interface ComparisonSliderProps {
   afterAlt: string;
 }
 
-const ImageComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImg, afterImg, beforeAlt, afterAlt }) => {
-  const [sliderPos, setSliderPos] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
+/** Comparador antes/después. El "antes" se recorta con clip-path, así ninguna foto se deforma. */
+const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImg, afterImg, beforeAlt, afterAlt }) => {
+  const [pos, setPos] = useState(50);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const handleMove = (clientX: number, rect: DOMRect) => {
-    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    const percent = Math.max(0, Math.min((x / rect.width) * 100, 100));
-    setSliderPos(percent);
+  const moveTo = (clientX: number) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    setPos(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100)));
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging && e.buttons !== 1) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    handleMove(e.clientX, rect);
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    moveTo(e.clientX);
   };
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    handleMove(e.touches[0].clientX, rect);
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) moveTo(e.clientX);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') setPos((p) => Math.max(0, p - 5));
+    if (e.key === 'ArrowRight') setPos((p) => Math.min(100, p + 5));
   };
 
   return (
-    <div 
-      className="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden select-none cursor-ew-resize border border-[#e2e8f0] shadow-inner"
-      onMouseDown={() => setIsDragging(true)}
-      onMouseUp={() => setIsDragging(false)}
-      onMouseLeave={() => setIsDragging(false)}
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
+    <div
+      ref={ref}
+      className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden select-none cursor-ew-resize touch-pan-y bg-mist"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onKeyDown={onKeyDown}
+      role="slider"
+      tabIndex={0}
+      aria-label="Comparar antes y después"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(pos)}
     >
-      {/* After Image (Full width background) */}
+      <img src={afterImg} alt={afterAlt} className="absolute inset-0 w-full h-full object-cover pointer-events-none" draggable={false} />
       <img
-        src={afterImg}
-        alt={afterAlt}
+        src={beforeImg}
+        alt={beforeAlt}
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        referrerPolicy="no-referrer"
+        style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
+        draggable={false}
       />
-      <div className="absolute top-3 right-3 bg-[#0284c7] text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-md z-10">
-        DESPUÉS: Sellado 100% Estanco
-      </div>
 
-      {/* Before Image (Clipped by slider position) */}
-      <div 
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        style={{ width: `${sliderPos}%` }}
-      >
-        <img
-          src={beforeImg}
-          alt={beforeAlt}
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none max-w-none"
-          style={{ width: '100%', minWidth: '100%', height: '100%' }}
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute top-3 left-3 bg-[#ba1a1a] text-white text-[11px] font-bold px-2.5 py-1 rounded shadow-md z-10 whitespace-nowrap">
-          ANTES: Filtración activa
+      <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-ink/80 backdrop-blur text-white text-[11px] font-semibold uppercase tracking-[0.18em]">
+        Antes
+      </span>
+      <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/90 backdrop-blur text-ink text-[11px] font-semibold uppercase tracking-[0.18em]">
+        Después
+      </span>
+
+      <div className="absolute inset-y-0 w-0.5 bg-white pointer-events-none" style={{ left: `calc(${pos}% - 1px)` }}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white text-ink shadow-[0_8px_24px_rgba(0,0,0,0.3)] flex items-center justify-center">
+          <ChevronsLeftRight size={20} strokeWidth={2} />
         </div>
-      </div>
-
-      {/* Divider Bar */}
-      <div 
-        className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)] z-20 pointer-events-none"
-        style={{ left: `${sliderPos}%` }}
-      >
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#00263f] text-white flex items-center justify-center shadow-lg border-2 border-white">
-          <span className="material-symbols-outlined text-[16px]">code</span>
-        </div>
-      </div>
-
-      {/* Instruction indicator */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full pointer-events-none">
-        ↔ Arrastrá para comparar
       </div>
     </div>
   );
 };
 
 export const BeforeAfterSection: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'interactive'>('side-by-side');
   const [expandedCase, setExpandedCase] = useState<string | null>(null);
 
-  const toggleDetails = (caseId: string) => {
-    setExpandedCase(expandedCase === caseId ? null : caseId);
-  };
-
   return (
-    <section className="w-full py-20 lg:py-24 bg-[#f2f4f6]" id="trabajos">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#cde5ff] text-[#001d32] text-xs font-bold uppercase tracking-wider mb-3">
-              Obras Realizadas en Córdoba
-            </div>
-            <h2 className="font-['Montserrat',sans-serif] text-2xl sm:text-3xl lg:text-4xl text-[#00263f] font-bold">
-              Resultados comprobables: Antes y Después
-            </h2>
-            <p className="text-base sm:text-lg text-[#42474e] mt-2 max-w-xl">
-              Mirá la transformación real de estructuras con filtraciones severas a sellados de alta performance.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            {/* View Mode Toggle */}
-            <div className="inline-flex p-1 rounded-xl bg-white border border-[#e2e8f0] shadow-sm text-xs font-semibold">
-              <button
-                onClick={() => setViewMode('side-by-side')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                  viewMode === 'side-by-side'
-                    ? 'bg-[#00263f] text-white shadow-xs'
-                    : 'text-[#42474e] hover:text-[#00263f]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[16px]">view_column</span>
-                <span>Lado a lado</span>
-              </button>
-              <button
-                onClick={() => setViewMode('interactive')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                  viewMode === 'interactive'
-                    ? 'bg-[#00263f] text-white shadow-xs'
-                    : 'text-[#42474e] hover:text-[#00263f]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[16px]">compare</span>
-                <span>Deslizador interactivo</span>
-              </button>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-[#e2e8f0] text-xs text-[#00263f] font-semibold">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#006399]" />
-              <span>100% fotos de obras propias</span>
-            </div>
-          </div>
+    <section className="py-24 lg:py-32 bg-white" id="trabajos">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="mb-14">
+          <SectionHeader
+            eyebrow="Trabajos realizados"
+            title="Resultados que se ven: antes y después"
+            description="Deslizá cada imagen para comparar el estado inicial con el trabajo terminado."
+          />
         </div>
 
-        {/* Case Studies Stack */}
-        <div className="space-y-10 sm:space-y-12">
-          {CASE_STUDIES.map((item) => (
-            <div 
-              key={item.id} 
-              className="bg-white rounded-2xl p-6 lg:p-8 border border-[#e2e8f0] shadow-[0_2px_12px_rgba(0,38,63,0.04)]"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                {/* Images Column */}
-                <div className="lg:col-span-7">
-                  {viewMode === 'side-by-side' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Before Box */}
-                      <div className="relative rounded-xl overflow-hidden group shadow-sm border border-[#e2e8f0]">
-                        <img 
-                          className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105" 
-                          src={item.beforeImg} 
-                          alt={item.beforeCaption}
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute top-3 left-3 bg-[#ba1a1a] text-white text-[11px] font-bold px-2.5 py-1 rounded shadow">
-                          {item.id === 'caso-1' && 'ANTES: Filtraciones activas'}
-                          {item.id === 'caso-2' && 'ANTES: Desprendimiento y goteras'}
-                          {item.id === 'caso-3' && 'ANTES: Goteras en cumbreras'}
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white text-xs opacity-90">
-                          {item.beforeCaption}
-                        </div>
-                      </div>
-
-                      {/* After Box */}
-                      <div className="relative rounded-xl overflow-hidden group shadow-sm border border-[#e2e8f0]">
-                        <img 
-                          className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105" 
-                          src={item.afterImg} 
-                          alt={item.afterCaption}
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute top-3 left-3 bg-[#0284c7] text-white text-[11px] font-bold px-2.5 py-1 rounded shadow">
-                          {item.id === 'caso-1' && 'DESPUÉS: Geotextil + Poliuretano'}
-                          {item.id === 'caso-2' && 'DESPUÉS: Poliuretánica transitable'}
-                          {item.id === 'caso-3' && 'DESPUÉS: Sellado polimérico'}
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white text-xs opacity-90">
-                          {item.afterCaption}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <ImageComparisonSlider
+        <div className="space-y-6">
+          {CASE_STUDIES.map((item) => {
+            const isOpen = expandedCase === item.id;
+            return (
+              <Reveal key={item.id}>
+                <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 p-4 sm:p-6 lg:p-8 rounded-[28px] bg-paper ring-1 ring-line">
+                  <div className="lg:col-span-7">
+                    <ComparisonSlider
                       beforeImg={item.beforeImg}
                       afterImg={item.afterImg}
                       beforeAlt={item.beforeCaption}
                       afterAlt={item.afterCaption}
                     />
-                  )}
-                </div>
+                  </div>
 
-                {/* Specs Column */}
-                <div className="lg:col-span-5 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs uppercase text-[#006399] font-bold tracking-wider">
-                        Caso de Estudio {item.number}
-                      </span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#c2c7ce]" />
-                      <span className="text-xs text-[#72777e] font-medium">{item.location}</span>
+                  <div className="lg:col-span-5 flex flex-col px-2 pb-2 lg:px-0 lg:py-2">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted mb-3">
+                      <span className="text-ink whitespace-nowrap">Obra {item.number}</span>
+                      <span className="h-px w-6 bg-silver" />
+                      <span>{item.location}</span>
                     </div>
 
-                    <h3 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-bold text-[#00263f] mb-3">
+                    <h3 className="font-headline text-2xl sm:text-[28px] font-bold text-ink leading-tight mb-4">
                       {item.title}
                     </h3>
+                    <p className="text-[15px] text-muted leading-relaxed mb-7">{item.system}</p>
 
-                    <p className="text-sm text-[#42474e] mb-6 leading-relaxed">
-                      <strong className="text-[#00263f]">Sistema:</strong> {item.system}
-                    </p>
-
-                    {/* Technical Specs 2x2 Grid */}
-                    <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[#f7f9fb] border border-[#eceef0] mb-6">
-                      <div>
-                        <div className="text-[11px] font-bold text-[#72777e] uppercase tracking-wider">Superficie</div>
-                        <div className="text-sm sm:text-base font-bold text-[#00263f]">{item.surface}</div>
-                      </div>
-                      <div>
-                        <div className="text-[11px] font-bold text-[#72777e] uppercase tracking-wider">Garantía Otorgada</div>
-                        <div className="text-sm sm:text-base font-bold text-[#006399]">{item.warranty}</div>
-                      </div>
-                      <div>
-                        <div className="text-[11px] font-bold text-[#72777e] uppercase tracking-wider">Tiempo de Obra</div>
-                        <div className="text-xs sm:text-sm font-semibold text-[#191c1e]">{item.time}</div>
-                      </div>
-                      <div>
-                        <div className="text-[11px] font-bold text-[#72777e] uppercase tracking-wider">Estado Actual</div>
-                        <div className="text-xs sm:text-sm font-bold text-[#00bb56]">{item.status}</div>
-                      </div>
-                    </div>
-
-                    {/* Expandable Technical Protocol */}
-                    {expandedCase === item.id && (
-                      <div className="p-4 rounded-xl bg-[#e0f2fe]/40 border border-[#bae6fd] mb-6 animate-fade-in">
-                        <div className="text-xs font-bold text-[#006399] uppercase tracking-wider mb-2">
-                          Protocolo de Aplicación Ejecutado
+                    <dl className="grid grid-cols-2 gap-px rounded-2xl overflow-hidden bg-line ring-1 ring-line mb-6">
+                      {[
+                        ['Superficie', item.surface],
+                        ['Garantía', item.warranty],
+                        ['Tiempo de obra', item.time],
+                        ['Resultado', item.status],
+                      ].map(([label, value]) => (
+                        <div key={label} className="bg-white p-4">
+                          <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{label}</dt>
+                          <dd className="mt-1 text-sm font-semibold text-ink">{value}</dd>
                         </div>
-                        <ul className="space-y-1.5 text-xs text-[#334155]">
-                          {item.details.map((detail, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5">
-                              <span className="material-symbols-outlined text-[15px] text-[#006399] shrink-0 mt-0.5">check</span>
-                              <span>{detail}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      ))}
+                    </dl>
+
+                    {isOpen && (
+                      <ul className="space-y-2.5 mb-6 animate-fade-in">
+                        {item.details.map((detail) => (
+                          <li key={detail} className="flex items-start gap-2.5 text-[13.5px] text-graphite leading-snug">
+                            <Check size={15} strokeWidth={2.2} className="text-ink shrink-0 mt-0.5" />
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </div>
 
-                  <div className="flex flex-wrap items-center gap-4 pt-2">
-                    <a 
-                      className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#006399] hover:text-[#00263f] transition-colors font-bold group" 
-                      href={`https://wa.me/${PHONE_NUMBER}?text=Hola%20AquaTech,%20quiero%20un%20presupuesto%20similar%20al%20de%20${encodeURIComponent(item.title)}`}
-                      rel="noopener noreferrer" 
-                      target="_blank"
-                    >
-                      <span>Pedir solución similar para mi techo</span>
-                      <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                    </a>
-
-                    <button
-                      type="button"
-                      onClick={() => toggleDetails(item.id)}
-                      className="text-xs text-[#72777e] hover:text-[#00263f] underline transition-colors"
-                    >
-                      {expandedCase === item.id ? 'Ocultar protocolo' : 'Ver protocolo aplicado'}
-                    </button>
+                    <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3">
+                      <a
+                        href={waLink(`Hola AquaTech, quiero un trabajo similar al de ${item.title}`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-1.5 h-11 px-5 rounded-full bg-ink text-white text-[13px] font-semibold hover:bg-graphite transition-colors"
+                      >
+                        Quiero algo así
+                        <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedCase(isOpen ? null : item.id)}
+                        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted hover:text-ink transition-colors"
+                        aria-expanded={isOpen}
+                      >
+                        {isOpen ? 'Ocultar el paso a paso' : 'Ver el paso a paso'}
+                        <ChevronDown size={15} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          ))}
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

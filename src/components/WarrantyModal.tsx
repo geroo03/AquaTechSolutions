@@ -1,5 +1,8 @@
 import React from 'react';
-import { CERTIFICATE_DATA, PHONE_NUMBER } from '../data/mockData';
+import { Printer } from 'lucide-react';
+import { CERTIFICATE_DATA } from '../data/mockData';
+import { Logo, WhatsAppIcon } from './Brand';
+import { Modal, waLink } from './ui';
 
 interface WarrantyModalProps {
   isOpen: boolean;
@@ -7,117 +10,62 @@ interface WarrantyModalProps {
 }
 
 export const WarrantyModal: React.FC<WarrantyModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-[#cbd5e1] p-6 sm:p-10 relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-lg bg-[#f1f5f9] text-[#475569] hover:bg-[#e2e8f0] flex items-center justify-center transition-colors"
-          aria-label="Cerrar modal"
-        >
-          <span className="material-symbols-outlined text-[22px]">close</span>
-        </button>
-
-        {/* Certificate Header */}
-        <div className="border-b-2 border-[#00263f] pb-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#00263f] text-white flex items-center justify-center font-['Montserrat',sans-serif] font-extrabold text-xl">
-                AQ
-              </div>
-              <div>
-                <h3 className="font-['Montserrat',sans-serif] text-2xl font-extrabold text-[#00263f] tracking-tight">
-                  AquaTech
-                </h3>
-                <span className="text-xs font-bold text-[#006399] uppercase tracking-wider">
-                  División de Garantías & Certificaciones Técnicas
-                </span>
-              </div>
-            </div>
-            <div className="hidden sm:block text-right">
-              <span className="text-[11px] font-mono text-[#64748b] block">CÓDIGO DE VALIDACIÓN:</span>
-              <span className="text-sm font-mono font-bold text-[#00263f]">{CERTIFICATE_DATA.policyNumber}</span>
-            </div>
+    <Modal isOpen={isOpen} onClose={onClose} label="Certificado de garantía modelo">
+      <div className="p-7 sm:p-10">
+        <div className="flex items-start justify-between gap-4 pb-7 mb-8 border-b-2 border-ink pr-10">
+          <Logo />
+          <div className="hidden sm:block text-right">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">Certificado</div>
+            <div className="font-mono text-sm font-bold text-ink">{CERTIFICATE_DATA.policyNumber}</div>
           </div>
         </div>
 
-        {/* Certificate Title */}
         <div className="text-center mb-8">
-          <div className="inline-block px-4 py-1 rounded bg-[#e0f2fe] text-[#0369a1] text-xs font-bold uppercase tracking-widest mb-2">
-            Documento Oficial Contractual
-          </div>
-          <h4 className="font-['Montserrat',sans-serif] text-xl sm:text-2xl font-bold text-[#0f172a]">
-            Certificado de Garantía de Impermeabilización
-          </h4>
-          <p className="text-xs text-[#64748b] mt-1">
-            Emitido en conformidad con los protocolos de la Cámara Argentina de la Construcción y Normas IRAM.
-          </p>
+          <span className="inline-block px-3 py-1 rounded-full bg-mist text-[10.5px] font-semibold uppercase tracking-[0.22em] text-graphite mb-4">
+            Documento modelo
+          </span>
+          <h3 className="font-headline text-2xl sm:text-3xl font-bold text-ink">Certificado de garantía</h3>
+          <p className="text-sm text-muted mt-2">Se entrega firmado al terminar cada obra.</p>
         </div>
 
-        {/* Certificate Specs Grid */}
-        <div className="space-y-4 mb-8 bg-[#f8fafc] p-5 rounded-xl border border-[#e2e8f0]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <span className="text-[#64748b] block">Dirección Técnica:</span>
-              <span className="font-bold text-[#0f172a]">{CERTIFICATE_DATA.technicalDirector}</span>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-px rounded-2xl overflow-hidden bg-line ring-1 ring-line mb-6">
+          {[
+            ['Dirección técnica', CERTIFICATE_DATA.technicalDirector],
+            ['Normativa', CERTIFICATE_DATA.standards],
+            ['Ensayo', CERTIFICATE_DATA.watertightTest],
+            ['Plazo de cobertura', CERTIFICATE_DATA.coveragePeriod],
+          ].map(([label, value]) => (
+            <div key={label} className="bg-white p-5">
+              <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{label}</dt>
+              <dd className="mt-1.5 text-sm font-semibold text-ink">{value}</dd>
             </div>
-            <div>
-              <span className="text-[#64748b] block">Normativa de Fabricación y Colocación:</span>
-              <span className="font-bold text-[#0f172a]">{CERTIFICATE_DATA.standards}</span>
-            </div>
-            <div>
-              <span className="text-[#64748b] block">Protocolo de Ensayo Hidráulico:</span>
-              <span className="font-bold text-[#00bb56]">{CERTIFICATE_DATA.watertightTest}</span>
-            </div>
-            <div>
-              <span className="text-[#64748b] block">Plazo de Cobertura Legal:</span>
-              <span className="font-bold text-[#006399]">{CERTIFICATE_DATA.coveragePeriod}</span>
-            </div>
-          </div>
+          ))}
+        </dl>
 
-          <div className="border-t border-[#e2e8f0] pt-3 text-[11px] text-[#475569] leading-relaxed">
-            <strong>Alcance de la Póliza:</strong> Esta garantía cubre fallas por desprendimiento, defectos de adhesión, rotura de membrana por amplitud térmica o filtraciones en juntas selladas. En caso de siniestro dentro del plazo otorgado, el personal técnico de AquaTech intervendrá dentro de las 24 a 48 hs hábiles sin ningún costo para el comitente.
-          </div>
-        </div>
+        <p className="text-[13px] text-graphite leading-relaxed p-5 rounded-2xl bg-paper mb-8">
+          <strong className="text-ink">Qué cubre:</strong> desprendimientos, defectos de adhesión, rotura de la membrana
+          por dilatación térmica y filtraciones en juntas selladas. Si aparece un problema dentro del plazo, el equipo
+          de AquaTech lo revisa y lo resuelve sin costo para el cliente.
+        </p>
 
-        {/* Seal and Signatures representation */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4 border-t border-[#e2e8f0]">
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#006399] flex items-center justify-center p-1 text-center">
-              <span className="text-[9px] font-bold text-[#006399] uppercase leading-tight">
-                AquaTech Oficial Córdoba
-              </span>
-            </div>
-            <div className="text-xs text-[#64748b]">
-              <div>Firma y Sello Profesional Registrado</div>
-              <div className="font-semibold text-[#0f172a]">Colegio Profesional de la Ingeniería de Cba.</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={() => window.print()}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#cbd5e1] hover:bg-[#f1f5f9] text-xs font-semibold text-[#334155] transition-colors"
-            >
-              <span className="material-symbols-outlined text-[18px]">print</span>
-              <span>Imprimir</span>
-            </button>
-
-            <a
-              href={`https://wa.me/${PHONE_NUMBER}?text=Hola%20AquaTech,%20quiero%20validar%20mi%20p%C3%B3liza%20o%20consultar%20por%20la%20garant%C3%ADa%20escrita`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1ebe57] text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[18px]">chat</span>
-              <span>Consultar Términos</span>
-            </a>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <a
+            href={waLink('Hola AquaTech, quiero consultar por los términos de la garantía escrita')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-ink text-white text-sm font-semibold hover:bg-graphite transition-colors"
+          >
+            <WhatsAppIcon size={17} /> Consultar términos
+          </a>
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-full ring-1 ring-line text-sm font-semibold text-ink hover:bg-mist transition-colors"
+          >
+            <Printer size={16} strokeWidth={1.8} /> Imprimir
+          </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };

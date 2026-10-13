@@ -1,78 +1,76 @@
-import React, { useState } from 'react';
-import { PHONE_NUMBER, PHONE_DISPLAY } from '../data/mockData';
+import React, { useEffect, useRef, useState } from 'react';
+import { CloudRain, Ruler, Building2, Camera, X, ArrowUpRight } from 'lucide-react';
+import { WhatsAppIcon } from './Brand';
+import { waLink } from './ui';
+
+const QUICK_MESSAGES = [
+  { icon: CloudRain, label: 'Gotera urgente', text: 'URGENTE: tengo una gotera activa en este momento, necesito presupuesto.' },
+  { icon: Ruler, label: 'Presupuesto de techo o losa', text: 'Hola AquaTech, quiero un presupuesto para impermeabilizar mi techo.' },
+  { icon: Building2, label: 'Consorcios y edificios', text: 'Hola AquaTech, escribo desde la administración de un consorcio para relevar una terraza común.' },
+  { icon: Camera, label: 'Mandar fotos para diagnóstico', text: 'Hola AquaTech, quiero mandarles fotos de mi techo para que me digan qué solución recomiendan.' },
+];
 
 export const FloatingWhatsApp: React.FC = () => {
-  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const quickMessages = [
-    { label: '💧 Gotera urgente por lluvia', text: 'URGENCIA: Tengo una gotera activa en este momento, necesito presupuesto urgente.' },
-    { label: '📐 Presupuesto para techo/losa', text: 'Hola AquaTech, quiero pedir un presupuesto para impermeabilizar mi losa de techo.' },
-    { label: '🏢 Consorcios y Edificios', text: 'Hola AquaTech, consulto desde la administración de un consorcio para relevar una terraza común.' },
-    { label: '📸 Mandar fotos para diagnóstico', text: 'Hola AquaTech, les escribo para mandar fotos de mi techo y consultar qué solución recomiendan.' },
-  ];
+  // Cierra el panel al tocar afuera o con Esc
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('mousedown', onDown);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      {/* Quick message selector popover */}
-      {popoverOpen && (
-        <div className="bg-white rounded-2xl p-4 shadow-2xl border border-[#cbd5e1] max-w-xs w-72 mb-2 animate-fade-in text-[#191c1e]">
-          <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#eceef0]">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#25D366] animate-pulse" />
-              <span className="font-['Montserrat',sans-serif] text-xs font-bold text-[#00263f]">
-                AquaTech WhatsApp Directo
-              </span>
+    <div ref={ref} className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
+      {open && (
+        <div className="w-[min(320px,calc(100vw-40px))] bg-white rounded-3xl shadow-[0_30px_60px_-20px_rgba(11,11,12,0.45)] ring-1 ring-line overflow-hidden animate-pop-in">
+          <div className="flex items-center justify-between px-5 py-4 bg-ink text-white">
+            <div className="flex items-center gap-2.5">
+              <WhatsAppIcon size={18} />
+              <span className="text-sm font-semibold">Escribinos por WhatsApp</span>
             </div>
-            <button
-              onClick={() => setPopoverOpen(false)}
-              className="text-[#72777e] hover:text-[#00263f] text-sm"
-              aria-label="Cerrar opciones rápidas"
-            >
-              ✕
+            <button onClick={() => setOpen(false)} aria-label="Cerrar" className="text-white/60 hover:text-white">
+              <X size={18} />
             </button>
           </div>
-
-          <p className="text-[11px] text-[#42474e] mb-3">
-            Elegí cómo querés iniciar la conversación o escribinos libremente:
-          </p>
-
-          <div className="space-y-1.5">
-            {quickMessages.map((qm, idx) => (
+          <div className="p-3">
+            <p className="px-2 pt-1 pb-3 text-[12.5px] text-muted">Elegí un tema para empezar la conversación:</p>
+            {QUICK_MESSAGES.map(({ icon: Icon, label, text }) => (
               <a
-                key={idx}
-                href={`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(qm.text)}`}
+                key={label}
+                href={waLink(text)}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setPopoverOpen(false)}
-                className="block text-left text-xs p-2 rounded-lg bg-[#f7f9fb] hover:bg-[#e0f2fe] text-[#00263f] font-semibold border border-[#e2e8f0] transition-colors"
+                onClick={() => setOpen(false)}
+                className="group flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-paper transition-colors"
               >
-                {qm.label}
+                <span className="w-9 h-9 rounded-xl bg-mist text-ink flex items-center justify-center shrink-0 group-hover:bg-ink group-hover:text-white transition-colors">
+                  <Icon size={17} strokeWidth={1.8} />
+                </span>
+                <span className="flex-1 text-[13.5px] font-medium text-ink">{label}</span>
+                <ArrowUpRight size={15} className="text-muted group-hover:text-ink" />
               </a>
             ))}
-          </div>
-
-          <div className="mt-3 pt-2 border-t border-[#eceef0] text-[10px] text-center text-[#72777e]">
-            Atención diaria · Córdoba y Gran Córdoba
           </div>
         </div>
       )}
 
-      {/* Main Floating Trigger Button */}
-      <div className="flex items-center gap-3 group">
-        <div className="hidden sm:flex bg-[#00263f] text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-lg opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none items-center gap-1.5">
-          <span>Escribinos por WhatsApp</span>
-          <span className="w-2 h-2 rounded-full bg-[#25D366]" />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setPopoverOpen(!popoverOpen)}
-          aria-label="Opciones de WhatsApp AquaTech"
-          className="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#1ebe57] text-white flex items-center justify-center shadow-[0_12px_24px_rgba(37,211,102,0.35)] hover:scale-105 active:scale-95 transition-all"
-        >
-          <span className="material-symbols-outlined text-[30px] text-white">chat</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        aria-label="Abrir opciones de WhatsApp"
+        aria-expanded={open}
+        className="w-14 h-14 rounded-full bg-ink text-white flex items-center justify-center ring-4 ring-white shadow-[0_16px_32px_-10px_rgba(11,11,12,0.6)] hover:scale-105 active:scale-95 transition-transform"
+      >
+        {open ? <X size={24} /> : <WhatsAppIcon size={26} />}
+      </button>
     </div>
   );
 };
