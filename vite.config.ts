@@ -14,7 +14,7 @@ function siteHtml(env: Record<string, string>): Plugin {
   const analytics: string[] = [];
   if (env.VITE_CF_BEACON_TOKEN) {
     analytics.push(
-      `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${env.VITE_CF_BEACON_TOKEN}"}'></script>`,
+      `<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${env.VITE_CF_BEACON_TOKEN}"}'></script>`,
     );
   }
   if (env.VITE_PLAUSIBLE_DOMAIN) {

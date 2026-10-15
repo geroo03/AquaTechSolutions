@@ -52,7 +52,7 @@ Para una promo nueva: editar `promo.ts` y subir. Para probar el vencimiento: Pla
 
 ### Analítica
 
-Recomendada: **Cloudflare Web Analytics** (gratis, sin cookies) con `VITE_CF_BEACON_TOKEN`. Cuenta visitas pero no clics por botón, así que **cada mensaje de WhatsApp de la web es distinto según el botón y termina con "(Enviado desde la web)"** (lo agrega `waLink()`): el dueño cuenta las consultas en su propio WhatsApp. Alternativas: `VITE_PLAUSIBLE_DOMAIN` (pago) o `VITE_GA_ID` (GA4); con esas, `src/analytics.ts` registra además el evento "WhatsApp" con su `origen`. Las variables se cargan en GitHub → Settings → Secrets and variables → Actions → **Variables**; `vite.config.ts` inyecta el script solo si existe la variable.
+**Activa: Cloudflare Web Analytics** (gratis, sin cookies) con la variable `VITE_CF_BEACON_TOKEN` del repo (desde el 15/10/2026, hostname `geroo03.github.io`, cuenta de Cloudflare de Sebastián; panel en Observability → Analytics → Web analytics). Al pasar al dominio propio hay que agregar el hostname nuevo en Cloudflare y actualizar el token. Cuenta visitas pero no clics por botón, así que **cada mensaje de WhatsApp de la web es distinto según el botón y termina con "(Enviado desde la web)"** (lo agrega `waLink()`): el dueño cuenta las consultas en su propio WhatsApp. Alternativas: `VITE_PLAUSIBLE_DOMAIN` (pago) o `VITE_GA_ID` (GA4); con esas, `src/analytics.ts` registra además el evento "WhatsApp" con su `origen`. Las variables se cargan en GitHub → Settings → Secrets and variables → Actions → **Variables**; `vite.config.ts` inyecta el script solo si existe la variable.
 
 ## Stack y estructura
 
