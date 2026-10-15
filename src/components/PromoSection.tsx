@@ -60,7 +60,8 @@ export const PromoSection: React.FC = () => {
             </ul>
 
             <p className="mt-4 text-[13px] text-graphite">
-              *{PROMO.note} Válido hasta el {PROMO.validUntilLabel}.
+              *{PROMO.note}
+              {PROMO.validUntilLabel && ` Válido hasta el ${PROMO.validUntilLabel}.`}
             </p>
           </Reveal>
 

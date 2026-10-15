@@ -15,7 +15,7 @@ export const WarrantySection: React.FC = () => {
             tone="light"
             eyebrow="Garantía"
             title="Cada sistema, con su garantía"
-            description={`Impermeabilizamos en Córdoba desde ${FOUNDED_YEAR}. Según el sistema que elijas, el trabajo queda cubierto entre 2 y 10 años, y hasta 25 años con tratamientos y productos específicos.`}
+            description={`Impermeabilizamos en Córdoba desde ${FOUNDED_YEAR}. Según el sistema que elijas, el trabajo queda cubierto entre 2 y 10 años, y hasta 25 años con tratamientos y productos específicos. La garantía se entrega por escrito, en papel y en formato digital.`}
           />
 
           <Reveal className="mt-10">

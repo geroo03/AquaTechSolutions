@@ -1,6 +1,6 @@
 # Negocio y marca
 
-Fuente: "Datos para la web de AquaTech" (15/10/2026). Todo lo de la tabla está confirmado por el dueño o por Sebastián. **No agregar a la web nada que no esté acá.**
+Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (16/10/2026). Todo lo de las tablas está confirmado por el dueño o por Sebastián. **No agregar a la web nada que no esté acá.**
 
 ## Datos confirmados
 
@@ -17,7 +17,17 @@ Fuente: "Datos para la web de AquaTech" (15/10/2026). Todo lo de la tabla está 
 | Dirección | **No se publica**: trabaja a domicilio y la dirección es su casa. En la web y en los datos estructurados va solo "Córdoba, Argentina". |
 | Servicios | Techos (membrana asfáltica + geotextil + poliuretano), terrazas y balcones, humedad de cimientos, filtraciones, tanques y piletas, mantenimiento preventivo. Secundario: pintura interior y exterior. |
 | Metros trabajados | 5.000 m² |
-| Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). En la web aparece **sin el nombre del country** hasta tener permiso. |
+| Zonas | Toda la provincia de Córdoba y las provincias limítrofes (Catamarca, Santiago del Estero, Santa Fe, Buenos Aires, La Pampa, San Luis, La Rioja) |
+| Horario | De 8 a 20 h (falta confirmar qué días) |
+| Presupuesto | **Sin cargo**, en menos de 24 h. Responde las consultas en unos 20 minutos |
+| Visita para medir | Puede tener costo de viáticos según la distancia |
+| Garantía | Se entrega **por escrito, en papel y en formato digital** |
+| Facturación | Monotributista. Dice que puede hacer factura A o B, con otro precio de mano de obra (ver nota abajo) |
+| Seguro | Tiene seguro y cumple los requisitos de higiene y seguridad según normas IRAM |
+| Obras que se pueden nombrar | Hospital Italiano, Colegio de Abogados de Jesús María, countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos |
+| Fotos propias | No tiene fotos del equipo (trabaja solo), pero sí fotos de él trabajando |
+| Dominio elegido | **aquatechsolutions.com.ar** (libre en NIC Argentina al 16/10/2026) |
+| Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). Ya se puede nombrar. |
 
 **Garantía, por sistema (no por servicio):**
 
@@ -32,28 +42,29 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 
 ## Promo vigente
 
-**Promo de octubre 2026** (flyer de Martín, `Desktop/marketing.aquatech/Extras/aquatech-flyer-web.html`): precio de **mano de obra $10.000 por m²**, materiales no incluidos, "solo por este mes", para membrana asfáltica con aluminio flexible, membrana asfáltica con geotextil y pintura, y membrana líquida poliuretánica o acrílica. En la web hasta el 31/10/2026 inclusive (`src/data/promo.ts`); el 1/11 desaparece sola.
+**Promo de octubre 2026** (flyer de Martín, `Desktop/marketing.aquatech/Extras/aquatech-flyer-web.html`): precio de **mano de obra $10.000 por m²**, materiales no incluidos, "solo por este mes", para membrana asfáltica con aluminio flexible, membrana asfáltica con geotextil y pintura, y membrana líquida poliuretánica o acrílica. El 16/10/2026 Martín decidió **dejarla como estrategia de marketing** hasta pasar los precios definitivos: queda sin fecha de fin (`endsAt: null` en `src/data/promo.ts`), con "Por tiempo limitado" en lugar de "Solo por este mes".
 
 ## Decisiones tomadas en la web (15/10/2026)
 
 - **Testimonios**: sección sacada hasta tener reseñas reales en Google. La única reseña real con texto es de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."): **solo se puede usar si ella lo autoriza**. No usar las reseñas de Muovi escritas por el propio Martín.
 - **Cotizador sin precios**: pide tipo de trabajo, m², estado y barrio, y arma el mensaje de WhatsApp. Si Martín quiere mostrar precios, que pase un rango por sistema.
 - **Preguntas frecuentes**: solo las confirmadas (cómo pedir presupuesto, garantía por sistema, desde cuándo trabaja y zona). Se sacaron las de Factura A/B, ART, cuotas y certificado con número.
-- **Sin afirmaciones no confirmadas**: se sacaron "presupuesto sin cargo", "visita sin cargo", "garantía escrita", "respuesta en el día", "presupuesto en 24 h", el horario, las marcas de materiales y el certificado modelo.
+- **Sin afirmaciones no confirmadas**: se sacaron las marcas de materiales, el certificado modelo y "visita sin cargo". El 16/10 se volvieron a poner, ya confirmados: presupuesto sin cargo, respuesta en unos 20 min, presupuesto en menos de 24 h, garantía por escrito y horario.
 - **Fotos**: la del hero y la de la obra son ilustrativas (IA) y la web lo aclara. **Sin las fotos reales, la web no sale a producción.**
 - **Analítica**: recomendada Cloudflare Web Analytics (gratis, sin cookies). No cuenta clics por botón, así que cada mensaje de WhatsApp de la web es distinto según el botón y termina en "(Enviado desde la web)".
 - **Imagen para compartir**: el logo sobre fondo negro hasta tener una foto real de obra.
 
 ## Falta pedirle a Martín
 
-- [ ] **Fotos originales de 3 obras con antes y después**, mandadas como documento por WhatsApp (ideal: GreenVille, Los Cerezos y una terraza). Las de los reels no sirven: son capturas de video.
-- [ ] **Zonas que cubre** (hay obras en Capital, countries de zona sur y Jesús María; Facebook dice "provincia de Córdoba").
-- [ ] **Horario** de atención.
-- [ ] Si el **presupuesto y la visita son sin cargo**.
-- [ ] **Dominio** y su **CUIT** para registrarlo en NIC Argentina a su nombre. Opciones para chequear: aquatechsolutions.com.ar, aquatechcordoba.com.ar, aquatechimpermeabilizaciones.com.ar. El costo lo fija NIC Argentina.
-- [ ] **Permiso para nombrar obras**: Hospital Italiano, Colegio de Abogados de Jesús María, countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos.
-- [ ] **Facturación y pagos**: Factura A/B, medios de pago, cuotas, ART y si la garantía se entrega por escrito.
-- [ ] Autorización de Alejandra Guzmán para usar su reseña.
+- [ ] **Fotos originales de 3 obras con antes y después**, mandadas como documento por WhatsApp (ideal: GreenVille, Los Cerezos y una terraza), y las fotos de él trabajando. **Sin esto la web no sale.**
+- [ ] **Días** de atención (el horario de 8 a 20 h ya está).
+- [ ] **Medios de pago y cuotas** (la pregunta 9 la contestó sobre el seguro).
+- [ ] **Factura**: confirmar qué tipo emite. Como monotributista, normalmente emite factura C; para A o B tendría que ser responsable inscripto o facturar por otro medio. En la web solo dice "hacemos factura, el precio puede variar según el tipo".
+- [ ] Autorización de **Alejandra Guzmán** para usar su reseña (dijo que se la puede pedir).
+- [ ] **Precios** definitivos por sistema, para después de la promo.
+- [ ] **CUIT y compra del dominio** aquatechsolutions.com.ar en NIC Argentina (ver README → Etapa 4).
+- [ ] Si quiere acceso a las **estadísticas** de Cloudflare.
+- [ ] Links de reseña: tiene clientes para pedirles reseñas en Google; falta crear la ficha de Google Business.
 
 ## Marca
 

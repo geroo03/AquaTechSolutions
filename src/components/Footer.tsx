@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin, Clock } from 'lucide-react';
 import {
   PHONE_DISPLAY,
   EMAIL,
@@ -7,6 +7,7 @@ import {
   INSTAGRAM_HANDLE,
   FACEBOOK_URL,
   FOUNDED_YEAR,
+  OPENING_HOURS,
   SERVICES,
   SECONDARY_SERVICE,
 } from '../data/mockData';
@@ -100,12 +101,15 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <MapPin size={16} strokeWidth={1.8} className="shrink-0" /> Córdoba, Argentina
+                <MapPin size={16} strokeWidth={1.8} className="shrink-0" /> Córdoba y provincias limítrofes
               </li>
               <li>
                 <a href={`mailto:${EMAIL}`} className="flex items-center gap-3 hover:text-white transition-colors">
                   <Mail size={16} strokeWidth={1.8} className="shrink-0" /> {EMAIL}
                 </a>
+              </li>
+              <li className="flex items-center gap-3">
+                <Clock size={16} strokeWidth={1.8} className="shrink-0" /> {OPENING_HOURS}
               </li>
             </ul>
           </div>

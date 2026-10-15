@@ -1,5 +1,5 @@
 /**
- * Datos del negocio. Fuente: "Datos para la web de AquaTech" (15/10/2026), confirmados por el dueño
+ * Datos del negocio. Fuente: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (16/10/2026), confirmados por el dueño
  * (Martín Emiliano Nieto) o por Sebastián. No agregar datos que no estén confirmados: lo pendiente
  * está en docs/negocio-y-marca.md.
  */
@@ -24,6 +24,21 @@ export const INSTAGRAM_HANDLE = '@aqua.tech.solutions';
 export const FACEBOOK_URL = 'https://www.facebook.com/p/Aquatech-Solutions-61563827794730/';
 export const FOUNDED_YEAR = 2008;
 export const SQUARE_METERS = '5.000 m²';
+/** Días de atención todavía sin confirmar: solo el rango horario */
+export const OPENING_HOURS = 'De 8 a 20 h';
+export const RESPONSE_TIME = 'unos 20 minutos';
+export const QUOTE_TIME = 'menos de 24 h';
+export const NEIGHBOR_PROVINCES = ['Catamarca', 'Santiago del Estero', 'Santa Fe', 'Buenos Aires', 'La Pampa', 'San Luis', 'La Rioja'];
+
+/** Obras que el dueño autorizó nombrar */
+export const NOTABLE_WORKS = [
+  'Hospital Italiano',
+  'Colegio de Abogados de Jesús María',
+  'Country GreenVille',
+  'Country Campo de Vuelo',
+  'Country La Cascada',
+  'Country Los Cerezos',
+];
 
 /** Garantía por sistema, confirmada por el dueño */
 export const WARRANTIES: WarrantyItem[] = [
@@ -83,14 +98,11 @@ export const SERVICES: ServiceItem[] = [
 /** Servicio secundario, se muestra aparte */
 export const SECONDARY_SERVICE = { title: 'Pintura interior y exterior', warranty: '2 años de garantía' };
 
-/**
- * Obra real (posteo de Instagram del 20/09/2026). El nombre del country no se publica hasta tener permiso.
- * Las fotos todavía son ilustrativas.
- */
+/** Obra real (posteo de Instagram del 20/09/2026). Las fotos todavía son ilustrativas. */
 export const CASE_STUDIES: CaseStudy[] = [
   {
-    id: 'country-zona-sur',
-    title: 'Techo en un country de zona sur',
+    id: 'greenville',
+    title: 'Techo en Country GreenVille',
     location: 'Zona sur, Córdoba Capital',
     system: 'Membrana asfáltica con geotextil de 4 mm y pintura poliuretánica.',
     warranty: '10 años (membrana con geotextil)',
@@ -105,62 +117,74 @@ export const WORK_PROCESS = [
   {
     step: '1',
     title: 'Nos mandás fotos por WhatsApp',
-    description: 'Fotos del problema, tu barrio y los metros cuadrados aproximados. Con eso arrancamos.',
+    description: 'Fotos del problema, tu barrio y los metros cuadrados aproximados. Te respondemos en unos 20 minutos.',
     icon: Camera,
-    tag: 'Desde tu celular',
+    tag: 'Respuesta en ~20 min',
   },
   {
     step: '2',
     title: 'Visita técnica',
-    description: 'Coordinamos una visita para ver la superficie, medir y revisar el estado de lo que hay.',
+    description: 'Coordinamos una visita para medir y revisar el estado de la superficie. Puede tener un costo de viáticos según la distancia.',
     icon: MapPin,
     tag: 'Coordinada con vos',
   },
   {
     step: '3',
-    title: 'Presupuesto',
-    description: 'Te pasamos el presupuesto con el sistema recomendado y su garantía.',
+    title: 'Presupuesto sin cargo',
+    description: 'Te pasamos el presupuesto con el sistema recomendado y su garantía, en menos de 24 h.',
     icon: ReceiptText,
-    tag: 'Sistema y garantía',
+    tag: 'En menos de 24 h',
   },
   {
     step: '4',
     title: 'Trabajo terminado',
-    description: 'Hacemos el trabajo y queda cubierto por la garantía del sistema elegido.',
+    description: 'Hacemos el trabajo y te entregamos la garantía por escrito, en papel y en formato digital.',
     icon: ShieldCheck,
-    tag: 'Hasta 10 años de garantía',
+    tag: 'Garantía por escrito',
   },
 ];
 
-/** Lugares con obras confirmadas. Facebook indica cobertura en la provincia de Córdoba. */
+/** Cobertura confirmada: toda la provincia de Córdoba y las provincias limítrofes. Puntos del mapa: lugares con obras. */
 export const ZONES: ZoneItem[] = [
-  { id: 'capital', name: 'Córdoba Capital', detail: 'Barrios de la ciudad', x: 50, y: 46 },
-  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'Barrios cerrados al sur de la ciudad', x: 46, y: 68 },
+  { id: 'capital', name: 'Córdoba Capital', detail: 'Barrios de la ciudad y Gran Córdoba', x: 50, y: 46 },
+  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'GreenVille, Campo de Vuelo, La Cascada, Los Cerezos', x: 46, y: 68 },
   { id: 'jesus-maria', name: 'Jesús María', detail: 'Norte de la provincia', x: 60, y: 14 },
+  { id: 'provincia', name: 'Resto de la provincia', detail: 'Todo el interior de Córdoba' },
+  { id: 'limitrofes', name: 'Provincias limítrofes', detail: NEIGHBOR_PROVINCES.join(', ') },
 ];
 
 export const FAQS: FaqItem[] = [
   {
     id: 'presupuesto',
-    question: '¿Cómo pido un presupuesto?',
+    question: '¿Cómo pido un presupuesto? ¿Tiene costo?',
     answer:
-      'Escribinos por WhatsApp con fotos del problema (una general y otras de cerca), tu barrio o localidad y los metros cuadrados aproximados. Con eso evaluamos el caso y coordinamos una visita para medir.',
+      'El presupuesto es sin cargo. Escribinos por WhatsApp con fotos del problema (una general y otras de cerca), tu barrio o localidad y los metros cuadrados aproximados. Te respondemos en unos 20 minutos y te pasamos el presupuesto en menos de 24 h. Si hace falta ir a medir, la visita puede tener un costo de viáticos según la distancia.',
   },
   {
     id: 'garantia',
     question: '¿Qué garantía tienen los trabajos?',
     answer:
-      'Depende del sistema: membrana con geotextil, 10 años; membrana con aluminio, 5 años; pintura, 2 años. Con tratamientos y productos específicos la garantía puede ser de 15, 20 o 25 años. Para tanques, piletas y cimientos, consultanos según el sistema.',
+      'Depende del sistema: membrana con geotextil, 10 años; membrana con aluminio, 5 años; pintura, 2 años. Con tratamientos y productos específicos la garantía puede ser de 15, 20 o 25 años. Para tanques, piletas y cimientos, consultanos según el sistema. La garantía se entrega por escrito, en papel y en formato digital.',
+  },
+  {
+    id: 'factura',
+    question: '¿Hacen factura?',
+    answer:
+      'Sí. Contanos qué tipo de factura necesitás cuando pidas el presupuesto: el precio de la mano de obra puede variar según la factura.',
+  },
+  {
+    id: 'seguro',
+    question: '¿Trabajan con seguro?',
+    answer: 'Sí. Contamos con seguro y cumplimos los requisitos de higiene y seguridad según las normas IRAM.',
   },
   {
     id: 'trayectoria',
     question: '¿Desde cuándo trabajan?',
-    answer: `Trabajamos en impermeabilizaciones desde ${FOUNDED_YEAR} y llevamos más de ${SQUARE_METERS} trabajados.`,
+    answer: `Trabajamos en impermeabilizaciones desde ${FOUNDED_YEAR} y llevamos más de ${SQUARE_METERS} trabajados, con obras como el Hospital Italiano, el Colegio de Abogados de Jesús María y los countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos.`,
   },
   {
     id: 'zona',
     question: '¿Trabajan en mi zona?',
-    answer:
-      'Trabajamos en Córdoba Capital y en la provincia de Córdoba. Escribinos con tu barrio o localidad y te confirmamos.',
+    answer: `Trabajamos en toda la provincia de Córdoba y en las provincias limítrofes (${NEIGHBOR_PROVINCES.join(', ')}). Escribinos con tu localidad y coordinamos.`,
   },
 ];

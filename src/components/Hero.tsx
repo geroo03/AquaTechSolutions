@@ -1,6 +1,6 @@
 import React from 'react';
-import { ArrowDown, Calculator, Award, Ruler, ShieldCheck } from 'lucide-react';
-import { ASSETS, FOUNDED_YEAR, SQUARE_METERS } from '../data/mockData';
+import { ArrowDown, Calculator, Award, ClipboardCheck, ShieldCheck } from 'lucide-react';
+import { ASSETS, FOUNDED_YEAR } from '../data/mockData';
 import { PROMO } from '../data/promo';
 import { LogoMark, WhatsAppIcon } from './Brand';
 import { usePromoActive } from './PromoSection';
@@ -12,8 +12,8 @@ interface HeroProps {
 
 const BENEFITS = [
   { icon: Award, title: `Desde ${FOUNDED_YEAR}`, text: 'Impermeabilizando en Córdoba' },
-  { icon: Ruler, title: `+${SQUARE_METERS}`, text: 'Trabajados' },
-  { icon: ShieldCheck, title: 'Hasta 10 años de garantía', text: 'Según el sistema' },
+  { icon: ClipboardCheck, title: 'Presupuesto sin cargo', text: 'En menos de 24 h' },
+  { icon: ShieldCheck, title: 'Garantía por escrito', text: 'Hasta 10 años según el sistema' },
 ];
 
 export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
@@ -50,7 +50,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               <span className="px-2.5 py-1 rounded-full bg-white text-ink text-[11px] font-bold uppercase tracking-[0.12em]">
                 Promo
               </span>
-              Mano de obra a {PROMO.items[0].price} el m² hasta el {PROMO.validUntilLabel}
+              Mano de obra a {PROMO.items[0].price} el m²{PROMO.validUntilLabel && ` hasta el ${PROMO.validUntilLabel}`}
               <ArrowDown size={14} className="transition-transform group-hover:translate-y-0.5" />
             </a>
           )}

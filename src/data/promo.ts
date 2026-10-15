@@ -1,18 +1,22 @@
 /**
  * Promo temporal. Fuente: flyer de Martín "Promo mano de obra" (Desktop/marketing.aquatech/Extras).
- * Se muestra hasta `endsAt` (hora de Córdoba). Pasada esa fecha desaparece sola:
+ * Si `endsAt` tiene fecha (hora de Córdoba), pasada esa fecha desaparece sola:
  *  - al compilar no se genera (el workflow recompila todos los días a las 00:05 de Argentina),
  *  - y en el navegador se vuelve a chequear la fecha por si la página quedó abierta o en caché.
- * Para una promo nueva: cambiar los textos y `endsAt`.
+ * Con `endsAt: null` queda sin vencimiento. Para una promo nueva: cambiar los textos y `endsAt`.
+ *
+ * 16/10/2026: Martín decidió dejar la promo como estrategia de marketing hasta definir los precios
+ * definitivos, así que no vence el 31/10. Sin fecha de fin, no decir "solo por este mes".
  */
 export const PROMO = {
-  endsAt: '2026-11-01T00:00:00-03:00',
-  validUntilLabel: '31 de octubre',
-  eyebrow: 'Promo de octubre',
+  endsAt: null as string | null,
+  /** Texto de vigencia; vacío mientras no haya fecha de fin */
+  validUntilLabel: '',
+  eyebrow: 'Promo vigente',
   title: '¿Problemas de humedad o filtraciones?',
   subtitle: 'Tenemos la solución que tu techo necesita.',
   priceLabel: 'Precio de mano de obra',
-  badge: 'Solo por este mes',
+  badge: 'Por tiempo limitado',
   items: [
     { name: 'Membrana asfáltica con aluminio flexible', price: '$10.000', unit: 'por m²' },
     { name: 'Membrana asfáltica con geotextil y pintura', price: '$10.000', unit: 'por m²' },
@@ -24,4 +28,4 @@ export const PROMO = {
   whatsappText: 'Hola AquaTech, quiero aprovechar la promo de mano de obra a $10.000 el m²',
 };
 
-export const isPromoActive = (now: number) => now < Date.parse(PROMO.endsAt);
+export const isPromoActive = (now: number) => PROMO.endsAt === null || now < Date.parse(PROMO.endsAt);

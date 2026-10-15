@@ -44,11 +44,15 @@ Para una promo nueva: editar `promo.ts` y subir. Para probar el vencimiento: Pla
 
 ### Pasar al dominio propio
 
-1. Cambiar `url` en `site.config.json` (con `/` final, ej. `https://aquatech.com.ar/`).
-2. Crear `public/CNAME` con el dominio (una sola línea, sin `https://`).
-3. En el proveedor del dominio: registros `A` del apex a 185.199.108.153, .109.153, .110.153 y .111.153 (y `CNAME` de `www` a `geroo03.github.io`).
-4. GitHub → Settings → Pages → Custom domain + "Enforce HTTPS".
-5. Dar de alta el sitio en Google Search Console y enviar el `sitemap.xml`.
+Dominio elegido: **aquatechsolutions.com.ar**. NIC Argentina solo **delega** el dominio a servidores DNS (no permite cargar registros A), así que el DNS va en Cloudflare (gratis):
+1. El titular (Martín, con su CUIT) lo registra en [nic.ar](https://nic.ar) entrando con su Clave Fiscal de ARCA.
+2. En Cloudflare: "Add a domain" → `aquatechsolutions.com.ar` → plan Free. Cloudflare da dos nameservers.
+3. En NIC Argentina → el dominio → "Delegaciones": cargar esos dos nameservers. Puede tardar unas horas.
+4. En Cloudflare DNS: registros `A` del apex a 185.199.108.153, 185.199.109.153, 185.199.110.153 y 185.199.111.153, y `CNAME` de `www` a `geroo03.github.io`, todos en **DNS only** (nube gris) al principio, para que GitHub pueda emitir el certificado.
+5. Repo: `url` en `site.config.json` → `https://aquatechsolutions.com.ar/`, crear `public/CNAME` con `aquatechsolutions.com.ar`, subir.
+6. GitHub → Settings → Pages → Custom domain + "Enforce HTTPS".
+7. Cloudflare Web Analytics: agregar el hostname nuevo y actualizar `VITE_CF_BEACON_TOKEN` (con el dominio en Cloudflare también se puede activar automático).
+8. Google Search Console: alta del dominio y envío del `sitemap.xml`.
 
 ### Analítica
 
@@ -100,8 +104,8 @@ public/
 
 ## Reglas sobre los datos
 
-- `src/data/mockData.ts` tiene **solo datos confirmados** por el dueño (Martín Emiliano Nieto) o por Sebastián: desde 2008, +5.000 m², garantía por sistema (geotextil 10 años, aluminio 5, pintura 2, tratamientos específicos 15/20/25), email, Instagram y Facebook. La fuente y la lista de lo que falta están en `docs/negocio-y-marca.md`.
-- **No inventar datos del negocio** ni volver a poner: precios, "sin cargo", "garantía escrita", tiempos de respuesta, horario, marcas de materiales, certificados, testimonios, dirección (es la casa del dueño: solo "Córdoba, Argentina") ni nombres de obras o countries sin permiso. Si falta un dato, dejarlo afuera y avisar.
+- `src/data/mockData.ts` tiene **solo datos confirmados** por el dueño (Martín Emiliano Nieto) o por Sebastián: desde 2008, +5.000 m², garantía por sistema y por escrito, presupuesto sin cargo en menos de 24 h, respuesta en ~20 min, horario de 8 a 20 h, zonas (Córdoba y provincias limítrofes), seguro, obras que se pueden nombrar, email, Instagram y Facebook. La fuente y la lista de lo que falta están en `docs/negocio-y-marca.md`.
+- **No inventar datos del negocio** ni poner lo no confirmado: precios fuera de la promo, días de atención, medios de pago y cuotas, tipo de factura (A/B/C), "visita sin cargo" (la visita puede cobrar viáticos), marcas de materiales, certificados, testimonios o la dirección (es la casa del dueño: solo "Córdoba"). Si falta un dato, dejarlo afuera y avisar.
 - La garantía se muestra **por sistema**, no por servicio. Lo que no encaja en un sistema: "Garantía según el sistema".
 - Las fotos del hero y de la obra son ilustrativas (IA) y la web lo dice. Al cargar las reales, sacar esa aclaración.
 - Testimonios: la sección se sacó. Vuelve solo con reseñas reales (Google) o con autorización expresa de quien la escribió.
@@ -116,5 +120,6 @@ Referencia Lighthouse (oct 2026, build local): celular 96 / 100 / 100 / 100, esc
 
 - Base generada con Google AI Studio / Stitch (azul, emojis, imágenes remotas).
 - Oct 2026: rediseño monocromo con el logo, íconos SVG, comparador antes/después arreglado, mapa vectorial, imágenes locales, mobile pulido y deploy automático a Pages.
+- 16/10/2026: respuestas de Martín (zonas, horario, presupuesto sin cargo, tiempos, garantía por escrito, seguro, obras nombradas). La promo queda sin fecha de fin.
 - 15/10/2026: datos reales del dueño. Se sacaron testimonios, certificado, precios del cotizador y afirmaciones no confirmadas; garantía por sistema; pintura como servicio secundario; email y Facebook; Cloudflare Web Analytics.
 - Oct 2026 (producción, parte técnica): pre-render + hidratación, JSON-LD, sitemap/robots, canonical y Open Graph absolutos con `og-image.png`, fuentes propias, WebP, modales lazy, sin `motion` (JS 422 → 291 KB), accesibilidad 100, analítica lista para activar, impresión del certificado, TypeScript strict y limpieza de restos de AI Studio.

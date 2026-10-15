@@ -22,7 +22,7 @@ interface Site {
   city: string;
   region: string;
   country: string;
-  areaServed: string;
+  areaServed: string[];
   sameAs: string[];
 }
 
@@ -50,7 +50,7 @@ export function jsonLd(site: Site) {
       addressRegion: site.region,
       addressCountry: site.country,
     },
-    areaServed: site.areaServed,
+    areaServed: site.areaServed.map((name) => ({ '@type': 'AdministrativeArea', name })),
     sameAs: site.sameAs,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',

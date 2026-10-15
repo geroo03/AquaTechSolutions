@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ArrowUpRight, ChevronsLeftRight } from 'lucide-react';
-import { CASE_STUDIES, FOUNDED_YEAR, SQUARE_METERS } from '../data/mockData';
+import { CASE_STUDIES, FOUNDED_YEAR, SQUARE_METERS, NOTABLE_WORKS } from '../data/mockData';
 import { Reveal, SectionHeader, waLink } from './ui';
 
 interface ComparisonSliderProps {
@@ -106,6 +106,19 @@ export const BeforeAfterSection: React.FC = () => {
           </dl>
         </Reveal>
 
+        <Reveal className="mb-6">
+          <div className="p-6 sm:p-7 rounded-3xl bg-paper ring-1 ring-line">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted mb-4">Algunas de nuestras obras</div>
+            <ul className="flex flex-wrap gap-2">
+              {NOTABLE_WORKS.map((work) => (
+                <li key={work} className="px-4 py-2 rounded-full bg-white ring-1 ring-line text-[13.5px] font-medium text-ink">
+                  {work}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
+
         <div className="space-y-6">
           {CASE_STUDIES.map((item) => (
             <Reveal key={item.id}>
@@ -138,7 +151,7 @@ export const BeforeAfterSection: React.FC = () => {
 
                   <div className="mt-auto">
                     <a
-                      href={waLink('Hola AquaTech, quiero un trabajo como el del techo del country de zona sur')}
+                      href={waLink('Hola AquaTech, quiero un trabajo como el del techo del Country GreenVille')}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group inline-flex items-center gap-1.5 h-11 px-5 rounded-full bg-ink text-white text-[13px] font-semibold hover:bg-graphite transition-colors"

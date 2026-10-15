@@ -8,6 +8,7 @@ import { Reveal, SectionHeader, waLink } from './ui';
 /** Mapa esquemático de cobertura: anillos de distancia desde Córdoba Capital y un punto por localidad */
 const CoverageMap: React.FC<{ selected: ZoneItem; onSelect: (z: ZoneItem) => void }> = ({ selected, onSelect }) => {
   const capital = ZONES[0];
+  const mapped = ZONES.filter((z) => z.x !== undefined && z.y !== undefined);
   return (
     <div className="relative aspect-square w-full rounded-[28px] bg-ink overflow-hidden">
       <div className="absolute inset-0 bg-dots" />
@@ -15,7 +16,7 @@ const CoverageMap: React.FC<{ selected: ZoneItem; onSelect: (z: ZoneItem) => voi
         {[14, 28, 42].map((r) => (
           <circle key={r} cx={capital.x} cy={capital.y} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.25" strokeDasharray="0.8 1.2" />
         ))}
-        {ZONES.slice(1).map((z) => (
+        {mapped.slice(1).map((z) => (
           <line
             key={z.id}
             x1={capital.x}
@@ -28,7 +29,7 @@ const CoverageMap: React.FC<{ selected: ZoneItem; onSelect: (z: ZoneItem) => voi
         ))}
       </svg>
 
-      {ZONES.map((z) => {
+      {mapped.map((z) => {
         const active = z.id === selected.id;
         const isCapital = z.id === capital.id;
         return (
@@ -81,8 +82,8 @@ export const CoverageZonesSection: React.FC = () => {
         <div>
           <SectionHeader
             eyebrow="Zonas de cobertura"
-            title="Córdoba Capital y la provincia"
-            description="Hicimos obras en Córdoba Capital, en countries de zona sur y en Jesús María. Trabajamos en toda la provincia de Córdoba."
+            title="Toda Córdoba y provincias limítrofes"
+            description="Trabajamos en toda la provincia de Córdoba y en las provincias que limitan con ella. En el mapa, algunos lugares donde ya hicimos obras."
           />
 
           <Reveal className="mt-8 flex flex-wrap gap-2">
@@ -123,7 +124,7 @@ export const CoverageZonesSection: React.FC = () => {
           </Reveal>
 
           <p className="mt-5 text-[13px] text-muted">
-            ¿Estás en otra localidad? Escribinos con tu barrio o ciudad y te confirmamos.
+            La visita para medir puede tener un costo de viáticos según la distancia.
           </p>
         </div>
 

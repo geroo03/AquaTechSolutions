@@ -36,7 +36,7 @@ export interface ZoneItem {
   id: string;
   name: string;
   detail: string;
-  /** Posición en el mapa esquemático (0–100) */
-  x: number;
-  y: number;
+  /** Posición en el mapa esquemático (0–100). Sin posición: no se dibuja en el mapa */
+  x?: number;
+  y?: number;
 }

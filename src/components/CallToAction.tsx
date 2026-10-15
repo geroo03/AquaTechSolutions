@@ -1,6 +1,6 @@
 import React from 'react';
-import { Mail } from 'lucide-react';
-import { PHONE_DISPLAY, EMAIL } from '../data/mockData';
+import { Mail, Clock } from 'lucide-react';
+import { PHONE_DISPLAY, EMAIL, OPENING_HOURS } from '../data/mockData';
 import { LogoMark, WhatsAppIcon } from './Brand';
 import { Eyebrow, Reveal, waLink } from './ui';
 
@@ -20,7 +20,7 @@ export const CallToAction: React.FC = () => {
           Escribinos antes de la próxima tormenta.
         </h2>
         <p className="mt-6 text-base sm:text-lg text-graphite max-w-2xl mx-auto leading-relaxed">
-          Evitá daños en cielorrasos, muebles e instalación eléctrica. Mandanos fotos del problema y te asesoramos.
+          Evitá daños en cielorrasos, muebles e instalación eléctrica. El presupuesto es sin cargo y te lo pasamos en menos de 24 h.
         </p>
 
         <a
@@ -33,13 +33,16 @@ export const CallToAction: React.FC = () => {
           WhatsApp {PHONE_DISPLAY}
         </a>
 
-        <a
-          href={`mailto:${EMAIL}`}
-          className="mt-6 flex w-fit mx-auto items-center justify-center gap-2 text-[13px] font-medium text-graphite hover:text-ink transition-colors"
-        >
-          <Mail size={15} strokeWidth={1.8} />
-          {EMAIL}
-        </a>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] font-medium text-graphite">
+          <span className="flex items-center gap-2">
+            <Clock size={15} strokeWidth={1.8} />
+            Atención {OPENING_HOURS.toLowerCase()}
+          </span>
+          <a href={`mailto:${EMAIL}`} className="flex items-center gap-2 hover:text-ink transition-colors">
+            <Mail size={15} strokeWidth={1.8} />
+            {EMAIL}
+          </a>
+        </div>
       </Reveal>
     </section>
   );

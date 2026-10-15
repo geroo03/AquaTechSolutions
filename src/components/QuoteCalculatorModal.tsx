@@ -133,7 +133,7 @@ Ahora les mando fotos.`;
           <p className="text-[14px] leading-relaxed text-white/85 whitespace-pre-line">{message}</p>
         </div>
         <p className="mt-3 text-[12px] text-muted text-center">
-          Al abrirse WhatsApp, adjuntá 2 o 3 fotos del problema para que podamos evaluarlo.
+          El presupuesto es sin cargo. Al abrirse WhatsApp, adjuntá 2 o 3 fotos del problema.
         </p>
 
         <a
