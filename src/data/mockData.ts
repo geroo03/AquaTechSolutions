@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import { ServiceItem, CaseStudy, FaqItem, ReviewItem, ZoneItem } from '../types';
 
-const img = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
+// Ruta relativa: igual en el pre-render y en el navegador, funcione bajo /AquaTechSolutions/ o en un dominio propio
+const img = (name: string) => `./images/${name}`;
 
 export const ASSETS = {
   heroBg: img('hero.webp'),
