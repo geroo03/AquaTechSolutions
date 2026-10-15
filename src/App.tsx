@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { PromoSection } from './components/PromoSection';
 import { ServicesSection } from './components/ServicesSection';
 import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
@@ -33,6 +34,7 @@ export default function App() {
 
       <main className="w-full flex-1">
         <Hero onOpenQuote={() => openQuote()} />
+        <PromoSection />
         <ServicesSection onSelectServiceForQuote={openQuote} />
         <BeforeAfterSection />
         <ProcessSection onOpenDiagnostic={() => setIsDiagnosticOpen(true)} />

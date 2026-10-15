@@ -49,5 +49,7 @@ export default defineConfig(({ mode }) => {
     // Rutas relativas: la web funciona igual en GitHub Pages (/AquaTechSolutions/) y con dominio propio
     base: './',
     plugins: [react(), tailwindcss(), siteHtml(env)],
+    // Fecha de compilación: decide qué promos se generan (ver src/data/promo.ts)
+    define: { __BUILD_TIME__: JSON.stringify(Date.now()) },
   };
 });

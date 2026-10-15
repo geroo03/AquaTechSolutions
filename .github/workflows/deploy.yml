@@ -3,6 +3,9 @@ name: Publicar demo en GitHub Pages
 on:
   push:
     branches: [main]
+  # Todos los días a las 00:05 de Argentina (03:05 UTC): las promos vencidas desaparecen del HTML
+  schedule:
+    - cron: '5 3 * * *'
   workflow_dispatch:
 
 permissions:

@@ -1,7 +1,9 @@
 import React from 'react';
 import { ArrowDown, Calculator, Award, Ruler, ShieldCheck } from 'lucide-react';
 import { ASSETS, FOUNDED_YEAR, SQUARE_METERS } from '../data/mockData';
+import { PROMO } from '../data/promo';
 import { LogoMark, WhatsAppIcon } from './Brand';
+import { usePromoActive } from './PromoSection';
 import { waLink } from './ui';
 
 interface HeroProps {
@@ -15,6 +17,7 @@ const BENEFITS = [
 ];
 
 export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
+  const promoActive = usePromoActive();
   return (
     <section id="inicio" className="relative isolate overflow-hidden bg-ink text-white">
       {/* Foto de obra en blanco y negro, con degradé para que el texto siempre se lea */}
@@ -39,6 +42,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
 
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-36 pb-16 sm:pt-44 lg:pt-48 lg:pb-24">
         <div className="max-w-3xl">
+          {promoActive && (
+            <a
+              href="#promo"
+              className="group inline-flex items-center gap-2.5 mb-8 pl-1.5 pr-4 py-1.5 rounded-2xl sm:rounded-full bg-white/10 ring-1 ring-white/20 text-[13px] text-white hover:bg-white/15 transition-colors"
+            >
+              <span className="px-2.5 py-1 rounded-full bg-white text-ink text-[11px] font-bold uppercase tracking-[0.12em]">
+                Promo
+              </span>
+              Mano de obra a {PROMO.items[0].price} el m² hasta el {PROMO.validUntilLabel}
+              <ArrowDown size={14} className="transition-transform group-hover:translate-y-0.5" />
+            </a>
+          )}
           <div className="flex items-center gap-3 mb-7">
             <span className="h-px w-10 bg-white/60" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/75">

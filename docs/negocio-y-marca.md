@@ -30,6 +30,10 @@ Fuente: "Datos para la web de AquaTech" (15/10/2026). Todo lo de la tabla está 
 
 Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía según el sistema, consultá".
 
+## Promo vigente
+
+**Promo de octubre 2026** (flyer de Martín, `Desktop/marketing.aquatech/Extras/aquatech-flyer-web.html`): precio de **mano de obra $10.000 por m²**, materiales no incluidos, "solo por este mes", para membrana asfáltica con aluminio flexible, membrana asfáltica con geotextil y pintura, y membrana líquida poliuretánica o acrílica. En la web hasta el 31/10/2026 inclusive (`src/data/promo.ts`); el 1/11 desaparece sola.
+
 ## Decisiones tomadas en la web (15/10/2026)
 
 - **Testimonios**: sección sacada hasta tener reseñas reales en Google. La única reseña real con texto es de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."): **solo se puede usar si ella lo autoriza**. No usar las reseñas de Muovi escritas por el propio Martín.

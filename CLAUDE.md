@@ -34,6 +34,14 @@ Cada push a `main` publica solo en GitHub Pages con `.github/workflows/deploy.ym
 
 **`site.config.json` es la única fuente** de URL, nombre, título, descripción y teléfono del sitio (la usan `vite.config.ts` para completar `%SITE_URL%`, `%TITLE%` y `%DESCRIPTION%` en `index.html`, y el pre-render). La imagen para compartir es `public/og-image.png` (1200×630).
 
+### Promos temporales
+
+`src/data/promo.ts` define la promo vigente (textos, precios y `endsAt` con hora de Córdoba, `-03:00`). Se ve como sección `#promo` después del hero y como aviso en el hero. Desaparece sola al vencer:
+- al compilar no se genera (`__BUILD_TIME__`, definido en `vite.config.ts`), y el workflow **recompila todos los días a las 00:05 de Argentina** (`schedule` en `deploy.yml`);
+- en el navegador, `usePromoActive()` arranca con la fecha de compilación (para que el pre-render y la hidratación coincidan) y después chequea la fecha real.
+
+Para una promo nueva: editar `promo.ts` y subir. Para probar el vencimiento: Playwright con `page.clock.install({ time })`.
+
 ### Pasar al dominio propio
 
 1. Cambiar `url` en `site.config.json` (con `/` final, ej. `https://aquatech.com.ar/`).
