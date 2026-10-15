@@ -44,7 +44,7 @@ Cada push a `main` publica solo en GitHub Pages con `.github/workflows/deploy.ym
 
 ### Analítica
 
-`src/analytics.ts` registra el evento **"WhatsApp"** en cada clic a `wa.me` con su `origen` (id de la sección, `header`, `footer`, `flotante` o el nombre del modal; se puede forzar con `data-origen`). No hace nada hasta que se configura un proveedor: cargar `VITE_PLAUSIBLE_DOMAIN` (Plausible, sin cookies) **o** `VITE_GA_ID` (Google Analytics 4) en GitHub → Settings → Secrets and variables → Actions → **Variables**. `vite.config.ts` inyecta el script solo si existe la variable.
+Recomendada: **Cloudflare Web Analytics** (gratis, sin cookies) con `VITE_CF_BEACON_TOKEN`. Cuenta visitas pero no clics por botón, así que **cada mensaje de WhatsApp de la web es distinto según el botón y termina con "(Enviado desde la web)"** (lo agrega `waLink()`): el dueño cuenta las consultas en su propio WhatsApp. Alternativas: `VITE_PLAUSIBLE_DOMAIN` (pago) o `VITE_GA_ID` (GA4); con esas, `src/analytics.ts` registra además el evento "WhatsApp" con su `origen`. Las variables se cargan en GitHub → Settings → Secrets and variables → Actions → **Variables**; `vite.config.ts` inyecta el script solo si existe la variable.
 
 ## Stack y estructura
 
@@ -59,14 +59,14 @@ src/
   analytics.ts            track() y clics a WhatsApp
   App.tsx                 orden de secciones + estado de los 3 modales (cargados con lazy)
   index.css               tokens de color (@theme), estilos base (@layer base), animaciones
-  data/mockData.ts        TODOS los textos y datos: servicios, obras, zonas, testimonios, FAQ, teléfono
+  data/mockData.ts        TODOS los datos del negocio (solo confirmados): servicios, garantías, obra, zonas, FAQ, contacto
   types.ts
   components/
     Brand.tsx             Logo, LogoMark (la "Λ"), íconos SVG de WhatsApp / Instagram / Facebook
     ui.tsx                waLink(), Eyebrow, SectionHeader, Reveal (IntersectionObserver), Modal, Select, IconTile
     Header, Hero, ServicesSection, BeforeAfterSection, ProcessSection, WarrantySection,
-    CoverageZonesSection, TestimonialsSection, FaqSection, CallToAction, Footer,
-    FloatingWhatsApp, QuoteCalculatorModal, DiagnosticModal, WarrantyModal
+    CoverageZonesSection, FaqSection, CallToAction, Footer,
+    FloatingWhatsApp, QuoteCalculatorModal (sin precios), DiagnosticModal
 public/
   images/*.webp           fotos en WebP (hoy son de ejemplo generadas por IA, 512 px)
   og-image.png            imagen para compartir en WhatsApp/redes (1200×630)
@@ -92,9 +92,11 @@ public/
 
 ## Reglas sobre los datos
 
-- **No inventar datos del negocio** (precios, años de garantía, matrículas, direcciones, reseñas, cantidades de obras, certificaciones). Si falta un dato, dejarlo como pendiente y avisar.
-- Lo que hoy es de ejemplo está listado en `docs/negocio-y-marca.md` → "Pendiente de confirmar". Al reemplazarlo por datos reales, sacar también la nota "Testimonios ilustrativos para esta demo".
-- El email `contacto@aquatech.com.ar` que traía la plantilla se sacó a propósito (el dominio no es del cliente).
+- `src/data/mockData.ts` tiene **solo datos confirmados** por el dueño (Martín Emiliano Nieto) o por Sebastián: desde 2008, +5.000 m², garantía por sistema (geotextil 10 años, aluminio 5, pintura 2, tratamientos específicos 15/20/25), email, Instagram y Facebook. La fuente y la lista de lo que falta están en `docs/negocio-y-marca.md`.
+- **No inventar datos del negocio** ni volver a poner: precios, "sin cargo", "garantía escrita", tiempos de respuesta, horario, marcas de materiales, certificados, testimonios, dirección (es la casa del dueño: solo "Córdoba, Argentina") ni nombres de obras o countries sin permiso. Si falta un dato, dejarlo afuera y avisar.
+- La garantía se muestra **por sistema**, no por servicio. Lo que no encaja en un sistema: "Garantía según el sistema".
+- Las fotos del hero y de la obra son ilustrativas (IA) y la web lo dice. Al cargar las reales, sacar esa aclaración.
+- Testimonios: la sección se sacó. Vuelve solo con reseñas reales (Google) o con autorización expresa de quien la escribió.
 
 ## Cómo verificar cambios visuales
 
@@ -106,4 +108,5 @@ Referencia Lighthouse (oct 2026, build local): celular 96 / 100 / 100 / 100, esc
 
 - Base generada con Google AI Studio / Stitch (azul, emojis, imágenes remotas).
 - Oct 2026: rediseño monocromo con el logo, íconos SVG, comparador antes/después arreglado, mapa vectorial, imágenes locales, mobile pulido y deploy automático a Pages.
+- 15/10/2026: datos reales del dueño. Se sacaron testimonios, certificado, precios del cotizador y afirmaciones no confirmadas; garantía por sistema; pintura como servicio secundario; email y Facebook; Cloudflare Web Analytics.
 - Oct 2026 (producción, parte técnica): pre-render + hidratación, JSON-LD, sitemap/robots, canonical y Open Graph absolutos con `og-image.png`, fuentes propias, WebP, modales lazy, sin `motion` (JS 422 → 291 KB), accesibilidad 100, analítica lista para activar, impresión del certificado, TypeScript strict y limpieza de restos de AI Studio.

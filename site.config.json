@@ -2,10 +2,16 @@
   "url": "https://geroo03.github.io/AquaTechSolutions/",
   "name": "AquaTech Solutions",
   "title": "AquaTech Solutions — Impermeabilizaciones en Córdoba",
-  "description": "Impermeabilización de techos, terrazas, humedad, filtraciones, tanques y piletas en Córdoba. Presupuesto sin cargo por WhatsApp y garantía escrita en cada trabajo.",
+  "description": "Impermeabilización de techos, terrazas, humedad, filtraciones, tanques y piletas en Córdoba desde 2008. Pedí tu presupuesto por WhatsApp.",
   "telephone": "+5493516134658",
   "city": "Córdoba",
   "region": "Córdoba",
   "country": "AR",
-  "instagram": "https://www.instagram.com/aqua.tech.solutions/"
+  "email": "aquatech.cba@gmail.com",
+  "foundingDate": "2008",
+  "areaServed": "Córdoba, Argentina",
+  "sameAs": [
+    "https://www.instagram.com/aqua.tech.solutions/",
+    "https://www.facebook.com/p/Aquatech-Solutions-61563827794730/"
+  ]
 }

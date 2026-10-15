@@ -1,7 +1,8 @@
 /**
  * Analítica opcional. No hace nada hasta que se configure un proveedor al compilar
- * (VITE_PLAUSIBLE_DOMAIN o VITE_GA_ID, ver vite.config.ts y CLAUDE.md).
- * El evento principal es "WhatsApp": cada clic que abre una conversación, con el botón de origen.
+ * (VITE_CF_BEACON_TOKEN, VITE_PLAUSIBLE_DOMAIN o VITE_GA_ID; ver vite.config.ts y CLAUDE.md).
+ * Con Plausible o GA4 se registra el evento "WhatsApp" con el botón de origen. Cloudflare no
+ * registra eventos: ahí el origen se ve en el texto del mensaje que llega al WhatsApp.
  */
 type Props = Record<string, string>;
 

@@ -6,11 +6,17 @@ import site from './site.config.json' with { type: 'json' };
 /**
  * Completa los datos del sitio en index.html (%SITE_URL%, %TITLE%, %DESCRIPTION%)
  * e inyecta la analítica solo si está configurada:
- *   VITE_PLAUSIBLE_DOMAIN=aquatech.com.ar  → Plausible (sin cookies)
+ *   VITE_CF_BEACON_TOKEN=xxxxxxxx          → Cloudflare Web Analytics (gratis, sin cookies; recomendado)
+ *   VITE_PLAUSIBLE_DOMAIN=aquatech.com.ar  → Plausible (pago, sin cookies)
  *   VITE_GA_ID=G-XXXXXXX                   → Google Analytics 4
  */
 function siteHtml(env: Record<string, string>): Plugin {
   const analytics: string[] = [];
+  if (env.VITE_CF_BEACON_TOKEN) {
+    analytics.push(
+      `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${env.VITE_CF_BEACON_TOKEN}"}'></script>`,
+    );
+  }
   if (env.VITE_PLAUSIBLE_DOMAIN) {
     analytics.push(
       `<script defer data-domain="${env.VITE_PLAUSIBLE_DOMAIN}" src="https://plausible.io/js/script.js"></script>`,

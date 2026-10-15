@@ -1,14 +1,22 @@
 import React from 'react';
-import { Clock, MapPin } from 'lucide-react';
-import { PHONE_DISPLAY, INSTAGRAM_URL, INSTAGRAM_HANDLE, OPENING_HOURS, SERVICES } from '../data/mockData';
-import { Logo, WhatsAppIcon, InstagramIcon } from './Brand';
+import { Mail, MapPin } from 'lucide-react';
+import {
+  PHONE_DISPLAY,
+  EMAIL,
+  INSTAGRAM_URL,
+  INSTAGRAM_HANDLE,
+  FACEBOOK_URL,
+  FOUNDED_YEAR,
+  SERVICES,
+  SECONDARY_SERVICE,
+} from '../data/mockData';
+import { Logo, WhatsAppIcon, InstagramIcon, FacebookIcon } from './Brand';
 import { waLink } from './ui';
 
-interface FooterProps {
-  onOpenWarrantyModal: () => void;
-}
+const socialClass =
+  'w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors';
 
-export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className="bg-ink text-white pt-20 pb-28 sm:pb-10">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
@@ -16,7 +24,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
           <div className="lg:col-span-4">
             <Logo tone="light" />
             <p className="mt-6 text-sm text-white/55 leading-relaxed max-w-xs">
-              Soluciones integrales en impermeabilización y control de humedad en Córdoba. Calidad garantizada.
+              Soluciones integrales en impermeabilización y control de humedad en Córdoba desde {FOUNDED_YEAR}. Calidad garantizada.
             </p>
             <div className="mt-6 flex gap-2">
               <a
@@ -24,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors"
+                className={socialClass}
               >
                 <WhatsAppIcon size={17} />
               </a>
@@ -33,9 +41,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors"
+                className={socialClass}
               >
                 <InstagramIcon size={17} />
+              </a>
+              <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={socialClass}>
+                <FacebookIcon size={17} />
               </a>
             </div>
           </div>
@@ -48,6 +59,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
                   <a href="#servicios" className="hover:text-white transition-colors">{s.title}</a>
                 </li>
               ))}
+              <li>
+                <a href="#servicios" className="hover:text-white transition-colors">{SECONDARY_SERVICE.title}</a>
+              </li>
             </ul>
           </div>
 
@@ -58,11 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
               <li><a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a></li>
               <li><a href="#zonas" className="hover:text-white transition-colors">Zonas</a></li>
               <li><a href="#preguntas" className="hover:text-white transition-colors">Preguntas</a></li>
-              <li>
-                <button onClick={onOpenWarrantyModal} className="hover:text-white transition-colors">
-                  Garantía
-                </button>
-              </li>
+              <li><a href="#garantia" className="hover:text-white transition-colors">Garantía</a></li>
             </ul>
           </div>
 
@@ -92,8 +102,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
               <li className="flex items-center gap-3">
                 <MapPin size={16} strokeWidth={1.8} className="shrink-0" /> Córdoba, Argentina
               </li>
-              <li className="flex items-center gap-3">
-                <Clock size={16} strokeWidth={1.8} className="shrink-0" /> {OPENING_HOURS}
+              <li>
+                <a href={`mailto:${EMAIL}`} className="flex items-center gap-3 hover:text-white transition-colors">
+                  <Mail size={16} strokeWidth={1.8} className="shrink-0" /> {EMAIL}
+                </a>
               </li>
             </ul>
           </div>

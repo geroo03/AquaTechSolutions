@@ -16,7 +16,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ onOpenDiagnostic
           <SectionHeader
             eyebrow="Cómo trabajamos"
             title="Cuatro pasos, sin vueltas"
-            description="Un proceso claro desde el primer mensaje hasta la entrega del certificado de garantía."
+            description="Un proceso claro, desde el primer mensaje hasta el trabajo terminado."
             center
           />
         </div>
@@ -60,7 +60,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ onOpenDiagnostic
               </div>
               <div>
                 <div className="font-headline text-lg font-bold">¿Tenés una gotera ahora mismo?</div>
-                <div className="text-sm text-white/60 mt-0.5">Atendemos filtraciones activas en Córdoba con prioridad.</div>
+                <div className="text-sm text-white/60 mt-0.5">Mandanos fotos por WhatsApp y te decimos cómo seguir.</div>
               </div>
             </div>
             <a
@@ -69,7 +69,7 @@ export const ProcessSection: React.FC<ProcessSectionProps> = ({ onOpenDiagnostic
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white text-ink text-sm font-semibold hover:bg-white/90 transition-colors shrink-0"
             >
-              <WhatsAppIcon size={17} /> Atención inmediata
+              <WhatsAppIcon size={17} /> Escribinos ahora
             </a>
           </div>
         </Reveal>

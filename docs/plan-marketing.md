@@ -21,14 +21,14 @@ Documento completo, para compartir con el dueño: https://claude.ai/code/artifac
 
 ## 3. Captación
 
-- **Oferta para que escriban**: "Inspección por fotos sin cargo".
-- **Referidos**: revisión anual sin cargo para quien recomiende a alguien que contrate.
+- **Oferta para que escriban**: "Mandanos fotos y te decimos qué tiene tu techo" (decir "sin cargo" solo si Martín lo confirma).
+- **Referidos**: un beneficio para quien recomiende a alguien que contrate (a definir con Martín).
 - **Clientes B2B**: administraciones de consorcios, countries, inmobiliarias y arquitectos.
 - **Gratis**: grupos de Facebook de barrios, Marketplace (servicios), perfil en Servidos y recontacto con clientes en septiembre y marzo.
 
 ## 4. Embudo
 
-Todos los canales (Instagram, Facebook, referidos, B2B, Google, la web) terminan en **un solo WhatsApp**, el del dueño. Pasos: responder en 15 min → pedir fotos, zona y m² → visita sin cargo → presupuesto en 24 h → trabajo con garantía → pedir reseña en Google.
+Todos los canales (Instagram, Facebook, referidos, B2B, Google, la web) terminan en **un solo WhatsApp**, el del dueño. Pasos: responder en 15 min → pedir fotos, zona y m² → visita → presupuesto → trabajo con garantía → pedir reseña en Google.
 
 ## 5. Medición
 

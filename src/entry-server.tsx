@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import App from './App';
-import { SERVICES, ZONES } from './data/mockData';
+import { SERVICES, SECONDARY_SERVICE } from './data/mockData';
 
 /** HTML de la página completa, para el pre-renderizado (scripts/prerender.mjs) */
 export function render() {
@@ -17,15 +17,18 @@ interface Site {
   name: string;
   description: string;
   telephone: string;
+  email: string;
+  foundingDate: string;
   city: string;
   region: string;
   country: string;
-  instagram: string;
+  areaServed: string;
+  sameAs: string[];
 }
 
 /**
- * Datos estructurados de negocio local para Google.
- * Solo datos confirmados: sin dirección exacta, horario ni reseñas hasta que el dueño los confirme.
+ * Datos estructurados de negocio local para Google, solo con datos confirmados.
+ * Sin calle (la dirección es la casa del dueño), sin horario ni reseñas hasta tenerlos.
  */
 export function jsonLd(site: Site) {
   return {
@@ -36,6 +39,8 @@ export function jsonLd(site: Site) {
     description: site.description,
     url: site.url,
     telephone: site.telephone,
+    email: site.email,
+    foundingDate: site.foundingDate,
     image: `${site.url}og-image.png`,
     logo: `${site.url}logo-aquatech.png`,
     slogan: 'Impermeabilizaciones que perduran',
@@ -45,14 +50,14 @@ export function jsonLd(site: Site) {
       addressRegion: site.region,
       addressCountry: site.country,
     },
-    areaServed: ZONES.filter((z) => !z.name.startsWith('Toda')).map((z) => ({ '@type': 'City', name: z.name })),
-    sameAs: [site.instagram],
+    areaServed: site.areaServed,
+    sameAs: site.sameAs,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Servicios de impermeabilización',
-      itemListElement: SERVICES.map((s) => ({
+      itemListElement: [...SERVICES.map((s) => s.title), SECONDARY_SERVICE.title].map((name) => ({
         '@type': 'Offer',
-        itemOffered: { '@type': 'Service', name: s.title, description: s.shortDesc },
+        itemOffered: { '@type': 'Service', name },
       })),
     },
   };

@@ -28,6 +28,7 @@ jobs:
       - run: npm run build
         env:
           # Analítica opcional: se cargan en Settings → Secrets and variables → Actions → Variables
+          VITE_CF_BEACON_TOKEN: ${{ vars.VITE_CF_BEACON_TOKEN }}
           VITE_PLAUSIBLE_DOMAIN: ${{ vars.VITE_PLAUSIBLE_DOMAIN }}
           VITE_GA_ID: ${{ vars.VITE_GA_ID }}
       - uses: actions/upload-pages-artifact@v3

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Clock } from 'lucide-react';
-import { PHONE_DISPLAY, OPENING_HOURS } from '../data/mockData';
+import { Mail } from 'lucide-react';
+import { PHONE_DISPLAY, EMAIL } from '../data/mockData';
 import { LogoMark, WhatsAppIcon } from './Brand';
 import { Eyebrow, Reveal, waLink } from './ui';
 
@@ -20,7 +20,7 @@ export const CallToAction: React.FC = () => {
           Escribinos antes de la próxima tormenta.
         </h2>
         <p className="mt-6 text-base sm:text-lg text-graphite max-w-2xl mx-auto leading-relaxed">
-          Evitá daños en cielorrasos, muebles e instalación eléctrica. El presupuesto es sin cargo y sin compromiso.
+          Evitá daños en cielorrasos, muebles e instalación eléctrica. Mandanos fotos del problema y te asesoramos.
         </p>
 
         <a
@@ -33,10 +33,13 @@ export const CallToAction: React.FC = () => {
           WhatsApp {PHONE_DISPLAY}
         </a>
 
-        <div className="mt-6 flex items-center justify-center gap-2 text-[13px] font-medium text-graphite">
-          <Clock size={15} strokeWidth={1.8} />
-          {OPENING_HOURS}
-        </div>
+        <a
+          href={`mailto:${EMAIL}`}
+          className="mt-6 flex w-fit mx-auto items-center justify-center gap-2 text-[13px] font-medium text-graphite hover:text-ink transition-colors"
+        >
+          <Mail size={15} strokeWidth={1.8} />
+          {EMAIL}
+        </a>
       </Reveal>
     </section>
   );

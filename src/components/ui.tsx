@@ -2,8 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { PHONE_NUMBER } from '../data/mockData';
 
-/** Link de WhatsApp con mensaje precargado */
-export const waLink = (text: string) => `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`;
+/**
+ * Link de WhatsApp con mensaje precargado. Cada botón usa un texto distinto y todos terminan con
+ * "(Enviado desde la web)": así el dueño puede contar en su WhatsApp cuántas consultas llegan
+ * de la web y desde qué botón, aunque la analítica no registre eventos.
+ */
+export const waLink = (text: string) =>
+  `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(`${text}\n\n(Enviado desde la web)`)}`;
 
 /** Etiqueta superior de sección, con la línea fina del logo */
 export const Eyebrow: React.FC<{ children: React.ReactNode; tone?: 'dark' | 'light'; center?: boolean }> = ({

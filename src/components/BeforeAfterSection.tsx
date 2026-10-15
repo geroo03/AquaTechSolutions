@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { ArrowUpRight, ChevronsLeftRight, Check, ChevronDown } from 'lucide-react';
-import { CASE_STUDIES } from '../data/mockData';
+import { ArrowUpRight, ChevronsLeftRight } from 'lucide-react';
+import { CASE_STUDIES, FOUNDED_YEAR, SQUARE_METERS } from '../data/mockData';
 import { Reveal, SectionHeader, waLink } from './ui';
 
 interface ComparisonSliderProps {
@@ -77,7 +77,11 @@ const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImg, afterImg
 };
 
 export const BeforeAfterSection: React.FC = () => {
-  const [expandedCase, setExpandedCase] = useState<string | null>(null);
+  const stats = [
+    ['Desde', String(FOUNDED_YEAR), 'Impermeabilizando en Córdoba'],
+    ['Trabajados', `+${SQUARE_METERS}`, 'De techos, terrazas y superficies'],
+    ['Garantía', 'Hasta 10 años', 'Según el sistema'],
+  ];
 
   return (
     <section className="py-24 lg:py-32 bg-white" id="trabajos">
@@ -86,87 +90,67 @@ export const BeforeAfterSection: React.FC = () => {
           <SectionHeader
             eyebrow="Trabajos realizados"
             title="Resultados que se ven: antes y después"
-            description="Deslizá cada imagen para comparar el estado inicial con el trabajo terminado."
+            description="Deslizá la imagen para comparar el estado inicial con el trabajo terminado."
           />
         </div>
 
+        <Reveal>
+          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-px rounded-3xl overflow-hidden bg-line ring-1 ring-line mb-6">
+            {stats.map(([label, value, text]) => (
+              <div key={label} className="bg-white p-6 sm:p-7">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">{label}</dt>
+                <dd className="mt-2 font-headline text-3xl sm:text-[34px] font-bold text-ink leading-none">{value}</dd>
+                <dd className="mt-2 text-[13.5px] text-muted">{text}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
+
         <div className="space-y-6">
-          {CASE_STUDIES.map((item) => {
-            const isOpen = expandedCase === item.id;
-            return (
-              <Reveal key={item.id}>
-                <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 p-4 sm:p-6 lg:p-8 rounded-[28px] bg-paper ring-1 ring-line">
-                  <div className="lg:col-span-7">
-                    <ComparisonSlider
-                      beforeImg={item.beforeImg}
-                      afterImg={item.afterImg}
-                      beforeAlt={item.beforeCaption}
-                      afterAlt={item.afterCaption}
-                    />
+          {CASE_STUDIES.map((item) => (
+            <Reveal key={item.id}>
+              <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 p-4 sm:p-6 lg:p-8 rounded-[28px] bg-paper ring-1 ring-line">
+                <div className="lg:col-span-7">
+                  <ComparisonSlider
+                    beforeImg={item.beforeImg}
+                    afterImg={item.afterImg}
+                    beforeAlt={item.beforeAlt}
+                    afterAlt={item.afterAlt}
+                  />
+                  <p className="mt-3 px-1 text-[12px] text-muted">Imágenes ilustrativas: pronto, las fotos reales de la obra.</p>
+                </div>
+
+                <div className="lg:col-span-5 flex flex-col px-2 pb-2 lg:px-0 lg:py-2">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted mb-3">{item.location}</div>
+                  <h3 className="font-headline text-2xl sm:text-[28px] font-bold text-ink leading-tight mb-6">{item.title}</h3>
+
+                  <dl className="grid grid-cols-1 gap-px rounded-2xl overflow-hidden bg-line ring-1 ring-line mb-8">
+                    {[
+                      ['Sistema', item.system],
+                      ['Garantía', item.warranty],
+                    ].map(([label, value]) => (
+                      <div key={label} className="bg-white p-4">
+                        <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{label}</dt>
+                        <dd className="mt-1 text-sm font-semibold text-ink leading-snug">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <div className="mt-auto">
+                    <a
+                      href={waLink('Hola AquaTech, quiero un trabajo como el del techo del country de zona sur')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-1.5 h-11 px-5 rounded-full bg-ink text-white text-[13px] font-semibold hover:bg-graphite transition-colors"
+                    >
+                      Quiero algo así
+                      <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </a>
                   </div>
-
-                  <div className="lg:col-span-5 flex flex-col px-2 pb-2 lg:px-0 lg:py-2">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted mb-3">
-                      <span className="text-ink whitespace-nowrap">Obra {item.number}</span>
-                      <span className="h-px w-6 bg-silver" />
-                      <span>{item.location}</span>
-                    </div>
-
-                    <h3 className="font-headline text-2xl sm:text-[28px] font-bold text-ink leading-tight mb-4">
-                      {item.title}
-                    </h3>
-                    <p className="text-[15px] text-muted leading-relaxed mb-7">{item.system}</p>
-
-                    <dl className="grid grid-cols-2 gap-px rounded-2xl overflow-hidden bg-line ring-1 ring-line mb-6">
-                      {[
-                        ['Superficie', item.surface],
-                        ['Garantía', item.warranty],
-                        ['Tiempo de obra', item.time],
-                        ['Resultado', item.status],
-                      ].map(([label, value]) => (
-                        <div key={label} className="bg-white p-4">
-                          <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{label}</dt>
-                          <dd className="mt-1 text-sm font-semibold text-ink">{value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-
-                    {isOpen && (
-                      <ul className="space-y-2.5 mb-6 animate-fade-in">
-                        {item.details.map((detail) => (
-                          <li key={detail} className="flex items-start gap-2.5 text-[13.5px] text-graphite leading-snug">
-                            <Check size={15} strokeWidth={2.2} className="text-ink shrink-0 mt-0.5" />
-                            <span>{detail}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3">
-                      <a
-                        href={waLink(`Hola AquaTech, quiero un trabajo similar al de ${item.title}`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-1.5 h-11 px-5 rounded-full bg-ink text-white text-[13px] font-semibold hover:bg-graphite transition-colors"
-                      >
-                        Quiero algo así
-                        <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => setExpandedCase(isOpen ? null : item.id)}
-                        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted hover:text-ink transition-colors"
-                        aria-expanded={isOpen}
-                      >
-                        {isOpen ? 'Ocultar el paso a paso' : 'Ver el paso a paso'}
-                        <ChevronDown size={15} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              </Reveal>
-            );
-          })}
+                </div>
+              </article>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

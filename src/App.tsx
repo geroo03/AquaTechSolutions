@@ -6,7 +6,6 @@ import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
 import { WarrantySection } from './components/WarrantySection';
 import { CoverageZonesSection } from './components/CoverageZonesSection';
-import { TestimonialsSection } from './components/TestimonialsSection';
 import { FaqSection } from './components/FaqSection';
 import { CallToAction } from './components/CallToAction';
 import { Footer } from './components/Footer';
@@ -17,77 +16,34 @@ const QuoteCalculatorModal = lazy(() =>
   import('./components/QuoteCalculatorModal').then((m) => ({ default: m.QuoteCalculatorModal })),
 );
 const DiagnosticModal = lazy(() => import('./components/DiagnosticModal').then((m) => ({ default: m.DiagnosticModal })));
-const WarrantyModal = lazy(() => import('./components/WarrantyModal').then((m) => ({ default: m.WarrantyModal })));
 
 export default function App() {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
-  const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
   const [quoteInitialService, setQuoteInitialService] = useState<string | undefined>(undefined);
 
-  const handleOpenQuoteWithService = (serviceName: string) => {
-    setQuoteInitialService(serviceName);
+  const openQuote = (service?: string) => {
+    setQuoteInitialService(service);
     setIsQuoteOpen(true);
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Fixed Header */}
-      <Header 
-        onOpenQuote={() => {
-          setQuoteInitialService(undefined);
-          setIsQuoteOpen(true);
-        }}
-        onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
-      />
+      <Header onOpenQuote={() => openQuote()} onOpenDiagnostic={() => setIsDiagnosticOpen(true)} />
 
-      {/* Main Content Area */}
       <main className="w-full flex-1">
-        {/* 1. Hero Section */}
-        <Hero 
-          onOpenQuote={() => {
-            setQuoteInitialService(undefined);
-            setIsQuoteOpen(true);
-          }}
-        />
-
-        {/* 2. Services Section */}
-        <ServicesSection 
-          onSelectServiceForQuote={handleOpenQuoteWithService}
-        />
-
-        {/* 3. Before and After Case Studies with Comparison Slider */}
+        <Hero onOpenQuote={() => openQuote()} />
+        <ServicesSection onSelectServiceForQuote={openQuote} />
         <BeforeAfterSection />
-
-        {/* 4. How We Work Process */}
-        <ProcessSection 
-          onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
-        />
-
-        {/* 5. Written Warranty & Certificate Preview */}
-        <WarrantySection 
-          onOpenWarrantyModal={() => setIsWarrantyOpen(true)}
-        />
-
-        {/* 6. Coverage Zones & Regional Presence */}
+        <ProcessSection onOpenDiagnostic={() => setIsDiagnosticOpen(true)} />
+        <WarrantySection />
         <CoverageZonesSection />
-
-        {/* 7. Client Reviews & Testimonials */}
-        <TestimonialsSection />
-
-        {/* 8. Frequently Asked Questions Accordion */}
+        {/* Testimonios: vuelven cuando haya reseñas reales en Google */}
         <FaqSection />
-
-        {/* 9. Final High-Conversion CTA */}
         <CallToAction />
       </main>
 
-      {/* Footer */}
-      <Footer 
-        onOpenWarrantyModal={() => setIsWarrantyOpen(true)}
-      />
-
-      {/* Sticky Floating WhatsApp Assistant */}
+      <Footer />
       <FloatingWhatsApp />
 
       {/* Modales (solo se montan abiertos) */}
@@ -96,7 +52,6 @@ export default function App() {
           <QuoteCalculatorModal isOpen onClose={() => setIsQuoteOpen(false)} initialService={quoteInitialService} />
         )}
         {isDiagnosticOpen && <DiagnosticModal isOpen onClose={() => setIsDiagnosticOpen(false)} />}
-        {isWarrantyOpen && <WarrantyModal isOpen onClose={() => setIsWarrantyOpen(false)} />}
       </Suspense>
     </div>
   );

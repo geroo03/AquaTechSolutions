@@ -1,6 +1,6 @@
 import React from 'react';
-import { ArrowDown, Calculator, ClipboardCheck, ShieldCheck, MapPin } from 'lucide-react';
-import { ASSETS } from '../data/mockData';
+import { ArrowDown, Calculator, Award, Ruler, ShieldCheck } from 'lucide-react';
+import { ASSETS, FOUNDED_YEAR, SQUARE_METERS } from '../data/mockData';
 import { LogoMark, WhatsAppIcon } from './Brand';
 import { waLink } from './ui';
 
@@ -9,9 +9,9 @@ interface HeroProps {
 }
 
 const BENEFITS = [
-  { icon: ClipboardCheck, title: 'Presupuesto sin cargo', text: 'Respuesta en el día' },
-  { icon: ShieldCheck, title: 'Garantía escrita', text: 'En cada trabajo terminado' },
-  { icon: MapPin, title: 'Toda la provincia', text: 'Capital, Sierras Chicas y Punilla' },
+  { icon: Award, title: `Desde ${FOUNDED_YEAR}`, text: 'Impermeabilizando en Córdoba' },
+  { icon: Ruler, title: `+${SQUARE_METERS}`, text: 'Trabajados' },
+  { icon: ShieldCheck, title: 'Hasta 10 años de garantía', text: 'Según el sistema' },
 ];
 
 export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
@@ -42,7 +42,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           <div className="flex items-center gap-3 mb-7">
             <span className="h-px w-10 bg-white/60" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/75">
-              Córdoba · Argentina
+              Córdoba · Desde {FOUNDED_YEAR}
             </span>
           </div>
 
@@ -55,8 +55,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           </h1>
 
           <p className="mt-7 text-base sm:text-lg text-white/70 max-w-xl leading-relaxed">
-            Techos, terrazas, humedad, tanques y piletas. Soluciones definitivas con materiales de primera línea y
-            garantía escrita en cada trabajo.
+            Techos, terrazas, humedad, filtraciones, tanques y piletas. Soluciones integrales en impermeabilización y
+            control de humedad, con garantía según el sistema.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-3">

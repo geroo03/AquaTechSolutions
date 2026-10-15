@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { MapPin, CalendarCheck } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { ZONES } from '../data/mockData';
 import { ZoneItem } from '../types';
-import { LogoMark } from './Brand';
+import { LogoMark, WhatsAppIcon } from './Brand';
 import { Reveal, SectionHeader, waLink } from './ui';
 
 /** Mapa esquemático de cobertura: anillos de distancia desde Córdoba Capital y un punto por localidad */
@@ -56,7 +56,7 @@ const CoverageMap: React.FC<{ selected: ZoneItem; onSelect: (z: ZoneItem) => voi
             )}
             <span
               className={`absolute left-1/2 -translate-x-1/2 top-full mt-1.5 px-1.5 py-0.5 rounded bg-ink whitespace-nowrap text-[10.5px] font-semibold tracking-wide transition-colors ${
-                active ? 'text-white' : 'hidden sm:block text-white/45 group-hover:text-white/80'
+                active ? 'text-white' : 'text-white/55 group-hover:text-white/80'
               }`}
             >
               {z.name}
@@ -81,8 +81,8 @@ export const CoverageZonesSection: React.FC = () => {
         <div>
           <SectionHeader
             eyebrow="Zonas de cobertura"
-            title="En toda la provincia de Córdoba"
-            description="Base en Córdoba Capital y visitas técnicas en Gran Córdoba, Sierras Chicas y Punilla."
+            title="Córdoba Capital y la provincia"
+            description="Hicimos obras en Córdoba Capital, en countries de zona sur y en Jesús María. Trabajamos en toda la provincia de Córdoba."
           />
 
           <Reveal className="mt-8 flex flex-wrap gap-2">
@@ -104,32 +104,26 @@ export const CoverageZonesSection: React.FC = () => {
 
           <Reveal className="mt-6">
             <div className="p-6 rounded-3xl bg-paper ring-1 ring-line">
-              <div className="flex items-start justify-between gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <MapPin size={20} strokeWidth={1.7} className="text-ink" />
-                  <div>
-                    <div className="font-headline text-lg font-bold text-ink leading-tight">{selectedZone.name}</div>
-                    <div className="text-[13px] text-muted">{selectedZone.area}</div>
-                  </div>
+              <div className="flex items-center gap-3 mb-5">
+                <MapPin size={20} strokeWidth={1.7} className="text-ink" />
+                <div>
+                  <div className="font-headline text-lg font-bold text-ink leading-tight">{selectedZone.name}</div>
+                  <div className="text-[13px] text-muted">{selectedZone.detail}</div>
                 </div>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink bg-white ring-1 ring-line px-3 py-1 rounded-full whitespace-nowrap">
-                  Visita sin cargo
-                </span>
               </div>
-              <div className="text-sm text-graphite mb-5">{selectedZone.response}</div>
               <a
-                href={waLink(`Hola AquaTech, quiero coordinar una visita técnica en ${selectedZone.name}`)}
+                href={waLink(`Hola AquaTech, quiero consultar por un trabajo en ${selectedZone.name}`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-full bg-ink text-white text-sm font-semibold hover:bg-graphite transition-colors"
               >
-                <CalendarCheck size={17} strokeWidth={1.8} /> Coordinar visita en {selectedZone.name}
+                <WhatsAppIcon size={17} /> Consultar por {selectedZone.name}
               </a>
             </div>
           </Reveal>
 
           <p className="mt-5 text-[13px] text-muted">
-            ¿Tu localidad no aparece? Escribinos igual: coordinamos visitas en toda la provincia.
+            ¿Estás en otra localidad? Escribinos con tu barrio o ciudad y te confirmamos.
           </p>
         </div>
 

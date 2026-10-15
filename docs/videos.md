@@ -68,7 +68,7 @@ ESTRUCTURA
 2. Desarrollo según la plantilla (ANTES → barrido → DESPUÉS + barrio y
    sistema · etapas numeradas · pregunta + 3 claves · recorrido de la obra).
 3. Cierre de 2.5 s: fondo negro, logo AquaTech (public/logo-aquatech.png),
-   "Presupuesto sin cargo", "WhatsApp 351 613-4658" y "Garantía escrita".
+   "Desde 2008", "WhatsApp 351 613-4658" y "Garantía hasta 10 años".
 
 CÓMO TRABAJAR
 1. Listá qué muestra cada foto y en qué orden la vas a usar. Si falta algo
