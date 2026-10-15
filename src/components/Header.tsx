@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
       }`}
     >
       <div className="h-[72px] max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex items-center justify-between gap-6">
-        <a href="#inicio" aria-label="AquaTech Solutions, inicio" className="shrink-0">
+        <a href="#inicio" className="shrink-0">
           <Logo tone={solid ? 'dark' : 'light'} />
         </a>
 

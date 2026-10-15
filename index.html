@@ -1,23 +1,35 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-AR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AquaTech Solutions — Impermeabilizaciones en Córdoba</title>
-    <meta name="description" content="Impermeabilización de techos, terrazas, humedad, tanques y piletas en Córdoba. Presupuesto sin cargo y garantía escrita en cada trabajo." />
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESCRIPTION%" />
     <meta name="theme-color" content="#0b0b0c" />
-    <meta property="og:title" content="AquaTech Solutions — Impermeabilizaciones que perduran" />
-    <meta property="og:description" content="Techos, terrazas y humedad en Córdoba. Presupuesto sin cargo y garantía escrita." />
+    <link rel="canonical" href="%SITE_URL%" />
+
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="./logo-aquatech.png" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="AquaTech Solutions" />
+    <meta property="og:url" content="%SITE_URL%" />
+    <meta property="og:title" content="AquaTech Solutions — Impermeabilizaciones que perduran" />
+    <meta property="og:description" content="Techos, terrazas y humedad en Córdoba. Presupuesto sin cargo por WhatsApp y garantía escrita." />
+    <meta property="og:image" content="%SITE_URL%og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AquaTech Solutions — Impermeabilizaciones que perduran" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="apple-touch-icon" href="./logo-aquatech.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preload" as="image" href="./images/hero.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- Marca que hay JavaScript: recién ahí se ocultan los bloques que aparecen al hacer scroll -->
+    <script>document.documentElement.classList.add('js')</script>
+    <!--jsonld-->
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><!--app--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

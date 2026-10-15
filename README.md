@@ -15,7 +15,8 @@ El contexto completo para trabajar con Claude Code está en [CLAUDE.md](CLAUDE.m
 ## Etapas
 
 1. **Demo para presentar** — hecha: rediseño con la marca, mobile y deploy automático.
+   - **Parte técnica de producción** — hecha: pre-render, SEO local técnico, vista previa para compartir, rendimiento, accesibilidad y analítica lista para activar.
 2. **Datos reales** — reemplazar fotos, testimonios, garantías, precios y horarios de ejemplo (lista en [docs/negocio-y-marca.md](docs/negocio-y-marca.md)).
 3. **Presencia en Google** — crear la ficha de Google Business, enlazarla desde la web y mostrar las reseñas reales.
-4. **Dominio propio** — comprar el dominio (por ejemplo, `.com.ar`), apuntarlo a la web y agregar SEO local (metadatos y schema `LocalBusiness`).
-5. **Contenido y anuncios** — reels semanales ([docs/videos.md](docs/videos.md)) y Meta Ads hacia WhatsApp ([docs/plan-marketing.md](docs/plan-marketing.md)).
+4. **Dominio propio** — comprar el dominio (por ejemplo, `.com.ar`) y conectarlo (pasos en [CLAUDE.md](CLAUDE.md) → "Pasar al dominio propio"), alta en Google Search Console y activar la analítica.
+5. **Difusión orgánica** — reels semanales ([docs/videos.md](docs/videos.md)), Google Business, grupos de barrio, B2B y referidos ([docs/plan-marketing.md](docs/plan-marketing.md)). Sin anuncios pagos.

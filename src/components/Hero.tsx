@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { ArrowDown, Calculator, ClipboardCheck, ShieldCheck, MapPin } from 'lucide-react';
 import { ASSETS } from '../data/mockData';
 import { LogoMark, WhatsAppIcon } from './Brand';
@@ -20,7 +19,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
     <section id="inicio" className="relative isolate overflow-hidden bg-ink text-white">
       {/* Foto de obra en blanco y negro, con degradé para que el texto siempre se lea */}
       <div className="absolute inset-0 -z-10">
-        <img src={ASSETS.heroBg} alt="" className="w-full h-full object-cover grayscale opacity-45" />
+        <img
+          src={ASSETS.heroBg}
+          alt=""
+          width={512}
+          height={286}
+          fetchPriority="high"
+          className="w-full h-full object-cover grayscale opacity-45"
+        />
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/60" />
       </div>
@@ -32,12 +38,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
       />
 
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-36 pb-16 sm:pt-44 lg:pt-48 lg:pb-24">
-        <motion.div
-          className="max-w-3xl"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-7">
             <span className="h-px w-10 bg-white/60" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/75">
@@ -76,14 +77,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               Cotizar online
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="mt-16 lg:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px rounded-2xl overflow-hidden bg-white/10 ring-1 ring-white/10"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div className="mt-16 lg:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px rounded-2xl overflow-hidden bg-white/10 ring-1 ring-white/10">
           {BENEFITS.map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex items-center gap-4 p-5 sm:p-6 bg-ink/70 backdrop-blur-md">
               <Icon size={22} strokeWidth={1.6} className="text-white/80 shrink-0" />
@@ -93,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
 
         <a
           href="#servicios"

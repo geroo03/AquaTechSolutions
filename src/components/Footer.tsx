@@ -41,7 +41,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
           </div>
 
           <div className="lg:col-span-3">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Servicios</h4>
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60 mb-5">Servicios</h2>
             <ul className="space-y-3 text-sm text-white/75">
               {SERVICES.map((s) => (
                 <li key={s.id}>
@@ -52,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
           </div>
 
           <div className="lg:col-span-2">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Empresa</h4>
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60 mb-5">Empresa</h2>
             <ul className="space-y-3 text-sm text-white/75">
               <li><a href="#trabajos" className="hover:text-white transition-colors">Trabajos</a></li>
               <li><a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a></li>
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
           </div>
 
           <div className="lg:col-span-3">
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/45 mb-5">Contacto</h4>
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60 mb-5">Contacto</h2>
             <ul className="space-y-4 text-sm text-white/75">
               <li>
                 <a
@@ -99,7 +99,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenWarrantyModal }) => {
           </div>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/40">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-white/60">
           <p>© {new Date().getFullYear()} AquaTech Solutions. Todos los derechos reservados.</p>
           <p className="tracking-[0.2em] uppercase text-[11px]">Impermeabilizaciones que perduran</p>
         </div>

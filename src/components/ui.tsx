@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { motion } from 'motion/react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { PHONE_NUMBER } from '../data/mockData';
 
@@ -51,22 +50,44 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ eyebrow, title, de
   </Reveal>
 );
 
-/** Aparición suave al entrar en pantalla */
+/**
+ * Aparición suave al entrar en pantalla. Solo se oculta si hay JavaScript
+ * (clase `js` en <html>, ver index.html), así el HTML pre-renderizado se lee igual sin JS.
+ */
 export const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({
   children,
-  className,
+  className = '',
   delay = 0,
-}) => (
-  <motion.div
-    className={className}
-    initial={{ opacity: 0, y: 18 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '0px 0px -60px 0px' }}
-    transition={{ duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] }}
-  >
-    {children}
-  </motion.div>
-);
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) return setShown(true);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -60px 0px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`reveal ${shown ? 'is-in' : ''} ${className}`}
+      style={delay ? { transitionDelay: `${delay}s` } : undefined}
+    >
+      {children}
+    </div>
+  );
+};
 
 interface ModalProps {
   isOpen: boolean;
@@ -99,6 +120,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, maxWidt
       role="dialog"
       aria-modal="true"
       aria-label={label}
+      data-origen={label}
     >
       <div
         className={`relative w-full ${maxWidth} max-h-[92vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl animate-pop-in`}

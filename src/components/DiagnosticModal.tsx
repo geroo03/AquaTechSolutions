@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, ImagePlus } from 'lucide-react';
 import { WhatsAppIcon } from './Brand';
 import { Modal, Select, waLink } from './ui';
+import { track } from '../analytics';
 
 interface DiagnosticModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({ isOpen, onClos
 - Inmueble: ${property}
 - Barrio o localidad: ${place || 'a confirmar'}
 Ahora les mando las fotos.`;
+    track('WhatsApp', { origen: 'Diagnóstico por fotos' });
     window.open(waLink(msg), '_blank', 'noopener');
     onClose();
   };

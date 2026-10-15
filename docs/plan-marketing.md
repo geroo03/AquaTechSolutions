@@ -4,7 +4,7 @@ Documento completo, para compartir con el dueño: https://claude.ai/code/artifac
 
 **Objetivo a 90 días:** 30+ consultas por mes por WhatsApp, 4 a 6 trabajos cerrados por mes desde los canales digitales, 15+ reseñas en Google y ~500 seguidores de Córdoba. La métrica que manda son las **consultas por WhatsApp**, no los likes.
 
-**Presupuesto de anuncios:** US$50–100 por mes (desde el mes 2).
+**Difusión 100% orgánica** (decisión de oct 2026): sin Meta Ads ni Google Ads. El documento original mencionaba anuncios pagos; esa parte quedó descartada.
 
 ## 1. Arreglos rápidos (semana 1, sin costo)
 
@@ -21,7 +21,6 @@ Documento completo, para compartir con el dueño: https://claude.ai/code/artifac
 
 ## 3. Captación
 
-- **Meta Ads**: objetivo Mensajes → WhatsApp, Córdoba + 25 km, de 30 a 65 años, US$2–3 por día con 2 o 3 anuncios rotando; subir el presupuesto en las semanas de tormentas.
 - **Oferta para que escriban**: "Inspección por fotos sin cargo".
 - **Referidos**: revisión anual sin cargo para quien recomiende a alguien que contrate.
 - **Clientes B2B**: administraciones de consorcios, countries, inmobiliarias y arquitectos.
@@ -29,12 +28,12 @@ Documento completo, para compartir con el dueño: https://claude.ai/code/artifac
 
 ## 4. Embudo
 
-Todos los canales (Instagram, Facebook, anuncios, referidos, Google) terminan en **un solo WhatsApp**, el del dueño. Pasos: responder en 15 min → pedir fotos, zona y m² → visita sin cargo → presupuesto en 24 h → trabajo con garantía → pedir reseña en Google.
+Todos los canales (Instagram, Facebook, referidos, B2B, Google, la web) terminan en **un solo WhatsApp**, el del dueño. Pasos: responder en 15 min → pedir fotos, zona y m² → visita sin cargo → presupuesto en 24 h → trabajo con garantía → pedir reseña en Google.
 
 ## 5. Medición
 
-Planilla con una fila por consulta (fecha, barrio, canal, servicio, m², presupuesto, estado) y siempre preguntar "¿Cómo nos conociste?". Revisión mensual: consultas por canal, tasa de cierre (meta 15–20%), costo por conversación en Meta (menos de US$2) y reseñas nuevas.
+Planilla con una fila por consulta (fecha, barrio, canal, servicio, m², presupuesto, estado) y siempre preguntar "¿Cómo nos conociste?". Revisión mensual: consultas por canal, tasa de cierre (meta 15–20%), clics a WhatsApp desde la web (analítica) y reseñas nuevas.
 
 ## Cronograma
 
-Semana 1: arreglos rápidos → semanas 2 a 4: contenido y primeros videos → mes 2: anuncios y B2B → mes 3: optimizar con datos.
+Semana 1: arreglos rápidos → semanas 2 a 4: contenido y primeros videos → mes 2: B2B, grupos y referidos → mes 3: optimizar con datos.

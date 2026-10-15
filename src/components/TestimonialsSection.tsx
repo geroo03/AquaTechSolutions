@@ -23,7 +23,7 @@ export const TestimonialsSection: React.FC = () => {
             <Reveal key={review.id} delay={(i % 3) * 0.06} className="h-full">
               <figure className="h-full flex flex-col p-7 sm:p-8 rounded-3xl bg-white ring-1 ring-line">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex gap-0.5" aria-label={`${review.rating} de 5 estrellas`}>
+                  <div className="flex gap-0.5" role="img" aria-label={`${review.rating} de 5 estrellas`}>
                     {Array.from({ length: review.rating }).map((_, s) => (
                       <Star key={s} size={16} className="fill-ink text-ink" />
                     ))}

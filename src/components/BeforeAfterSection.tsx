@@ -49,10 +49,12 @@ const ComparisonSlider: React.FC<ComparisonSliderProps> = ({ beforeImg, afterImg
       aria-valuemax={100}
       aria-valuenow={Math.round(pos)}
     >
-      <img src={afterImg} alt={afterAlt} className="absolute inset-0 w-full h-full object-cover pointer-events-none" draggable={false} />
+      <img src={afterImg} alt={afterAlt} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover pointer-events-none" draggable={false} />
       <img
         src={beforeImg}
         alt={beforeAlt}
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         draggable={false}

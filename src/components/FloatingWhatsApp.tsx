@@ -28,7 +28,7 @@ export const FloatingWhatsApp: React.FC = () => {
   }, [open]);
 
   return (
-    <div ref={ref} className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
+    <div ref={ref} data-origen="flotante" className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
       {open && (
         <div className="w-[min(320px,calc(100vw-40px))] bg-white rounded-3xl shadow-[0_30px_60px_-20px_rgba(11,11,12,0.45)] ring-1 ring-line overflow-hidden animate-pop-in">
           <div className="flex items-center justify-between px-5 py-4 bg-ink text-white">

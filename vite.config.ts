@@ -1,24 +1,47 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
-import {defineConfig} from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
+import site from './site.config.json' with { type: 'json' };
 
-export default defineConfig(() => {
+/**
+ * Completa los datos del sitio en index.html (%SITE_URL%, %TITLE%, %DESCRIPTION%)
+ * e inyecta la analítica solo si está configurada:
+ *   VITE_PLAUSIBLE_DOMAIN=aquatech.com.ar  → Plausible (sin cookies)
+ *   VITE_GA_ID=G-XXXXXXX                   → Google Analytics 4
+ */
+function siteHtml(env: Record<string, string>): Plugin {
+  const analytics: string[] = [];
+  if (env.VITE_PLAUSIBLE_DOMAIN) {
+    analytics.push(
+      `<script defer data-domain="${env.VITE_PLAUSIBLE_DOMAIN}" src="https://plausible.io/js/script.js"></script>`,
+      `<script>window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}</script>`,
+    );
+  }
+  if (env.VITE_GA_ID) {
+    analytics.push(
+      `<script async src="https://www.googletagmanager.com/gtag/js?id=${env.VITE_GA_ID}"></script>`,
+      `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${env.VITE_GA_ID}');</script>`,
+    );
+  }
   return {
-    // Rutas relativas: la demo funciona igual en GitHub Pages (/AquaTechSolutions/) y en local
+    name: 'aquatech-site-html',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html) =>
+        html
+          .replaceAll('%SITE_URL%', site.url)
+          .replaceAll('%TITLE%', site.title)
+          .replaceAll('%DESCRIPTION%', site.description)
+          .replace('</head>', `${analytics.join('\n    ')}\n  </head>`),
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  return {
+    // Rutas relativas: la web funciona igual en GitHub Pages (/AquaTechSolutions/) y con dominio propio
     base: './',
-    plugins: [react(), tailwindcss()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      },
-    },
-    server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-    },
+    plugins: [react(), tailwindcss(), siteHtml(env)],
   };
 });

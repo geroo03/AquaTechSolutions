@@ -15,13 +15,13 @@ import { ServiceItem, CaseStudy, FaqItem, ReviewItem, ZoneItem } from '../types'
 const img = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
 
 export const ASSETS = {
-  heroBg: img('hero.jpg'),
-  case1Before: img('case1-before.jpg'),
-  case1After: img('case1-after.jpg'),
-  case2Before: img('case2-before.jpg'),
-  case2After: img('case2-after.jpg'),
-  case3Before: img('case3-before.jpg'),
-  case3After: img('case3-after.jpg'),
+  heroBg: img('hero.webp'),
+  case1Before: img('case1-before.webp'),
+  case1After: img('case1-after.webp'),
+  case2Before: img('case2-before.webp'),
+  case2After: img('case2-after.webp'),
+  case3Before: img('case3-before.webp'),
+  case3After: img('case3-after.webp'),
 };
 
 export const PHONE_NUMBER = '5493516134658';

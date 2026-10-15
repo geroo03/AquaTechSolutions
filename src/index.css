@@ -11,8 +11,8 @@
   --color-paper: #f6f6f7;
   --color-mist: #eeeef0;
 
-  --font-headline: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-headline: 'Montserrat Variable', 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --animate-fade-in: fade-in 0.25s ease-out both;
   --animate-pop-in: pop-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -68,7 +68,41 @@ input[type='range'] {
   accent-color: var(--color-ink);
 }
 
+/* Aparición al hacer scroll (ver <Reveal>). Solo oculta si hay JS. */
+.reveal {
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+/* Imprimir: si hay un modal abierto (certificado), sale solo el modal */
+@media print {
+  body:has([role='dialog']) #root > div > :not([role='dialog']) {
+    display: none !important;
+  }
+  [role='dialog'] {
+    position: static !important;
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+  [role='dialog'] > div {
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+  }
+  [role='dialog'] button,
+  [role='dialog'] a {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .js .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ServicesSection } from './components/ServicesSection';
@@ -11,9 +11,13 @@ import { FaqSection } from './components/FaqSection';
 import { CallToAction } from './components/CallToAction';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
-import { QuoteCalculatorModal } from './components/QuoteCalculatorModal';
-import { DiagnosticModal } from './components/DiagnosticModal';
-import { WarrantyModal } from './components/WarrantyModal';
+
+// Los modales se descargan recién cuando se abren por primera vez
+const QuoteCalculatorModal = lazy(() =>
+  import('./components/QuoteCalculatorModal').then((m) => ({ default: m.QuoteCalculatorModal })),
+);
+const DiagnosticModal = lazy(() => import('./components/DiagnosticModal').then((m) => ({ default: m.DiagnosticModal })));
+const WarrantyModal = lazy(() => import('./components/WarrantyModal').then((m) => ({ default: m.WarrantyModal })));
 
 export default function App() {
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
@@ -86,22 +90,14 @@ export default function App() {
       {/* Sticky Floating WhatsApp Assistant */}
       <FloatingWhatsApp />
 
-      {/* Interactive Modals */}
-      <QuoteCalculatorModal 
-        isOpen={isQuoteOpen}
-        onClose={() => setIsQuoteOpen(false)}
-        initialService={quoteInitialService}
-      />
-
-      <DiagnosticModal 
-        isOpen={isDiagnosticOpen}
-        onClose={() => setIsDiagnosticOpen(false)}
-      />
-
-      <WarrantyModal 
-        isOpen={isWarrantyOpen}
-        onClose={() => setIsWarrantyOpen(false)}
-      />
+      {/* Modales (solo se montan abiertos) */}
+      <Suspense fallback={null}>
+        {isQuoteOpen && (
+          <QuoteCalculatorModal isOpen onClose={() => setIsQuoteOpen(false)} initialService={quoteInitialService} />
+        )}
+        {isDiagnosticOpen && <DiagnosticModal isOpen onClose={() => setIsDiagnosticOpen(false)} />}
+        {isWarrantyOpen && <WarrantyModal isOpen onClose={() => setIsWarrantyOpen(false)} />}
+      </Suspense>
     </div>
   );
 }

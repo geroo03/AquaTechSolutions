@@ -26,6 +26,10 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+        env:
+          # Analítica opcional: se cargan en Settings → Secrets and variables → Actions → Variables
+          VITE_PLAUSIBLE_DOMAIN: ${{ vars.VITE_PLAUSIBLE_DOMAIN }}
+          VITE_GA_ID: ${{ vars.VITE_GA_ID }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
