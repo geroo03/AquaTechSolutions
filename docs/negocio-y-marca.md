@@ -28,7 +28,7 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Obras que se pueden nombrar | Hospital Italiano, Colegio de Abogados de Jesús María, countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos |
 | Estadísticas | Martín ya tiene acceso a Cloudflare Web Analytics |
 | Fotos propias | 16/10/2026: mandó 3 fotos reales de obra (techo con las sierras de fondo, aplicación en el borde y recorrida). Se usan en el hero, la sección "En obra" y la imagen para compartir |
-| Dominio elegido | **aquatechsolutions.com.ar** (libre en NIC Argentina al 16/10/2026) |
+| Dominio | **aquatechsolutions.com.ar**, registrado en NIC Argentina a nombre de Martín el 15/10/2026. **Vence el 15/10/2027**: renovar todos los años en nic.ar (costó $8.500) |
 | Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). Ya se puede nombrar. |
 
 **Garantía, por sistema (no por servicio):**
@@ -62,7 +62,7 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 - [ ] Confirmar que **las personas que aparecen en las fotos de obra** están de acuerdo con salir en la web.
 - [ ] **Otros medios de pago** además de Mercado Pago (efectivo, transferencia), si quiere mostrarlos.
 - [ ] **Precios** definitivos por sistema, para después de la promo.
-- [ ] **CUIT y compra del dominio** aquatechsolutions.com.ar en NIC Argentina (ver README → Etapa 4).
+- [ ] **Conectar el dominio**: Cloudflare → delegación en NIC → GitHub Pages (pasos en CLAUDE.md).
 - [ ] Links de reseña: tiene clientes para pedirles reseñas en Google; falta crear la ficha de Google Business.
 
 ## Marca
