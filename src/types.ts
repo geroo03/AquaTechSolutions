@@ -36,7 +36,6 @@ export interface ZoneItem {
   id: string;
   name: string;
   detail: string;
-  /** Posición en el mapa esquemático (0–100). Sin posición: no se dibuja en el mapa */
-  x?: number;
-  y?: number;
+  /** Qué resalta en el mapa: un punto de obra, toda la provincia o las limítrofes */
+  map: 'pin' | 'province' | 'neighbors';
 }

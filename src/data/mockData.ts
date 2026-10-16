@@ -146,13 +146,13 @@ export const WORK_PROCESS = [
   },
 ];
 
-/** Cobertura confirmada: toda la provincia de Córdoba y las provincias limítrofes. Puntos del mapa: lugares con obras. */
+/** Cobertura confirmada: toda la provincia de Córdoba y las provincias limítrofes. Los puntos del mapa son lugares con obras. */
 export const ZONES: ZoneItem[] = [
-  { id: 'capital', name: 'Córdoba Capital', detail: 'Barrios de la ciudad y Gran Córdoba', x: 50, y: 46 },
-  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'GreenVille, Campo de Vuelo, La Cascada, Los Cerezos. De lunes a viernes', x: 46, y: 68 },
-  { id: 'jesus-maria', name: 'Jesús María', detail: 'Norte de la provincia', x: 60, y: 14 },
-  { id: 'provincia', name: 'Resto de la provincia', detail: 'Todo el interior de Córdoba' },
-  { id: 'limitrofes', name: 'Provincias limítrofes', detail: NEIGHBOR_PROVINCES.join(', ') },
+  { id: 'capital', name: 'Córdoba Capital', detail: 'Barrios de la ciudad y Gran Córdoba', map: 'pin' },
+  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'GreenVille, Campo de Vuelo, La Cascada, Los Cerezos. De lunes a viernes', map: 'pin' },
+  { id: 'jesus-maria', name: 'Jesús María', detail: 'Norte de la provincia', map: 'pin' },
+  { id: 'provincia', name: 'Resto de la provincia', detail: 'Todo el interior de Córdoba', map: 'province' },
+  { id: 'limitrofes', name: 'Provincias limítrofes', detail: NEIGHBOR_PROVINCES.join(', '), map: 'neighbors' },
 ];
 
 export const FAQS: FaqItem[] = [

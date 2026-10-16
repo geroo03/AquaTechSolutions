@@ -122,6 +122,7 @@ Referencia Lighthouse (oct 2026, build local): celular 96 / 100 / 100 / 100, esc
 
 - Base generada con Google AI Studio / Stitch (azul, emojis, imágenes remotas).
 - Oct 2026: rediseño monocromo con el logo, íconos SVG, comparador antes/después arreglado, mapa vectorial, imágenes locales, mobile pulido y deploy automático a Pages.
+- 16/10/2026 (4): mapa de cobertura real (provincias del IGN, `scripts/build-map.py` → `src/data/mapShapes.ts`), con Córdoba y las limítrofes resaltables y los puntos de obras; +15.000 m²; animaciones de la promo en Servicios.
 - 16/10/2026 (3): fotos reales de obra en el hero, la sección "En obra" y la imagen para compartir.
 - 16/10/2026 (2): atención todos los días (barrios privados de lunes a viernes), cuotas con Mercado Pago, reseña autorizada de Alejandra G., horario en JSON-LD.
 - 16/10/2026: respuestas de Martín (zonas, horario, presupuesto sin cargo, tiempos, garantía por escrito, seguro, obras nombradas). La promo queda sin fecha de fin.
