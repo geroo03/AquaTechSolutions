@@ -95,7 +95,7 @@ public/
 - Textos en español rioplatense (vos, mandá, pedí).
 - Todo contacto sale por `waLink(texto)` de `ui.tsx` (número en `PHONE_NUMBER` de `mockData.ts`).
 - Modales: usar el componente `Modal` (cierra con Esc / tocando afuera y bloquea el scroll). Los modales de `App.tsx` se montan solo cuando están abiertos y se cargan con `lazy`.
-- Animaciones de aparición: `<Reveal>` (sin librerías). Solo oculta contenido si `<html>` tiene la clase `js`, para que el HTML pre-renderizado se lea sin JavaScript. **El hero no lleva animación de entrada** (es el LCP en celular).
+- Animaciones de aparición: `<Reveal>` (sin librerías). Solo oculta contenido si `<html>` tiene la clase `js`, para que el HTML pre-renderizado se lea sin JavaScript. **El hero no lleva animación de entrada** (es el LCP en celular). La foto del hero es decorativa: **sin preload y con `fetchPriority="low"`** (precargarla retrasaba el texto, que es el LCP: el rendimiento en celular bajaba de 97 a 85).
 - Imágenes nuevas: en WebP, con `width`/`height`, y `loading="lazy"` si no están arriba de todo.
 - Rutas de archivos de `public/`: siempre relativas (`./images/...`). **No usar `import.meta.env.BASE_URL`**: en la build SSR vale `/` y el HTML pre-renderizado apunta a la raíz del dominio (en Pages da 404). En local no se nota porque `preview` sirve desde la raíz: verificar siempre en la URL publicada.
 - Accesibilidad: Lighthouse tiene que dar 100. Ojo con el contraste de textos grises sobre negro (mínimo `text-white/60`) y con el orden de los títulos.

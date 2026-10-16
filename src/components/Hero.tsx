@@ -29,7 +29,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           alt=""
           width={1600}
           height={1200}
-          fetchPriority="high"
+          fetchPriority="low"
+          decoding="async"
           className="w-full h-full object-cover grayscale opacity-45"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/30" />
