@@ -43,10 +43,11 @@ export const PromoSection: React.FC = () => {
             </div>
 
             <ul className="space-y-3">
-              {PROMO.items.map((item) => (
+              {PROMO.items.map((item, i) => (
                 <li
                   key={item.name}
-                  className="flex items-center justify-between gap-6 p-5 sm:p-6 rounded-3xl bg-ink text-white shadow-[0_20px_40px_-24px_rgba(11,11,12,0.6)]"
+                  className="promo-shine promo-shine-dark flex items-center justify-between gap-6 p-5 sm:p-6 rounded-3xl bg-ink text-white shadow-[0_20px_40px_-24px_rgba(11,11,12,0.6)] transition-transform duration-300 hover:-translate-y-0.5"
+                  style={{ '--promo-delay': `${1.5 + i * 0.35}s` } as React.CSSProperties}
                 >
                   <span className="text-[15px] sm:text-base font-semibold leading-snug">{item.name}</span>
                   <span className="text-right shrink-0">

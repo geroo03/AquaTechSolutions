@@ -26,6 +26,8 @@ export const PROMO = {
   specialist: 'Martín Emiliano Nieto',
   specialistRole: 'Impermeabilización de techos, terrazas y balcones',
   whatsappText: 'Hola AquaTech, quiero aprovechar la promo de mano de obra a $10.000 el m²',
+  /** Tarjetas de "Servicios" que se destacan mientras la promo está activa (ids de SERVICES) */
+  serviceIds: ['techos', 'terrazas'],
 };
 
 export const isPromoActive = (now: number) => PROMO.endsAt === null || now < Date.parse(PROMO.endsAt);

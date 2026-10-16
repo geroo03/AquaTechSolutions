@@ -1,6 +1,8 @@
 import React from 'react';
 import { ArrowUpRight, PaintRoller } from 'lucide-react';
 import { SERVICES, SECONDARY_SERVICE } from '../data/mockData';
+import { PROMO } from '../data/promo';
+import { usePromoActive } from './PromoSection';
 import { Reveal, SectionHeader, waLink } from './ui';
 
 interface ServicesSectionProps {
@@ -8,6 +10,7 @@ interface ServicesSectionProps {
 }
 
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ onSelectServiceForQuote }) => {
+  const promoActive = usePromoActive();
   return (
     <section className="py-24 lg:py-32 bg-paper" id="servicios">
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
@@ -22,11 +25,35 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onSelectServic
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {SERVICES.map((service, i) => {
             const Icon = service.icon;
+            const inPromo = promoActive && PROMO.serviceIds.includes(service.id);
             return (
               <Reveal key={service.id} delay={(i % 3) * 0.06} className="h-full">
-                <article className="group h-full flex flex-col p-7 sm:p-8 rounded-3xl bg-white ring-1 ring-line hover:ring-ink/20 hover:shadow-[0_24px_48px_-24px_rgba(11,11,12,0.25)] transition-all duration-300">
-                  <div className="w-12 h-12 mb-8 rounded-2xl bg-mist text-ink flex items-center justify-center group-hover:bg-ink group-hover:text-white transition-colors duration-300">
-                    <Icon size={22} strokeWidth={1.6} />
+                <article
+                  className={`group h-full flex flex-col p-7 sm:p-8 rounded-3xl bg-white ring-1 hover:shadow-[0_24px_48px_-24px_rgba(11,11,12,0.25)] transition-all duration-300 ${
+                    inPromo ? 'promo-shine promo-breathe ring-ink/25 hover:ring-ink/40' : 'ring-line hover:ring-ink/20'
+                  }`}
+                  style={inPromo ? ({ '--promo-delay': `${1.2 + i * 0.9}s` } as React.CSSProperties) : undefined}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-8">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300 ${
+                        inPromo ? 'bg-ink text-white' : 'bg-mist text-ink group-hover:bg-ink group-hover:text-white'
+                      }`}
+                    >
+                      <Icon size={22} strokeWidth={1.6} />
+                    </div>
+                    {inPromo && (
+                      <a
+                        href="#promo"
+                        className="relative z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink text-white text-[11px] font-semibold uppercase tracking-[0.12em] hover:bg-graphite transition-colors"
+                      >
+                        <span className="relative flex w-1.5 h-1.5">
+                          <span className="absolute inset-0 rounded-full bg-white/70 animate-ping motion-reduce:animate-none" />
+                          <span className="relative w-1.5 h-1.5 rounded-full bg-white" />
+                        </span>
+                        Promo {PROMO.items[0].price}/m²
+                      </a>
+                    )}
                   </div>
 
                   <h3 className="font-headline text-xl font-bold text-ink mb-3">{service.title}</h3>

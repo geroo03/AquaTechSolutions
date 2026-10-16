@@ -77,6 +77,38 @@ input[type='range'] {
   transform: translateY(18px);
 }
 
+/* Promo: brillo que cruza la tarjeta cada tanto y borde que "respira" (ver ServicesSection y PromoSection) */
+@keyframes promo-shine {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  28%, 100% { transform: translateX(380%) skewX(-18deg); }
+}
+@keyframes promo-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(11, 11, 12, 0); }
+  50% { box-shadow: 0 0 0 5px rgba(11, 11, 12, 0.06); }
+}
+.promo-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.promo-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--promo-sheen, rgba(201, 201, 205, 0.2)), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: promo-shine 7s ease-in-out var(--promo-delay, 1.2s) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+.promo-shine-dark {
+  --promo-sheen: rgba(255, 255, 255, 0.12);
+}
+.promo-breathe {
+  animation: promo-breathe 3.6s ease-in-out infinite;
+}
+
 /* Imprimir: si hay un modal abierto (certificado), sale solo el modal */
 @media print {
   body:has([role='dialog']) #root > div > :not([role='dialog']) {
@@ -103,6 +135,8 @@ input[type='range'] {
     opacity: 1;
     transform: none;
   }
+  .promo-shine::after { display: none; }
+  .promo-breathe { animation: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
