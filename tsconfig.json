@@ -19,5 +19,6 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "strict": true
-  }
+  },
+  "exclude": ["bots", "node_modules", "dist", "dist-ssr"]
 }

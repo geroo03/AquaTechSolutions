@@ -1,0 +1,7 @@
+{
+  "id": "presentacion_001",
+  "scope": "marketing",
+  "template": "Hola, equipo de {{lugar}}. Les compartimos la información de nuestros servicios que solicitaron. ¿Quieren coordinar una charla?",
+  "scheduledAt": "2026-10-19T08:00:00-03:00",
+  "expiresAt": "2026-10-19T20:00:00-03:00"
+}

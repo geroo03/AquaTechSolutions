@@ -12,6 +12,12 @@ npm run build    # dist/ — cada push a main se publica solo en GitHub Pages
 
 El contexto completo para trabajar con Claude Code está en [CLAUDE.md](CLAUDE.md) y en [docs/](docs/).
 
+## Bot de WhatsApp
+
+El servidor del bot vive separado en [`bots/whatsapp/`](bots/whatsapp/README.md). Tiene su propio `package.json`, configuración, pruebas y Docker; los comandos de esta raíz siguen siendo los de la web. GitHub Pages publica únicamente la web: el bot requiere un servidor con almacenamiento persistente.
+
+El workflow [`whatsapp-bot.yml`](.github/workflows/whatsapp-bot.yml) ejecuta las pruebas, revisa TypeScript, compila y arranca el contenedor en simulación. No necesita credenciales de Google ni una cuenta de WhatsApp.
+
 ## Etapas
 
 1. **Demo para presentar** — hecha: rediseño con la marca, mobile y deploy automático.

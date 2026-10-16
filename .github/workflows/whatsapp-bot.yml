@@ -1,0 +1,67 @@
+name: Bot WhatsApp - pruebas y Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bots/whatsapp/**'
+      - '.github/workflows/whatsapp-bot.yml'
+  pull_request:
+    paths:
+      - 'bots/whatsapp/**'
+      - '.github/workflows/whatsapp-bot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whatsapp-bot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: bots/whatsapp
+    shell: bash
+
+jobs:
+  verify:
+    name: Pruebas, compilación y contenedor en simulación
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      PORT: '3300'
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Preparar Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: bots/whatsapp/package-lock.json
+      - name: Instalar dependencias fijadas
+        run: npm ci --no-fund
+      - name: Revisar TypeScript
+        run: npm run check
+      - name: Ejecutar pruebas de lógica, API y reinicio
+        run: npm test
+      - name: Compilar
+        run: npm run build
+      - name: Crear configuración temporal de simulación
+        run: npm run setup
+      - name: Validar Docker Compose
+        run: docker compose config --quiet
+      - name: Construir y arrancar contenedor
+        run: docker compose up --build --detach --wait --wait-timeout 90
+      - name: Probar API del contenedor sin enviar mensajes
+        run: node --env-file=.env scripts/smoke-container.mjs
+      - name: Mostrar logs del contenedor
+        if: always()
+        run: docker compose logs --no-color --tail=100
+      - name: Limpiar contenedor y datos temporales de CI
+        if: always()
+        run: docker compose down --volumes
