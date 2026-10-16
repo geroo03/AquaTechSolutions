@@ -4,7 +4,7 @@
  * está en docs/negocio-y-marca.md.
  */
 import { House, Building2, Droplets, CloudRain, Waves, Wrench, Camera, MapPin, ReceiptText, ShieldCheck } from 'lucide-react';
-import { ServiceItem, CaseStudy, FaqItem, ZoneItem, WarrantyItem } from '../types';
+import { ServiceItem, WorkItem, FaqItem, ZoneItem, WarrantyItem } from '../types';
 
 // Ruta relativa: igual en el pre-render y en el navegador, funcione bajo /AquaTechSolutions/ o en un dominio propio
 const img = (name: string) => `./images/${name}`;
@@ -13,9 +13,6 @@ export const ASSETS = {
   /** Foto real de obra (16/10/2026) */
   heroBg: img('obra-techo-sierras.webp'),
   heroBgSmall: img('obra-techo-sierras-960.webp'),
-  /** Ilustrativas (IA) hasta tener el antes y después real de la obra */
-  case1Before: img('case1-before.webp'),
-  case1After: img('case1-after.webp'),
 };
 
 export const PHONE_NUMBER = '5493516134658';
@@ -32,15 +29,6 @@ export const RESPONSE_TIME = 'unos 20 minutos';
 export const QUOTE_TIME = 'menos de 24 h';
 export const NEIGHBOR_PROVINCES = ['Catamarca', 'Santiago del Estero', 'Santa Fe', 'Buenos Aires', 'La Pampa', 'San Luis', 'La Rioja'];
 
-/** Obras que el dueño autorizó nombrar */
-export const NOTABLE_WORKS = [
-  'Hospital Italiano',
-  'Colegio de Abogados de Jesús María',
-  'Country GreenVille',
-  'Country Campo de Vuelo',
-  'Country La Cascada',
-  'Country Los Cerezos',
-];
 
 /** Garantía por sistema, confirmada por el dueño */
 export const WARRANTIES: WarrantyItem[] = [
@@ -100,18 +88,58 @@ export const SERVICES: ServiceItem[] = [
 /** Servicio secundario, se muestra aparte */
 export const SECONDARY_SERVICE = { title: 'Pintura interior y exterior', warranty: '2 años de garantía' };
 
-/** Obra real (posteo de Instagram del 20/09/2026). Las fotos todavía son ilustrativas. */
-export const CASE_STUDIES: CaseStudy[] = [
+/**
+ * Obras reales, de las redes de AquaTech (relevamiento del 16/10/2026). Martín autorizó nombrarlas.
+ * Solo datos textuales del posteo o visibles en la imagen; sin m², tiempos ni precios que no figuren.
+ */
+export const WORKS: WorkItem[] = [
   {
     id: 'greenville',
-    title: 'Techo en Country GreenVille',
-    location: 'Zona sur, Córdoba Capital',
-    system: 'Membrana asfáltica con geotextil de 4 mm y pintura poliuretánica.',
-    warranty: '10 años (membrana con geotextil)',
-    beforeImg: ASSETS.case1Before,
-    afterImg: ASSETS.case1After,
-    beforeAlt: 'Techo antes de la impermeabilización (imagen ilustrativa)',
-    afterAlt: 'Techo impermeabilizado (imagen ilustrativa)',
+    place: 'Country GreenVille',
+    type: 'Techo · Zona sur, Córdoba Capital',
+    detail: 'Membrana asfáltica con geotextil de 4 mm, protegida con pintura poliuretánica.',
+    date: 'Septiembre 2026',
+    url: 'https://www.instagram.com/p/Ddhm_k-jgwd/',
+  },
+  {
+    id: 'la-cascada',
+    place: 'Country La Cascada',
+    type: 'Terraza',
+    detail: 'Retiro de la membrana vieja, membrana con geotextil y terminación blanca.',
+    date: 'Junio 2026',
+    url: 'https://www.instagram.com/p/DZY-2-ojlXi/',
+  },
+  {
+    id: 'campo-de-vuelo',
+    place: 'Country Campo de Vuelo',
+    type: 'Terraza',
+    detail: 'Antes y después de la terraza, desde el mismo ángulo.',
+    date: 'Junio 2026',
+    url: 'https://www.instagram.com/p/DZY_F_yjljB/',
+  },
+  {
+    id: 'hospital-italiano',
+    place: 'Hospital Italiano',
+    type: 'Losa',
+    detail: 'Membrana asfáltica con geotextil.',
+    date: 'Junio 2026',
+    url: 'https://www.instagram.com/p/DZY_PqNDuBy/',
+  },
+  {
+    id: 'colegio-abogados',
+    place: 'Colegio de Abogados de Jesús María',
+    type: 'Techo · Obra completa',
+    detail: 'Protección contra humedad y filtraciones.',
+    date: 'Junio 2026',
+    url: 'https://www.instagram.com/p/DZ8DuYDIqwo/',
+  },
+  {
+    id: 'los-cerezos',
+    place: 'Los Cerezos',
+    type: 'Techo · Córdoba Capital',
+    detail: 'Impermeabilización asfáltica con geotextil.',
+    date: 'Octubre 2026',
+    url: 'https://www.instagram.com/p/Dejnv-ZoJ2D/',
   },
 ];
 

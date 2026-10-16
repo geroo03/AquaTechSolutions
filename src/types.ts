@@ -14,16 +14,15 @@ export interface WarrantyItem {
   years: string;
 }
 
-export interface CaseStudy {
+/** Obra real, tomada de las redes de AquaTech (relevamiento del 16/10/2026) */
+export interface WorkItem {
   id: string;
-  title: string;
-  location: string;
-  system: string;
-  warranty: string;
-  beforeImg: string;
-  afterImg: string;
-  beforeAlt: string;
-  afterAlt: string;
+  place: string;
+  type: string;
+  /** Solo si el posteo lo dice o se ve claramente */
+  detail?: string;
+  date: string;
+  url: string;
 }
 
 export interface FaqItem {

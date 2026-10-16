@@ -56,9 +56,22 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 - **Analítica**: recomendada Cloudflare Web Analytics (gratis, sin cookies). No cuenta clics por botón, así que cada mensaje de WhatsApp de la web es distinto según el botón y termina en "(Enviado desde la web)".
 - **Imagen para compartir**: el logo sobre fondo negro hasta tener una foto real de obra.
 
+## Relevamiento de redes (16/10/2026)
+
+Se revisaron las 42 publicaciones de Instagram y las 83 de Facebook. Las obras con nombre y link están en `WORKS` (`src/data/mockData.ts`).
+
+**Contradicciones con lo confirmado. Preguntarle a Martín cuál vale:**
+- **Garantía de la membrana con aluminio**: Martín dijo 5 años, pero dos posteos de 2024 dicen **10 años**.
+- **Garantía de la membrana con geotextil**: Martín dijo 10 años, pero cinco posteos de 2024–2025 dicen **15 años**, sin aclarar la condición.
+- Otros posteos dicen "garantía de por vida" (pileta) y "hasta 25 años, únicos en el país". En la web no se usan.
+- **Desde 2008**: no figura en las redes, y la sección Empleo de Facebook decía **2015** (se corrigió el 15/10/2026). Confirmar el año.
+- **Visita**: un comentario de Martín en Facebook dice "visita sin costo", pero el 16/10 dijo que la visita puede cobrar viáticos. En la web va lo de los viáticos.
+
+**Contenido útil para sumar más adelante:** la pileta en 4 pasos (con antes y después), el "cómo impermeabilizar tu techo en 5 pasos", la prueba hidráulica de 72 h con 30.000 litros y la obra en el centro de distribución Mapei (pedir permiso para nombrarlo).
+
 ## Falta pedirle a Martín
 
-- [ ] **Fotos de antes y después** de 3 obras, desde el mismo lugar (ideal: GreenVille, Los Cerezos y una terraza), para el comparador de Trabajos, que todavía usa imágenes ilustrativas. Mandarlas como documento por WhatsApp.
+- [ ] **Fotos originales de antes y después** (las mejores: Campo de Vuelo, La Cascada y las losas con agua estancada), mandadas como documento. Con eso se suman fotos a las tarjetas de Trabajos y se puede volver a poner el comparador.
 - [ ] Confirmar que **las personas que aparecen en las fotos de obra** están de acuerdo con salir en la web.
 - [ ] **Otros medios de pago** además de Mercado Pago (efectivo, transferencia), si quiere mostrarlos.
 - [ ] **Precios** definitivos por sistema, para después de la promo.
