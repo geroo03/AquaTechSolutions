@@ -44,6 +44,8 @@ Para una promo nueva: editar `promo.ts` y subir. Para probar el vencimiento: Pla
 
 ### Pasar al dominio propio
 
+**Estado (16/10/2026):** dominio registrado (titular Martín, vence 15/10/2027). En Cloudflare (cuenta de Sebastián) ya está creada la zona, en plan Free, con nameservers `angelina.ns.cloudflare.com` y `rohin.ns.cloudflare.com`, los 4 `A` y el `CNAME www`, todos en DNS only, y SSL en "Full" (nunca "Flexible"). **Falta la delegación en NIC** (paso 3). Recién cuando el dominio resuelva se hacen los pasos 5 y 6: si se pone el custom domain en GitHub antes, la URL de github.io redirige a un dominio que todavía no anda.
+
 Dominio elegido: **aquatechsolutions.com.ar**. NIC Argentina solo **delega** el dominio a servidores DNS (no permite cargar registros A), así que el DNS va en Cloudflare (gratis):
 1. El titular (Martín, con su CUIT) lo registra en [nic.ar](https://nic.ar) entrando con su Clave Fiscal de ARCA.
 2. En Cloudflare: "Add a domain" → `aquatechsolutions.com.ar` → plan Free. Cloudflare da dos nameservers.
