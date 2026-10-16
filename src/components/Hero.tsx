@@ -24,9 +24,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
       <div className="absolute inset-0 -z-10">
         <img
           src={ASSETS.heroBg}
+          srcSet={`${ASSETS.heroBgSmall} 960w, ${ASSETS.heroBg} 1600w`}
+          sizes="100vw"
           alt=""
-          width={512}
-          height={286}
+          width={1600}
+          height={1200}
           fetchPriority="high"
           className="w-full h-full object-cover grayscale opacity-45"
         />

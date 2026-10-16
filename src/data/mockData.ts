@@ -9,9 +9,11 @@ import { ServiceItem, CaseStudy, FaqItem, ZoneItem, WarrantyItem } from '../type
 // Ruta relativa: igual en el pre-render y en el navegador, funcione bajo /AquaTechSolutions/ o en un dominio propio
 const img = (name: string) => `./images/${name}`;
 
-/** Imágenes ilustrativas (generadas por IA) hasta tener las fotos originales de obra */
 export const ASSETS = {
-  heroBg: img('hero.webp'),
+  /** Foto real de obra (16/10/2026) */
+  heroBg: img('obra-techo-sierras.webp'),
+  heroBgSmall: img('obra-techo-sierras-960.webp'),
+  /** Ilustrativas (IA) hasta tener el antes y después real de la obra */
   case1Before: img('case1-before.webp'),
   case1After: img('case1-after.webp'),
 };
@@ -201,3 +203,25 @@ export const TESTIMONIAL = {
   author: 'Alejandra G.',
   source: 'Reseña publicada en Muovi',
 };
+
+/** Fotos reales de obra enviadas por Martín (16/10/2026) */
+export const WORK_PHOTOS = [
+  {
+    src: img('obra-techo-sierras.webp'),
+    alt: 'Techo plano en obra, con las sierras de fondo',
+    width: 1600,
+    height: 1200,
+  },
+  {
+    src: img('obra-aplicacion.webp'),
+    alt: 'Aplicación de impermeabilizante en el borde del techo',
+    width: 960,
+    height: 1280,
+  },
+  {
+    src: img('obra-recorrida.webp'),
+    alt: 'Recorrida del techo durante la obra',
+    width: 1280,
+    height: 960,
+  },
+];

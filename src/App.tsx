@@ -5,6 +5,7 @@ import { PromoSection } from './components/PromoSection';
 import { ServicesSection } from './components/ServicesSection';
 import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
+import { WorkGallerySection } from './components/WorkGallerySection';
 import { WarrantySection } from './components/WarrantySection';
 import { CoverageZonesSection } from './components/CoverageZonesSection';
 import { TestimonialSection } from './components/TestimonialSection';
@@ -39,6 +40,7 @@ export default function App() {
         <ServicesSection onSelectServiceForQuote={openQuote} />
         <BeforeAfterSection />
         <ProcessSection onOpenDiagnostic={() => setIsDiagnosticOpen(true)} />
+        <WorkGallerySection />
         <WarrantySection />
         <CoverageZonesSection />
         <TestimonialSection />

@@ -27,7 +27,7 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Seguro | Tiene seguro y cumple los requisitos de higiene y seguridad según normas IRAM |
 | Obras que se pueden nombrar | Hospital Italiano, Colegio de Abogados de Jesús María, countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos |
 | Estadísticas | Martín ya tiene acceso a Cloudflare Web Analytics |
-| Fotos propias | No tiene fotos del equipo (trabaja solo), pero sí fotos de él trabajando |
+| Fotos propias | 16/10/2026: mandó 3 fotos reales de obra (techo con las sierras de fondo, aplicación en el borde y recorrida). Se usan en el hero, la sección "En obra" y la imagen para compartir |
 | Dominio elegido | **aquatechsolutions.com.ar** (libre en NIC Argentina al 16/10/2026) |
 | Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). Ya se puede nombrar. |
 
@@ -58,7 +58,8 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 
 ## Falta pedirle a Martín
 
-- [ ] **Fotos originales de 3 obras con antes y después**, mandadas como documento por WhatsApp (ideal: GreenVille, Los Cerezos y una terraza), y las fotos de él trabajando. **Sin esto la web no sale.**
+- [ ] **Fotos de antes y después** de 3 obras, desde el mismo lugar (ideal: GreenVille, Los Cerezos y una terraza), para el comparador de Trabajos, que todavía usa imágenes ilustrativas. Mandarlas como documento por WhatsApp.
+- [ ] Confirmar que **las personas que aparecen en las fotos de obra** están de acuerdo con salir en la web.
 - [ ] **Otros medios de pago** además de Mercado Pago (efectivo, transferencia), si quiere mostrarlos.
 - [ ] **Precios** definitivos por sistema, para después de la promo.
 - [ ] **CUIT y compra del dominio** aquatechsolutions.com.ar en NIC Argentina (ver README → Etapa 4).

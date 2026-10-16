@@ -107,7 +107,7 @@ public/
 - `src/data/mockData.ts` tiene **solo datos confirmados** por el dueño (Martín Emiliano Nieto) o por Sebastián: desde 2008, +5.000 m², garantía por sistema y por escrito, presupuesto sin cargo en menos de 24 h, respuesta en ~20 min, horario todos los días de 8 a 20 h (barrios privados: lunes a viernes), cuotas con Mercado Pago, zonas (Córdoba y provincias limítrofes), seguro, obras que se pueden nombrar, email, Instagram y Facebook. La fuente y la lista de lo que falta están en `docs/negocio-y-marca.md`.
 - **No inventar datos del negocio** ni poner lo no confirmado: precios fuera de la promo, medios de pago distintos de Mercado Pago, tipo de factura (A/B/C), "visita sin cargo" (la visita puede cobrar viáticos), marcas de materiales, certificados, testimonios o la dirección (es la casa del dueño: solo "Córdoba"). Si falta un dato, dejarlo afuera y avisar.
 - La garantía se muestra **por sistema**, no por servicio. Lo que no encaja en un sistema: "Garantía según el sistema".
-- Las fotos del hero y de la obra son ilustrativas (IA) y la web lo dice. Al cargar las reales, sacar esa aclaración.
+- Fotos: el hero, la sección "En obra" (`WorkGallerySection`, `WORK_PHOTOS`) y `og-image.png` usan fotos reales de Martín. El comparador antes/después de Trabajos todavía usa imágenes ilustrativas (IA) y lo aclara: al cargar el antes y después real, sacar esa aclaración. Las fotos nuevas van en WebP, y el hero tiene versión de 960 px para celular (`srcSet`).
 - Testimonios: solo la reseña autorizada de Alejandra G. (Muovi). Sumar únicamente reseñas reales (Google) o con autorización expresa de quien la escribió.
 
 ## Cómo verificar cambios visuales
@@ -120,6 +120,7 @@ Referencia Lighthouse (oct 2026, build local): celular 96 / 100 / 100 / 100, esc
 
 - Base generada con Google AI Studio / Stitch (azul, emojis, imágenes remotas).
 - Oct 2026: rediseño monocromo con el logo, íconos SVG, comparador antes/después arreglado, mapa vectorial, imágenes locales, mobile pulido y deploy automático a Pages.
+- 16/10/2026 (3): fotos reales de obra en el hero, la sección "En obra" y la imagen para compartir.
 - 16/10/2026 (2): atención todos los días (barrios privados de lunes a viernes), cuotas con Mercado Pago, reseña autorizada de Alejandra G., horario en JSON-LD.
 - 16/10/2026: respuestas de Martín (zonas, horario, presupuesto sin cargo, tiempos, garantía por escrito, seguro, obras nombradas). La promo queda sin fecha de fin.
 - 15/10/2026: datos reales del dueño. Se sacaron testimonios, certificado, precios del cotizador y afirmaciones no confirmadas; garantía por sistema; pintura como servicio secundario; email y Facebook; Cloudflare Web Analytics.
