@@ -82,10 +82,10 @@ const CoverageMap: React.FC<{ selected: ZoneItem; onSelect: (z: ZoneItem) => voi
           </text>
         ))}
         <text
-          x={cordoba.labelX + 38}
+          x={cordoba.labelX + 22}
           y={cordoba.labelY + 70}
           textAnchor="middle"
-          fontSize="34"
+          fontSize="30"
           fontWeight="700"
           letterSpacing="2"
           fill="#0b0b0c"
