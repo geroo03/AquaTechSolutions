@@ -18,13 +18,15 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Servicios | Techos (membrana asfáltica + geotextil + poliuretano), terrazas y balcones, humedad de cimientos, filtraciones, tanques y piletas, mantenimiento preventivo. Secundario: pintura interior y exterior. |
 | Metros trabajados | 5.000 m² |
 | Zonas | Toda la provincia de Córdoba y las provincias limítrofes (Catamarca, Santiago del Estero, Santa Fe, Buenos Aires, La Pampa, San Luis, La Rioja) |
-| Horario | De 8 a 20 h (falta confirmar qué días) |
+| Horario | Todos los días de 8 a 20 h. En barrios privados trabaja de lunes a viernes |
+| Cuotas | Sí, con la financiación de Mercado Pago (con el interés que aplique MP según el plan que elija el cliente) |
 | Presupuesto | **Sin cargo**, en menos de 24 h. Responde las consultas en unos 20 minutos |
 | Visita para medir | Puede tener costo de viáticos según la distancia |
 | Garantía | Se entrega **por escrito, en papel y en formato digital** |
-| Facturación | Monotributista. Dice que puede hacer factura A o B, con otro precio de mano de obra (ver nota abajo) |
+| Facturación | Monotributista. Puede hacer factura; el precio de la mano de obra varía según el tipo. En la web va así, sin decir A/B/C (Martín lo aprobó) |
 | Seguro | Tiene seguro y cumple los requisitos de higiene y seguridad según normas IRAM |
 | Obras que se pueden nombrar | Hospital Italiano, Colegio de Abogados de Jesús María, countries GreenVille, Campo de Vuelo, La Cascada y Los Cerezos |
+| Estadísticas | Martín ya tiene acceso a Cloudflare Web Analytics |
 | Fotos propias | No tiene fotos del equipo (trabaja solo), pero sí fotos de él trabajando |
 | Dominio elegido | **aquatechsolutions.com.ar** (libre en NIC Argentina al 16/10/2026) |
 | Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). Ya se puede nombrar. |
@@ -46,7 +48,7 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 
 ## Decisiones tomadas en la web (15/10/2026)
 
-- **Testimonios**: sección sacada hasta tener reseñas reales en Google. La única reseña real con texto es de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."): **solo se puede usar si ella lo autoriza**. No usar las reseñas de Muovi escritas por el propio Martín.
+- **Testimonios**: se muestra solo la reseña de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."), que **dio el ok el 16/10/2026**. Va firmada "Alejandra G.". No usar las reseñas de Muovi escritas por el propio Martín. Sumar reseñas de Google cuando exista la ficha.
 - **Cotizador sin precios**: pide tipo de trabajo, m², estado y barrio, y arma el mensaje de WhatsApp. Si Martín quiere mostrar precios, que pase un rango por sistema.
 - **Preguntas frecuentes**: solo las confirmadas (cómo pedir presupuesto, garantía por sistema, desde cuándo trabaja y zona). Se sacaron las de Factura A/B, ART, cuotas y certificado con número.
 - **Sin afirmaciones no confirmadas**: se sacaron las marcas de materiales, el certificado modelo y "visita sin cargo". El 16/10 se volvieron a poner, ya confirmados: presupuesto sin cargo, respuesta en unos 20 min, presupuesto en menos de 24 h, garantía por escrito y horario.
@@ -57,13 +59,9 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 ## Falta pedirle a Martín
 
 - [ ] **Fotos originales de 3 obras con antes y después**, mandadas como documento por WhatsApp (ideal: GreenVille, Los Cerezos y una terraza), y las fotos de él trabajando. **Sin esto la web no sale.**
-- [ ] **Días** de atención (el horario de 8 a 20 h ya está).
-- [ ] **Medios de pago y cuotas** (la pregunta 9 la contestó sobre el seguro).
-- [ ] **Factura**: confirmar qué tipo emite. Como monotributista, normalmente emite factura C; para A o B tendría que ser responsable inscripto o facturar por otro medio. En la web solo dice "hacemos factura, el precio puede variar según el tipo".
-- [ ] Autorización de **Alejandra Guzmán** para usar su reseña (dijo que se la puede pedir).
+- [ ] **Otros medios de pago** además de Mercado Pago (efectivo, transferencia), si quiere mostrarlos.
 - [ ] **Precios** definitivos por sistema, para después de la promo.
 - [ ] **CUIT y compra del dominio** aquatechsolutions.com.ar en NIC Argentina (ver README → Etapa 4).
-- [ ] Si quiere acceso a las **estadísticas** de Cloudflare.
 - [ ] Links de reseña: tiene clientes para pedirles reseñas en Google; falta crear la ficha de Google Business.
 
 ## Marca

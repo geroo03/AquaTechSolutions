@@ -7,7 +7,7 @@ export const FaqSection: React.FC = () => {
   const [openId, setOpenId] = useState<string | null>(FAQS[0].id);
 
   return (
-    <section className="py-24 lg:py-32 bg-paper" id="preguntas">
+    <section className="py-24 lg:py-32 bg-white" id="preguntas">
       <div className="max-w-3xl mx-auto px-5 sm:px-8">
         <div className="mb-12">
           <SectionHeader eyebrow="Preguntas frecuentes" title="Todo lo que necesitás saber" center />

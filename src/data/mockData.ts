@@ -24,8 +24,8 @@ export const INSTAGRAM_HANDLE = '@aqua.tech.solutions';
 export const FACEBOOK_URL = 'https://www.facebook.com/p/Aquatech-Solutions-61563827794730/';
 export const FOUNDED_YEAR = 2008;
 export const SQUARE_METERS = '5.000 m²';
-/** Días de atención todavía sin confirmar: solo el rango horario */
-export const OPENING_HOURS = 'De 8 a 20 h';
+export const OPENING_HOURS = 'Todos los días de 8 a 20 h';
+export const PRIVATE_NEIGHBORHOODS_NOTE = 'En barrios privados trabajamos de lunes a viernes.';
 export const RESPONSE_TIME = 'unos 20 minutos';
 export const QUOTE_TIME = 'menos de 24 h';
 export const NEIGHBOR_PROVINCES = ['Catamarca', 'Santiago del Estero', 'Santa Fe', 'Buenos Aires', 'La Pampa', 'San Luis', 'La Rioja'];
@@ -147,7 +147,7 @@ export const WORK_PROCESS = [
 /** Cobertura confirmada: toda la provincia de Córdoba y las provincias limítrofes. Puntos del mapa: lugares con obras. */
 export const ZONES: ZoneItem[] = [
   { id: 'capital', name: 'Córdoba Capital', detail: 'Barrios de la ciudad y Gran Córdoba', x: 50, y: 46 },
-  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'GreenVille, Campo de Vuelo, La Cascada, Los Cerezos', x: 46, y: 68 },
+  { id: 'zona-sur', name: 'Countries de zona sur', detail: 'GreenVille, Campo de Vuelo, La Cascada, Los Cerezos. De lunes a viernes', x: 46, y: 68 },
   { id: 'jesus-maria', name: 'Jesús María', detail: 'Norte de la provincia', x: 60, y: 14 },
   { id: 'provincia', name: 'Resto de la provincia', detail: 'Todo el interior de Córdoba' },
   { id: 'limitrofes', name: 'Provincias limítrofes', detail: NEIGHBOR_PROVINCES.join(', ') },
@@ -173,6 +173,12 @@ export const FAQS: FaqItem[] = [
       'Sí. Contanos qué tipo de factura necesitás cuando pidas el presupuesto: el precio de la mano de obra puede variar según la factura.',
   },
   {
+    id: 'cuotas',
+    question: '¿Se puede pagar en cuotas?',
+    answer:
+      'Sí, con la financiación de Mercado Pago. Las cuotas tienen el interés que aplica Mercado Pago según el plan que elijas.',
+  },
+  {
     id: 'seguro',
     question: '¿Trabajan con seguro?',
     answer: 'Sí. Contamos con seguro y cumplimos los requisitos de higiene y seguridad según las normas IRAM.',
@@ -185,6 +191,13 @@ export const FAQS: FaqItem[] = [
   {
     id: 'zona',
     question: '¿Trabajan en mi zona?',
-    answer: `Trabajamos en toda la provincia de Córdoba y en las provincias limítrofes (${NEIGHBOR_PROVINCES.join(', ')}). Escribinos con tu localidad y coordinamos.`,
+    answer: `Trabajamos en toda la provincia de Córdoba y en las provincias limítrofes (${NEIGHBOR_PROVINCES.join(', ')}). Atendemos todos los días de 8 a 20 h; en barrios privados trabajamos de lunes a viernes. Escribinos con tu localidad y coordinamos.`,
   },
 ];
+
+/** Reseña real, publicada en Muovi. Alejandra Guzmán autorizó usarla (16/10/2026). */
+export const TESTIMONIAL = {
+  quote: 'Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones.',
+  author: 'Alejandra G.',
+  source: 'Reseña publicada en Muovi',
+};

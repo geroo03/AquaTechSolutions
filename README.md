@@ -16,7 +16,7 @@ El contexto completo para trabajar con Claude Code está en [CLAUDE.md](CLAUDE.m
 
 1. **Demo para presentar** — hecha: rediseño con la marca, mobile y deploy automático.
    - **Parte técnica de producción** — hecha: pre-render, SEO local técnico, vista previa para compartir, rendimiento, accesibilidad y analítica lista para activar.
-2. **Datos reales** — en curso: ya están los datos y las respuestas de Martín (15 y 16/10/2026). Faltan las fotos reales de obra, días de atención, medios de pago y tipo de factura (lista en [docs/negocio-y-marca.md](docs/negocio-y-marca.md)). **Sin fotos reales no sale a producción.**
+2. **Datos reales** — en curso: ya están los datos y las respuestas de Martín (15 y 16/10/2026). Falta lo principal: las fotos reales de obra (lista en [docs/negocio-y-marca.md](docs/negocio-y-marca.md)). **Sin fotos reales no sale a producción.**
 3. **Presencia en Google** — crear la ficha de Google Business, enlazarla desde la web y mostrar las reseñas reales.
 4. **Dominio propio** — `aquatechsolutions.com.ar` (elegido por Martín, libre al 16/10/2026). Se compra en [nic.ar](https://nic.ar) con la Clave Fiscal del titular; conectarlo (pasos en [CLAUDE.md](CLAUDE.md) → "Pasar al dominio propio"), alta en Google Search Console y activar la analítica.
 5. **Difusión orgánica** — reels semanales ([docs/videos.md](docs/videos.md)), Google Business, grupos de barrio, B2B y referidos ([docs/plan-marketing.md](docs/plan-marketing.md)). Sin anuncios pagos.

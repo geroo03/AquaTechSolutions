@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin } from 'lucide-react';
-import { ZONES } from '../data/mockData';
+import { ZONES, PRIVATE_NEIGHBORHOODS_NOTE } from '../data/mockData';
 import { ZoneItem } from '../types';
 import { LogoMark, WhatsAppIcon } from './Brand';
 import { Reveal, SectionHeader, waLink } from './ui';
@@ -124,7 +124,7 @@ export const CoverageZonesSection: React.FC = () => {
           </Reveal>
 
           <p className="mt-5 text-[13px] text-muted">
-            La visita para medir puede tener un costo de viáticos según la distancia.
+            {PRIVATE_NEIGHBORHOODS_NOTE} La visita para medir puede tener un costo de viáticos según la distancia.
           </p>
         </div>
 

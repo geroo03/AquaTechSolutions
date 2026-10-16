@@ -7,6 +7,7 @@ import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
 import { WarrantySection } from './components/WarrantySection';
 import { CoverageZonesSection } from './components/CoverageZonesSection';
+import { TestimonialSection } from './components/TestimonialSection';
 import { FaqSection } from './components/FaqSection';
 import { CallToAction } from './components/CallToAction';
 import { Footer } from './components/Footer';
@@ -40,7 +41,7 @@ export default function App() {
         <ProcessSection onOpenDiagnostic={() => setIsDiagnosticOpen(true)} />
         <WarrantySection />
         <CoverageZonesSection />
-        {/* Testimonios: vuelven cuando haya reseñas reales en Google */}
+        <TestimonialSection />
         <FaqSection />
         <CallToAction />
       </main>

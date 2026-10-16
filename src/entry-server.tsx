@@ -28,7 +28,7 @@ interface Site {
 
 /**
  * Datos estructurados de negocio local para Google, solo con datos confirmados.
- * Sin calle (la dirección es la casa del dueño), sin horario ni reseñas hasta tenerlos.
+ * Sin calle (la dirección es la casa del dueño). Sin reseñas: Google no acepta reseñas propias en este marcado.
  */
 export function jsonLd(site: Site) {
   return {
@@ -51,6 +51,12 @@ export function jsonLd(site: Site) {
       addressCountry: site.country,
     },
     areaServed: site.areaServed.map((name) => ({ '@type': 'AdministrativeArea', name })),
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '08:00',
+      closes: '20:00',
+    },
     sameAs: site.sameAs,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
