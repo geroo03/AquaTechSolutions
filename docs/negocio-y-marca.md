@@ -16,7 +16,7 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Facebook | https://www.facebook.com/p/Aquatech-Solutions-61563827794730/ |
 | Dirección | **No se publica**: trabaja a domicilio y la dirección es su casa. En la web y en los datos estructurados va solo "Córdoba, Argentina". |
 | Servicios | Techos (membrana asfáltica + geotextil + poliuretano), terrazas y balcones, humedad de cimientos, filtraciones, tanques y piletas, mantenimiento preventivo. Secundario: pintura interior y exterior. |
-| Metros trabajados | 5.000 m² |
+| Metros trabajados | Más de 15.000 m² (actualizado por Sebastián el 16/10/2026; antes figuraba 5.000 m²) |
 | Zonas | Toda la provincia de Córdoba y las provincias limítrofes (Catamarca, Santiago del Estero, Santa Fe, Buenos Aires, La Pampa, San Luis, La Rioja) |
 | Horario | Todos los días de 8 a 20 h. En barrios privados trabaja de lunes a viernes |
 | Cuotas | Sí, con la financiación de Mercado Pago (con el interés que aplique MP según el plan que elija el cliente) |
