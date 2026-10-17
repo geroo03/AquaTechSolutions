@@ -4,7 +4,10 @@ import { chooseAttribution, enrichWhatsAppLink } from '../../src/attribution';
 
 test.beforeEach(async ({ context }) => {
   // La prueba no envía visitas de ensayo a proveedores de analítica ni abre WhatsApp real.
-  await context.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.fulfill({ contentType: 'text/html', body: '' }));
+  await context.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.fulfill({
+    contentType: route.request().resourceType() === 'script' ? 'application/javascript' : 'text/html',
+    body: '',
+  }));
 });
 
 for (const route of PAGES) {
