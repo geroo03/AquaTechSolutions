@@ -17,6 +17,7 @@ Más contexto en `docs/`:
 npm install        # Node 24 (igual que GitHub Actions)
 npm run dev        # http://localhost:3000
 npm run lint       # tsc --noEmit (tiene que pasar sin errores)
+npm run test:security # validación de configuración y restricciones de la build
 npm run build      # build del cliente + build SSR + pre-render (scripts/prerender.mjs) → dist/
 npm run preview    # sirve dist/ para revisar la build
 ```
@@ -37,6 +38,12 @@ Cada push a `main` con cambios de la web publica en GitHub Pages con `.github/wo
 Los títulos y descripciones de páginas internas viven en `src/routes.ts`; la portada usa los de `site.config.json`. `src/data/serviceDetails.ts` contiene los textos de los tres servicios. La página de GreenVille usa únicamente los datos confirmados y enlaza las imágenes originales en Instagram. `src/pages/BusinessPage.tsx` contiene la página para consorcios y empresas, con consulta por WhatsApp; sus campos no se guardan ni se mandan a un servidor del sitio.
 
 La atribución vive en `src/attribution.ts` y se agrega a los enlaces de WhatsApp al hacer clic, sin cambiar el HTML de hidratación. Ver `docs/medicion-consultas.md`. `npm run test:web` comprueba escritorio y celular contra la build estática; localmente usa Chrome y en CI Chromium.
+
+### Seguridad y reseñas
+
+`prerender.mjs` aplica `secureHtml()` de `scripts/security.ts` después de generar el HTML final. Los hashes de scripts inline deben coincidir con ese HTML: no mover este paso antes de Vite ni añadir `unsafe-inline` / `unsafe-eval` a scripts. La CSP restringe recursos, conexiones y formularios; permite CSS inline por los estilos de React. Las cabeceras HTTP y el WAF requieren configurar Cloudflare: estado y regla preparada en `docs/seguridad.md`; no afirmar que están activos solo por existir el JSON.
+
+`site.config.json` contiene `reviewUrl`, verificado contra el Place ID público de AquaTech. `docs/resenas-google.md` explica la comprobación y el mensaje para clientes. La web enlaza a escribir reseñas, no publica comentarios automáticamente ni muestra puntuaciones no verificadas.
 
 ### Promos temporales
 

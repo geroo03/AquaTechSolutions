@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import site from './site.config.json' with { type: 'json' };
+import { escapeHtml, validateAnalytics } from './scripts/security.ts';
 
 /**
  * Completa los datos del sitio en index.html (%SITE_URL%, %TITLE%, %DESCRIPTION%)
@@ -11,6 +12,7 @@ import site from './site.config.json' with { type: 'json' };
  *   VITE_GA_ID=G-XXXXXXX                   → Google Analytics 4
  */
 function siteHtml(env: Record<string, string>): Plugin {
+  validateAnalytics(env);
   const analytics: string[] = [];
   if (env.VITE_CF_BEACON_TOKEN) {
     analytics.push(
@@ -35,9 +37,9 @@ function siteHtml(env: Record<string, string>): Plugin {
       order: 'pre',
       handler: (html, ctx) =>
         (ctx.server ? html.replace('<!--base-->', '<base href="/">') : html)
-          .replaceAll('%SITE_URL%', site.url)
-          .replaceAll('%TITLE%', site.title)
-          .replaceAll('%DESCRIPTION%', site.description)
+          .replaceAll('%SITE_URL%', escapeHtml(site.url))
+          .replaceAll('%TITLE%', escapeHtml(site.title))
+          .replaceAll('%DESCRIPTION%', escapeHtml(site.description))
           .replace('</head>', `${analytics.join('\n    ')}\n  </head>`),
     },
   };

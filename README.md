@@ -20,11 +20,18 @@ Los mensajes de WhatsApp incluyen el origen de la visita cuando se puede identif
 
 ```bash
 npm run lint
+npm run test:security
 npm run build
 npm run test:web  # requiere Chrome en local; GitHub Actions instala Chromium
 ```
 
 Las pruebas recorren las páginas en escritorio y celular, revisan recursos, metadatos, ausencia de errores de hidratación, navegación, cotizador, atribución y uso de los formularios con teclado. También comprueban el contenido sin JavaScript. Las capturas y trazas se guardan en `test-results/`, fuera de Git. El workflow de Pages ejecuta estas pruebas antes de publicar.
+
+## Seguridad y reseñas
+
+La build incorpora una CSP para restringir scripts y conexiones. Las protecciones implementadas y la regla preparada para Cloudflare están en [docs/seguridad.md](docs/seguridad.md). La regla de Cloudflare requiere acceso a esa cuenta y no se activa solo por publicar.
+
+El enlace directo para escribir reseñas está en el footer, en Opiniones y en [docs/resenas-google.md](docs/resenas-google.md). `site.config.json` define `reviewUrl`.
 
 ## Bot de WhatsApp
 

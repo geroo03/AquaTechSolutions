@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { secureHtml } from './security.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -40,7 +41,7 @@ for (const page of pages) {
     .replace('<!--jsonld-->', `<script type="application/ld+json">${ld}</script>`);
   const output = path.join(dist, page.path.slice(1), 'index.html');
   fs.mkdirSync(path.dirname(output), { recursive: true });
-  fs.writeFileSync(output, html);
+  fs.writeFileSync(output, secureHtml(html));
   console.log(`✓ ${page.path} (${Math.round(html.length / 1024)} KB)`);
 }
 

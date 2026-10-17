@@ -1,6 +1,6 @@
 import React from 'react';
-import { Quote } from 'lucide-react';
-import { TESTIMONIAL } from '../data/mockData';
+import { ArrowUpRight, Quote } from 'lucide-react';
+import { GOOGLE_REVIEW_URL, TESTIMONIAL } from '../data/mockData';
 import { Eyebrow, Reveal } from './ui';
 
 /** Una sola reseña real (autorizada). Cuando haya reseñas de Google, sumarlas acá. */
@@ -18,6 +18,10 @@ export const TestimonialSection: React.FC = () => (
           <span className="text-[13px] text-muted">{TESTIMONIAL.source}</span>
         </figcaption>
       </figure>
+      <div className="mt-10 pt-8 border-t border-line">
+        <p className="text-sm text-muted">¿Hicimos un trabajo para vos? Contanos cómo fue.</p>
+        <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 px-5 py-3 rounded-full ring-1 ring-line bg-white text-sm font-semibold hover:bg-mist transition-colors">Dejar una reseña en Google <ArrowUpRight size={16} /></a>
+      </div>
     </Reveal>
   </section>
 );

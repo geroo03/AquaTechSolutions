@@ -88,6 +88,7 @@ Ahora les mando las fotos.`;
               <Label>Barrio o localidad</Label>
               <input
                 type="text"
+                maxLength={120}
                 value={place}
                 onChange={(e) => setPlace(e.target.value)}
                 placeholder="Ej: Cerro, Villa Allende"

@@ -25,6 +25,7 @@ export const FACEBOOK_URL = 'https://www.facebook.com/p/Aquatech-Solutions-61563
 /** Dirección y ficha compartidas por Sebastián el 17/10/2026 para publicar en la web. */
 export const STREET_ADDRESS = site.streetAddress;
 export const GOOGLE_MAPS_URL = site.mapsUrl;
+export const GOOGLE_REVIEW_URL = site.reviewUrl;
 export const FOUNDED_YEAR = 2008;
 export const SQUARE_METERS = '15.000 m²';
 export const OPENING_HOURS = 'Todos los días de 8 a 20 h';

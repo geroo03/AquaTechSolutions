@@ -1,3 +1,5 @@
+import { PAGES } from './routes';
+
 export interface Attribution {
   source: 'instagram' | 'facebook' | 'google' | 'buscador' | 'referido' | 'otro' | 'directo';
   campaign?: string;
@@ -12,8 +14,8 @@ const storageKey = 'aquatech:origen:v1';
 let current: Attribution | undefined;
 
 /** Solo se conservan etiquetas de campaña, nunca la query completa ni datos de contacto. */
-function campaignLabel(value: string | null) {
-  return value && /^[a-zA-Z0-9_-]{1,64}$/.test(value) ? value : undefined;
+function campaignLabel(value: unknown) {
+  return typeof value === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(value) ? value : undefined;
 }
 
 export function chooseAttribution(search: string, referrer: string, origin: string, landing: string, previous?: Attribution): Attribution {
@@ -46,7 +48,7 @@ export function captureAttribution(landing: string) {
     const stored: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null');
     if (stored && typeof stored === 'object') {
       const value = stored as Attribution;
-      if (Object.hasOwn(SOURCES, value.source) && typeof value.landing === 'string' && value.landing.length <= 100) {
+      if (typeof value.source === 'string' && Object.hasOwn(SOURCES, value.source) && PAGES.some(page => page.label === value.landing)) {
         previous = { source: value.source, landing: value.landing, campaign: campaignLabel(value.campaign ?? null) };
       }
     }

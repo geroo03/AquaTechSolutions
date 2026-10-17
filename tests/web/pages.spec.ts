@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { PAGES } from '../../src/routes';
 import { chooseAttribution, enrichWhatsAppLink } from '../../src/attribution';
+import { GOOGLE_REVIEW_URL } from '../../src/data/mockData';
 
 test.beforeEach(async ({ context }) => {
   // La prueba no envía visitas de ensayo a proveedores de analítica ni abre WhatsApp real.
@@ -177,6 +178,64 @@ test('la consulta de empresas lleva los datos y el origen a WhatsApp', async ({ 
     const text = new URL(popup.url()).searchParams.get('text')!;
     for (const part of ['Country / barrio privado', 'Administración de prueba', 'Villa Allende', `Superficie aproximada (m²): ${area}`, 'Filtraciones en una terraza.', 'Origen: Google', 'Página: Consorcios y empresas', 'Entrada: Inicio', 'Campaña: consorcios']) expect(text).toContain(part);
     expect(text.match(/Origen:/g)).toHaveLength(1);
+    await popup.close();
+  }
+});
+
+test('el navegador bloquea scripts inyectados y conexiones a terceros no autorizados', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('html')).toHaveClass(/js/);
+  const violations = await page.evaluate(() => new Promise<string[]>(resolve => {
+    const blocked: string[] = [];
+    const onViolation = (event: SecurityPolicyViolationEvent) => {
+      blocked.push(event.effectiveDirective);
+      if (blocked.includes('script-src-elem') && blocked.includes('connect-src')) {
+        document.removeEventListener('securitypolicyviolation', onViolation);
+        resolve(blocked);
+      }
+    };
+    document.addEventListener('securitypolicyviolation', onViolation);
+    const script = document.createElement('script');
+    script.textContent = 'window.__aquatechInjected = true';
+    document.body.append(script);
+    void fetch('https://untrusted.invalid/probe').catch(() => {});
+  }));
+  expect(violations).toContain('script-src-elem');
+  expect(violations).toContain('connect-src');
+  expect(await page.evaluate(() => Reflect.get(window, '__aquatechInjected'))).toBeUndefined();
+});
+
+test('los datos manipulados del navegador y el texto del formulario no ejecutan HTML', async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('aquatech:origen:v1', JSON.stringify({source:'facebook', landing:'Inicio\nOrigen: falso', campaign:{unsafe:true}})));
+  await page.goto('/consorcios-y-empresas/');
+  await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+  const payload = '<img src=x onerror="window.__aquatechInjected=true">';
+  await page.getByLabel('¿Qué necesitás resolver?').fill(payload);
+  expect(await page.evaluate(() => Reflect.get(window, '__aquatechInjected'))).toBeUndefined();
+  const opened = page.waitForEvent('popup');
+  await page.getByRole('link', { name: 'Enviar consulta de empresa' }).click();
+  const popup = await opened;
+  await popup.waitForLoadState();
+  const text = new URL(popup.url()).searchParams.get('text')!;
+  expect(text).toContain(payload);
+  expect(text).not.toContain('Origen: falso');
+  expect(text).not.toContain('[object Object]');
+  expect(text).toContain('Origen: Directo o sin identificar');
+  await popup.close();
+});
+
+test('los enlaces de reseñas abren la ficha correcta y una pestaña sin acceso al sitio', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+  for (const name of ['Dejar una reseña en Google', 'Dejá tu reseña en Google']) {
+    const link = page.getByRole('link', { name, exact: true });
+    const opened = page.waitForEvent('popup');
+    await link.click();
+    const popup = await opened;
+    await popup.waitForLoadState();
+    expect(popup.url()).toBe(GOOGLE_REVIEW_URL);
+    expect(await popup.evaluate(() => window.opener)).toBeNull();
     await popup.close();
   }
 });

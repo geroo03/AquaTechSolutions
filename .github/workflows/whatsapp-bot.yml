@@ -47,6 +47,8 @@ jobs:
         run: npm ci --no-fund
       - name: Revisar TypeScript
         run: npm run check
+      - name: Auditar dependencias
+        run: npm audit --audit-level=high
       - name: Ejecutar pruebas de lógica, API y reinicio
         run: npm test
       - name: Compilar

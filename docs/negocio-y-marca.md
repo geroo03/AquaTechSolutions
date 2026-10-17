@@ -30,6 +30,7 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Estadísticas | Martín ya tiene acceso a Cloudflare Web Analytics |
 | Fotos propias | 16/10/2026: mandó 3 fotos reales de obra (techo con las sierras de fondo, aplicación en el borde y recorrida). Se usan en el hero, la sección "En obra" y la imagen para compartir |
 | Dominio | **aquatechsolutions.com.ar**, registrado en NIC Argentina a nombre de Martín el 15/10/2026. **Vence el 15/10/2027**: renovar todos los años en nic.ar (costó $8.500) |
+| Enlace de reseñas | https://search.google.com/local/writereview?placeid=ChIJlwm6fwCZMpQRHXTIHXhFyO8 — Place ID comprobado contra la ficha pública el 17/10/2026; ver docs/resenas-google.md. |
 | Obra real con detalle | Country GreenVille (zona sur de Córdoba Capital): membrana asfáltica con geotextil de 4 mm y pintura poliuretánica (posteo de Instagram del 20/09/2026). Ya se puede nombrar. |
 
 **Garantía, por sistema (no por servicio):**
@@ -78,7 +79,8 @@ Se revisaron las 42 publicaciones de Instagram y las 83 de Facebook. Las obras c
 - [ ] **Precios** definitivos por sistema, para después de la promo.
 - [x] **Dominio conectado**: https://aquatechsolutions.com.ar/, con HTTPS público verificado el 17/10/2026 (estado en CLAUDE.md).
 - [x] **Ficha de Google enlazada**: Sebastián compartió el enlace el 17/10/2026.
-- [ ] Confirmar la gestión de la ficha y obtener el enlace para pedir reseñas a clientes reales. No se incorporaron puntuaciones ni testimonios de Google sin verificar.
+- [x] **Enlace directo de reseñas generado y publicado** (17/10/2026).
+- [ ] Confirmar la gestión de la ficha y actualizar su web y horario. No se incorporaron puntuaciones ni testimonios de Google sin verificar.
 
 ## Marca
 
