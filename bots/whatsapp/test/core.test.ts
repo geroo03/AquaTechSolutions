@@ -10,7 +10,7 @@ import { Store } from '../src/store.js';
 import { Worker, SimulationSender, type Sender } from '../src/worker.js';
 import { encryptedAuthState } from '../src/auth-state.js';
 
-export const config = (overrides = {}) => loadConfig({ ADMIN_API_KEY: 'a'.repeat(64), AUTH_ENCRYPTION_KEY: 'b'.repeat(64), ...overrides });
+export const config = (overrides = {}) => loadConfig({ ADMIN_API_KEY: 'a'.repeat(64), AUTH_ENCRYPTION_KEY: 'b'.repeat(64), WHATSAPP_PROVIDER: 'baileys', ...overrides });
 const now = new Date('2026-10-16T12:00:00Z'); // viernes, 09:00 en Córdoba
 const contact = normalizeContact({ id: 'local_1', name: 'Local', phone: '+12025550123', country: 'US', source: 'test' });
 const second = { ...contact, id: 'local_2', phone: '+12025550124' };

@@ -20,9 +20,16 @@ async function request(path, data) {
 assert.deepEqual(await request('/health'), { ok: true });
 const status = await request('/status');
 assert.equal(status.mode, 'simulation');
+assert.equal(status.whatsappProvider, 'cloud_api');
+assert.equal(status.runtimeUid, 1000);
+assert.equal(status.autoReplyEnabled, false);
 assert.equal(status.usedToday, 0);
 assert.equal(status.senderReady, true);
 assert.equal(status.dailyLimit, 20);
+assert.deepEqual(await request('/cloud/inbox'), []);
+assert.deepEqual(await request('/cloud/replies'), []);
+assert.equal((await fetch(`${base}/status`)).status, 401);
+assert.equal((await fetch(`${base}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=incorrecto&hub.challenge=123`)).status, 403);
 
 await request('/imports/contacts', { contacts: [{
   id: 'container_smoke', name: 'Contacto ficticio de CI', phone: '+12025550123',

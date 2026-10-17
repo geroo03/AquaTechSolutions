@@ -2,7 +2,12 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, chmodSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { ConflictError, InputError, eligible, renderMessage, type Campaign, type Contact, type ContactInput, type Job, type Mode, type Scope } from './domain.js';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import { ConflictError, InputError, eligible, isOptOut, normalizeContact, renderMessage, type Campaign, type Contact, type ContactInput, type Job, type Mode, type Scope } from './domain.js';
+import type { Inbound } from './cloud-api.js';
+
+export type CloudReply = { id: number; phone: string; body: string; mode: Mode; state: string; created_at: number; expires_at: number; reason: string | null; provider_id: string | null };
+const serviceWindow = 24 * 60 * 60 * 1000;
 
 export class Store {
   readonly db: DatabaseSync;
@@ -43,6 +48,17 @@ export class Store {
         id INTEGER PRIMARY KEY, event TEXT NOT NULL, contact_id TEXT, detail TEXT NOT NULL, created_at TEXT NOT NULL
       );
       CREATE TABLE IF NOT EXISTS auth_state (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS cloud_inbound (
+        id TEXT PRIMARY KEY, phone TEXT NOT NULL, name TEXT NOT NULL, received_at INTEGER NOT NULL,
+        type TEXT NOT NULL, text TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS cloud_conversations (phone TEXT PRIMARY KEY, last_message_at INTEGER NOT NULL);
+      CREATE TABLE IF NOT EXISTS cloud_replies (
+        id INTEGER PRIMARY KEY, phone TEXT NOT NULL, body TEXT NOT NULL, mode TEXT NOT NULL,
+        source_id TEXT UNIQUE, state TEXT NOT NULL DEFAULT 'queued', created_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL, reason TEXT, provider_id TEXT
+      );
+      CREATE TABLE IF NOT EXISTS cloud_attempts (reply_id INTEGER PRIMARY KEY REFERENCES cloud_replies(id), mode TEXT NOT NULL, local_day TEXT NOT NULL);
     `);
     if (path !== ':memory:') chmodSync(path, 0o600);
   }
@@ -95,12 +111,14 @@ export class Store {
     });
   }
   revokePhone(phone: string, now = new Date()) {
-    this.transaction(() => {
+    this.transaction(() => this.revokePhoneRows(phone, now));
+  }
+  private revokePhoneRows(phone: string, now: Date) {
       this.db.prepare('INSERT INTO suppressions(phone,created_at) VALUES(?,?) ON CONFLICT(phone) DO UPDATE SET created_at=excluded.created_at').run(phone, now.toISOString());
       this.db.prepare("UPDATE contacts SET consent_state='revoked',consent_scope=NULL WHERE phone=?").run(phone);
       this.db.prepare("UPDATE jobs SET state='cancelled', reason='opt_out' WHERE state='queued' AND contact_id IN(SELECT id FROM contacts WHERE phone=?)").run(phone);
+      this.db.prepare("UPDATE cloud_replies SET state='cancelled',reason='opt_out' WHERE phone=? AND state='queued'").run(phone);
       this.audit('consent_revoked', this.contactByPhone(phone)?.id ?? null, 'opt_out', now);
-    });
   }
   suppressed(phone: string) { return Boolean(this.db.prepare('SELECT phone FROM suppressions WHERE phone=?').get(phone)); }
   queueCampaign(c: Campaign, business: string) {
@@ -122,8 +140,62 @@ export class Store {
   jobs() { return this.db.prepare('SELECT * FROM jobs ORDER BY id DESC LIMIT 1000').all() as Job[]; }
   recoverInterrupted() {
     const result = this.db.prepare("UPDATE jobs SET state='unknown',reason='interrupted' WHERE state='sending'").run();
-    if (result.changes) this.pause('interrupted_send');
-    return Number(result.changes);
+    const replies = this.db.prepare("UPDATE cloud_replies SET state='unknown',reason='interrupted' WHERE state='sending'").run();
+    if (result.changes || replies.changes) this.pause('interrupted_send');
+    return Number(result.changes) + Number(replies.changes);
+  }
+  receiveCloudMessage(message: Inbound, mode: Mode, autoReply: string | undefined, now = new Date()) {
+    return this.transaction(() => {
+      const inserted = this.db.prepare('INSERT OR IGNORE INTO cloud_inbound(id,phone,name,received_at,type,text) VALUES(?,?,?,?,?,?)')
+        .run(message.id, message.phone, message.name, message.at, message.type, message.text);
+      if (!inserted.changes) return false;
+      let contact = this.contactByPhone(message.phone);
+      if (!contact) {
+        const parsed = parsePhoneNumberFromString(message.phone);
+        const input = normalizeContact({ id: `wa_${message.phone.substring(1)}`, phone: message.phone, name: message.name.trim() || 'Consulta por WhatsApp', country: parsed?.country ?? 'AR', source: 'Consulta entrante por WhatsApp oficial' });
+        this.db.prepare('INSERT INTO contacts(id,name,phone,country,source,consent_state) VALUES(?,?,?,?,?,?)').run(input.id, input.name, input.phone, input.country, input.source, this.suppressed(input.phone) ? 'revoked' : 'pending');
+        contact = this.contact(input.id)!;
+      }
+      this.db.prepare('INSERT INTO cloud_conversations(phone,last_message_at) VALUES(?,?) ON CONFLICT(phone) DO UPDATE SET last_message_at=MAX(last_message_at,excluded.last_message_at)').run(message.phone, message.at);
+      if (isOptOut(message.text)) this.revokePhoneRows(message.phone, now);
+      else {
+        this.audit('human_review_required', contact.id, JSON.stringify({ source: 'cloud_api', messageId: message.id, type: message.type }), now);
+        // Una consulta entrante habilita atención, nunca consentimiento para campañas de marketing.
+        const recent = this.db.prepare('SELECT id FROM cloud_replies WHERE phone=? AND mode=? AND created_at>? LIMIT 1').get(message.phone, mode, now.getTime() - serviceWindow);
+        if (autoReply && !recent && !this.suppressed(message.phone) && message.at + serviceWindow - 60000 > now.getTime()) {
+          this.db.prepare('INSERT INTO cloud_replies(phone,body,mode,source_id,created_at,expires_at) VALUES(?,?,?,?,?,?)').run(message.phone, autoReply, mode, message.id, now.getTime(), message.at + serviceWindow - 60000);
+        }
+      }
+      return true;
+    });
+  }
+  cloudInbox() { return this.db.prepare('SELECT * FROM cloud_inbound ORDER BY received_at DESC LIMIT 100').all(); }
+  cloudReplies() { return this.db.prepare('SELECT * FROM cloud_replies ORDER BY id DESC LIMIT 100').all() as CloudReply[]; }
+  queueCloudReply(phone: string, text: string, mode: Mode, now = new Date()) {
+    const conversation = this.db.prepare('SELECT last_message_at FROM cloud_conversations WHERE phone=?').get(phone) as { last_message_at: number } | undefined;
+    if (!conversation || conversation.last_message_at + serviceWindow - 60000 <= now.getTime()) throw new ConflictError('No hay ventana de atención vigente; se necesita una plantilla aprobada');
+    if (this.suppressed(phone)) throw new ConflictError('El contacto pidió la baja');
+    const result = this.db.prepare('INSERT INTO cloud_replies(phone,body,mode,created_at,expires_at) VALUES(?,?,?,?,?)').run(phone, text, mode, now.getTime(), conversation.last_message_at + serviceWindow - 60000);
+    this.audit('cloud_reply_queued', this.contactByPhone(phone)?.id ?? null, JSON.stringify({ replyId: Number(result.lastInsertRowid), mode }), now);
+    return Number(result.lastInsertRowid);
+  }
+  cloudUsage(mode: Mode, day: string) { return Number((this.db.prepare('SELECT count(*) AS n FROM cloud_attempts WHERE mode=? AND local_day=?').get(mode, day) as { n: number }).n); }
+  claimCloudReply(mode: Mode, day: string, limit: number, now = new Date()) {
+    return this.transaction(() => {
+      if (this.setting('paused') || this.cloudUsage(mode, day) + this.usage(mode, day) >= limit) return;
+      this.db.prepare("UPDATE cloud_replies SET state='expired',reason='service_window_closed' WHERE state='queued' AND expires_at<=?").run(now.getTime());
+      this.db.prepare("UPDATE cloud_replies SET state='cancelled',reason='opt_out' WHERE state='queued' AND phone IN(SELECT phone FROM suppressions)").run();
+      const reply = this.db.prepare("SELECT * FROM cloud_replies WHERE state='queued' AND mode=? ORDER BY id LIMIT 1").get(mode) as CloudReply | undefined;
+      if (!reply) return;
+      const conversation = this.db.prepare('SELECT last_message_at FROM cloud_conversations WHERE phone=?').get(reply.phone) as { last_message_at: number } | undefined;
+      if (!conversation || conversation.last_message_at + serviceWindow - 60000 <= now.getTime()) { this.finishCloudReply(reply.id, 'expired', 'service_window_closed'); return; }
+      this.db.prepare("UPDATE cloud_replies SET state='sending' WHERE id=?").run(reply.id);
+      this.db.prepare('INSERT INTO cloud_attempts(reply_id,mode,local_day) VALUES(?,?,?)').run(reply.id, mode, day);
+      return reply;
+    });
+  }
+  finishCloudReply(id: number, state: string, reason: string | null = null, providerId: string | null = null) {
+    this.db.prepare('UPDATE cloud_replies SET state=?,reason=?,provider_id=? WHERE id=?').run(state, reason, providerId, id);
   }
   pause(reason: string) { this.setSetting('paused', reason); this.audit('paused', null, reason); }
   resume() { this.setSetting('paused', ''); this.audit('resumed', null, 'operator'); }
@@ -137,7 +209,7 @@ export class Store {
   usage(mode: Mode, day: string) { return Number((this.db.prepare('SELECT count(*) AS n FROM attempts WHERE mode=? AND local_day=?').get(mode, day) as { n: number }).n); }
   claim(job: Job, day: string, limit: number, now: Date, intervalSeconds: number) {
     return this.transaction(() => {
-      if (this.setting('paused') || this.usage(job.mode, day) >= limit) return false;
+      if (this.setting('paused') || this.usage(job.mode, day) + this.cloudUsage(job.mode, day) >= limit) return false;
       const next = Number(this.setting(`next_send_${job.mode}`) ?? 0);
       if (now.getTime() < next) return false;
       const contact = this.contact(job.contact_id);

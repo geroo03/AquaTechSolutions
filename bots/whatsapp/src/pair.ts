@@ -6,6 +6,7 @@ import { WhatsAppSender } from './whatsapp.js';
 if (!process.stdout.isTTY) throw new Error('La vinculación requiere una terminal interactiva; no guardar el QR en logs');
 process.umask(0o077);
 const config = loadConfig();
+if (config.WHATSAPP_PROVIDER !== 'baileys') throw new Error('La API oficial se conecta desde Meta; no usa el QR de Baileys');
 const store = new Store(config.DATABASE_PATH);
 const lease = store.lock();
 let closing = false;

@@ -12,7 +12,15 @@ const schema = z.object({
   PORT: integer(1, 65535, '3000'),
   DATABASE_PATH: z.string().default('./data/bot.sqlite'),
   MODE: z.enum(['simulation', 'live']).default('simulation'),
+  WHATSAPP_PROVIDER: z.enum(['cloud_api', 'baileys']).default('cloud_api'),
   SEND_ENABLED: bool.default(false),
+  META_ACCESS_TOKEN: z.string().default(''),
+  META_PHONE_NUMBER_ID: z.string().regex(/^\d*$/).default(''),
+  META_WABA_ID: z.string().regex(/^\d*$/).default(''),
+  META_GRAPH_VERSION: z.string().regex(/^(v\d+\.\d+)?$/).default(''),
+  META_APP_SECRET: z.string().regex(/^([a-fA-F0-9]{32})?$/).default(''),
+  META_WEBHOOK_VERIFY_TOKEN: z.string().refine(value => !value || value.length >= 32).default(''),
+  AUTO_REPLY_ENABLED: bool.default(false),
   TIME_ZONE: z.string().default('America/Argentina/Cordoba'),
   START_HOUR: integer(0, 23, '8'),
   END_HOUR: integer(1, 24, '20'),
@@ -40,8 +48,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env) {
   if (!days.length || days.some(d => !Number.isInteger(d) || d < 1 || d > 7)) throw new Error('ACTIVE_DAYS inválido');
   if (c.MODE === 'simulation' && c.SEND_ENABLED) throw new Error('SEND_ENABLED solo se usa con MODE=live');
   if (c.MODE === 'live' && !c.SEND_ENABLED) throw new Error('MODE=live requiere SEND_ENABLED=true');
+  if (c.MODE === 'live' && c.WHATSAPP_PROVIDER === 'cloud_api') {
+    const missing = metaMissing(c);
+    if (missing.length) throw new Error(`Falta configurar WhatsApp oficial: ${missing.join(', ')}`);
+  }
   if (c.SHEETS_SPREADSHEET_ID && !c.GOOGLE_APPLICATION_CREDENTIALS) throw new Error('Falta GOOGLE_APPLICATION_CREDENTIALS');
   if (c.SHEETS_SYNC_SECONDS >= c.SHEETS_MAX_AGE_SECONDS) throw new Error('La antigüedad máxima de Sheets debe superar el intervalo de sincronización');
   return { ...c, DATABASE_PATH: resolve(c.DATABASE_PATH), activeDays: days };
 }
 export type Config = ReturnType<typeof loadConfig>;
+
+export function metaMissing(config: Record<string, unknown>) {
+  return ['META_ACCESS_TOKEN', 'META_PHONE_NUMBER_ID', 'META_WABA_ID', 'META_GRAPH_VERSION', 'META_APP_SECRET', 'META_WEBHOOK_VERIFY_TOKEN'].filter(key => !config[key]);
+}
