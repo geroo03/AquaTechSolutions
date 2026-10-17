@@ -3,6 +3,7 @@ import { renderToString } from 'react-dom/server';
 import App from './App';
 import { SERVICES, SECONDARY_SERVICE } from './data/mockData';
 import DetailPage from './pages/DetailPage';
+import BusinessPage from './pages/BusinessPage';
 import { PAGES, pageForPath, type SitePage } from './routes';
 
 export const pages = PAGES;
@@ -12,7 +13,7 @@ export function render(path = '/') {
   const page = pageForPath(path);
   return renderToString(
     <StrictMode>
-      {page.kind === 'home' ? <App /> : <DetailPage page={page} />}
+      {page.kind === 'home' ? <App /> : page.kind === 'business' ? <BusinessPage page={page} /> : <DetailPage page={page} />}
     </StrictMode>,
   );
 }
@@ -25,6 +26,8 @@ interface Site {
   email: string;
   foundingDate: string;
   city: string;
+  streetAddress: string;
+  mapsUrl: string;
   region: string;
   country: string;
   areaServed: string[];
@@ -33,7 +36,7 @@ interface Site {
 
 /**
  * Datos estructurados de negocio local para Google, solo con datos confirmados.
- * Sin calle (la dirección es la casa del dueño). Sin reseñas: Google no acepta reseñas propias en este marcado.
+ * Dirección y ficha autorizadas por Sebastián el 17/10/2026. Sin reseñas propias en este marcado.
  */
 export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
   const business = {
@@ -51,6 +54,7 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
     slogan: 'Impermeabilizaciones que perduran',
     address: {
       '@type': 'PostalAddress',
+      streetAddress: site.streetAddress,
       addressLocality: site.city,
       addressRegion: site.region,
       addressCountry: site.country,
@@ -63,6 +67,7 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
       closes: '20:00',
     },
     sameAs: site.sameAs,
+    hasMap: site.mapsUrl,
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Servicios de impermeabilización',
@@ -74,7 +79,8 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
   };
   if (page.kind === 'home') return business;
   const url = new URL(page.path.slice(1), site.url).href;
-  const entityId = `${url}#${page.kind === 'service' ? 'servicio' : 'obra'}`;
+  const isService = page.kind === 'service' || page.kind === 'business';
+  const entityId = `${url}#${isService ? 'servicio' : 'obra'}`;
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -90,7 +96,7 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
           { '@type': 'ListItem', position: 2, name: page.label, item: url },
         ],
       },
-      page.kind === 'service' ? {
+      isService ? {
         '@type': 'Service', '@id': entityId, name: page.title.split(' | ')[0],
         description: page.description, url, provider: { '@id': business['@id'] },
         areaServed: business.areaServed,

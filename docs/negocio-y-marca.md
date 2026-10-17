@@ -14,7 +14,8 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Email | aquatech.cba@gmail.com |
 | Instagram | https://www.instagram.com/aqua.tech.solutions/ |
 | Facebook | https://www.facebook.com/p/Aquatech-Solutions-61563827794730/ |
-| Dirección | **No se publica**: trabaja a domicilio y la dirección es su casa. En la web y en los datos estructurados va solo "Córdoba, Argentina". |
+| Dirección | **Caseros 1191, Córdoba, Argentina**. Sebastián pidió publicarla en el footer el 17/10/2026; reemplaza la indicación anterior de ocultar la calle. El trabajo se realiza a domicilio; no se afirma atención presencial. |
+| Google Maps | https://share.google/DewBH416dEBKgWxEs — enlace de la ficha de AquaTech proporcionado por Sebastián el 17/10/2026. |
 | Servicios | Techos (membrana asfáltica + geotextil + poliuretano), terrazas y balcones, humedad de cimientos, filtraciones, tanques y piletas, mantenimiento preventivo. Secundario: pintura interior y exterior. |
 | Metros trabajados | Más de 15.000 m² (actualizado por Sebastián el 16/10/2026; antes figuraba 5.000 m²) |
 | Zonas | Toda la provincia de Córdoba y las provincias limítrofes (Catamarca, Santiago del Estero, Santa Fe, Buenos Aires, La Pampa, San Luis, La Rioja) |
@@ -48,7 +49,7 @@ Para lo que no encaja en un sistema (tanques, piletas, cimientos): "garantía se
 
 ## Decisiones tomadas en la web (actualizadas al 17/10/2026)
 
-- **Testimonios**: se muestra solo la reseña de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."), que **dio el ok el 16/10/2026**. Va firmada "Alejandra G.". No usar las reseñas de Muovi escritas por el propio Martín. Sumar reseñas de Google cuando exista la ficha.
+- **Testimonios**: se muestra solo la reseña de Alejandra Guzmán en Muovi ("Hace más de 10 años me hicieron la impermeabilización del techo. Hasta ahora no tengo filtraciones."), que **dio el ok el 16/10/2026**. Va firmada "Alejandra G.". No usar las reseñas de Muovi escritas por el propio Martín. Sumar reseñas de Google con fuente y autorización cuando estén disponibles; la ficha ya fue enlazada.
 - **Cotizador sin precios**: pide tipo de trabajo, m², estado y barrio, y arma el mensaje de WhatsApp. Si Martín quiere mostrar precios, que pase un rango por sistema.
 - **Preguntas frecuentes**: solo las confirmadas (cómo pedir presupuesto, garantía por sistema, desde cuándo trabaja y zona). Se sacaron las de Factura A/B, ART, cuotas y certificado con número.
 - **Sin afirmaciones no confirmadas**: se sacaron las marcas de materiales, el certificado modelo y "visita sin cargo". El 16/10 se volvieron a poner, ya confirmados: presupuesto sin cargo, respuesta en unos 20 min, presupuesto en menos de 24 h, garantía por escrito y horario.
@@ -76,7 +77,8 @@ Se revisaron las 42 publicaciones de Instagram y las 83 de Facebook. Las obras c
 - [ ] **Otros medios de pago** además de Mercado Pago (efectivo, transferencia), si quiere mostrarlos.
 - [ ] **Precios** definitivos por sistema, para después de la promo.
 - [x] **Dominio conectado**: https://aquatechsolutions.com.ar/, con HTTPS público verificado el 17/10/2026 (estado en CLAUDE.md).
-- [ ] Links de reseña: tiene clientes para pedirles reseñas en Google; falta crear la ficha de Google Business.
+- [x] **Ficha de Google enlazada**: Sebastián compartió el enlace el 17/10/2026.
+- [ ] Confirmar la gestión de la ficha y obtener el enlace para pedir reseñas a clientes reales. No se incorporaron puntuaciones ni testimonios de Google sin verificar.
 
 ## Marca
 

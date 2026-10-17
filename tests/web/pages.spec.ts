@@ -154,6 +154,33 @@ test('bloquear sessionStorage no impide abrir una consulta con su origen actual'
   await popup.close();
 });
 
+test('la consulta de empresas lleva los datos y el origen a WhatsApp', async ({ page }) => {
+  await page.goto('/?utm_source=google&utm_campaign=consorcios');
+  await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+  await page.getByRole('link', { name: /¿Administrás un edificio o una empresa/ }).click();
+  await expect(page).toHaveURL(/\/consorcios-y-empresas\/$/);
+  await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+  await page.getByRole('link', { name: 'Preparar consulta', exact: true }).click();
+  await expect(page).toHaveURL(/\/consorcios-y-empresas\/#consulta-empresa$/);
+  await page.getByLabel('Tipo de inmueble').selectOption('Country / barrio privado');
+  await page.getByLabel('Administración o empresa').fill('Administración de prueba');
+  await page.getByLabel('Barrio o localidad').fill('Villa Allende');
+  await page.getByLabel('Superficie aproximada en m²').fill('240');
+  await page.getByLabel('¿Qué necesitás resolver?').fill('Filtraciones en una terraza.');
+  const link = page.getByRole('link', { name: 'Enviar consulta de empresa', exact: true });
+  for (const area of ['240', '300']) {
+    await page.getByLabel('Superficie aproximada en m²').fill(area);
+    const opened = page.waitForEvent('popup');
+    await link.click();
+    const popup = await opened;
+    await popup.waitForLoadState();
+    const text = new URL(popup.url()).searchParams.get('text')!;
+    for (const part of ['Country / barrio privado', 'Administración de prueba', 'Villa Allende', `Superficie aproximada (m²): ${area}`, 'Filtraciones en una terraza.', 'Origen: Google', 'Página: Consorcios y empresas', 'Entrada: Inicio', 'Campaña: consorcios']) expect(text).toContain(part);
+    expect(text.match(/Origen:/g)).toHaveLength(1);
+    await popup.close();
+  }
+});
+
 test('el contenido y la navegación de las páginas existen sin JavaScript', async ({ browser }, info) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: info.project.use.viewport });
   const page = await context.newPage();
@@ -168,11 +195,14 @@ test('el contenido y la navegación de las páginas existen sin JavaScript', asy
         await faq.locator('summary').click();
         await expect(faq).toHaveAttribute('open', '');
       }
+      if (route.kind === 'business') {
+        await expect(page.getByRole('link', { name: 'Enviar consulta de empresa' })).toHaveAttribute('href', /^https:\/\/wa\.me\//);
+      }
     }
   } finally { await context.close(); }
 });
 
-test('el sitemap incluye las cinco páginas', async ({ request }) => {
+test('el sitemap incluye todas las páginas', async ({ request }) => {
   const response = await request.get('/sitemap.xml');
   expect(response.ok()).toBe(true);
   const xml = await response.text();

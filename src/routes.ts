@@ -2,7 +2,7 @@ import site from '../site.config.json' with { type: 'json' };
 
 export interface SitePage {
   path: string;
-  kind: 'home' | 'service' | 'work';
+  kind: 'home' | 'service' | 'work' | 'business';
   label: string;
   title: string;
   description: string;
@@ -35,6 +35,11 @@ export const PAGES: SitePage[] = [
     title: 'Impermeabilización en Country GreenVille, Córdoba | AquaTech Solutions',
     description: 'Conocé la obra de AquaTech en Country GreenVille: membrana asfáltica con geotextil de 4 mm y pintura poliuretánica. Publicación de septiembre de 2026.',
   },
+  {
+    path: '/consorcios-y-empresas/', kind: 'business', label: 'Consorcios y empresas',
+    title: 'Impermeabilización para consorcios y empresas en Córdoba | AquaTech Solutions',
+    description: 'Impermeabilización para edificios, countries y empresas en Córdoba. Conocé obras realizadas y prepará una consulta con ubicación, superficie y problema.',
+  },
 ];
 
 /** Admite también el prefijo del repositorio cuando se sirve en GitHub Pages. */
@@ -49,3 +54,4 @@ export const serviceHref = (serviceId: string) => {
 };
 
 export const GREENVILLE_PATH = '/trabajos/greenville/';
+export const BUSINESS_PATH = '/consorcios-y-empresas/';

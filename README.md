@@ -14,7 +14,7 @@ El contexto completo para trabajar con Claude Code está en [CLAUDE.md](CLAUDE.m
 
 ## Servicios, obras y medición
 
-La portada se complementa con páginas de techos, humedad de cimientos y terrazas/balcones, y con el caso de Country GreenVille. Todas se generan como HTML estático con URL propia, metadatos y entrada en el sitemap. `src/routes.ts` define las rutas y `src/data/serviceDetails.ts` sus contenidos.
+La portada se complementa con páginas de techos, humedad de cimientos y terrazas/balcones, con el caso de Country GreenVille y con una página para consorcios, countries y empresas. Todas se generan como HTML estático con URL propia, metadatos y entrada en el sitemap. `src/routes.ts` define las rutas y `src/data/serviceDetails.ts` sus contenidos. La página empresarial vive en `src/pages/BusinessPage.tsx` y prepara una consulta de WhatsApp con tipo de inmueble, organización, ubicación, superficie y problema; no almacena esos datos.
 
 Los mensajes de WhatsApp incluyen el origen de la visita cuando se puede identificar. La guía de enlaces de campaña y la planilla comercial están en [docs/medicion-consultas.md](docs/medicion-consultas.md).
 
@@ -37,6 +37,6 @@ El workflow [`whatsapp-bot.yml`](.github/workflows/whatsapp-bot.yml) ejecuta las
 1. **Demo para presentar** — hecha: rediseño con la marca, mobile y deploy automático.
    - **Parte técnica de producción** — hecha: pre-render, SEO local técnico, vista previa para compartir, rendimiento, accesibilidad y analítica lista para activar.
 2. **Datos reales** — en curso: ya están los datos y las respuestas de Martín (15 y 16/10/2026). Ya hay fotos reales de obra; falta el antes y después de 3 obras para el comparador (lista en [docs/negocio-y-marca.md](docs/negocio-y-marca.md)). El comparador queda pendiente de esas fotos originales.
-3. **Presencia en Google** — crear la ficha de Google Business, enlazarla desde la web y mostrar las reseñas reales.
+3. **Presencia en Google** — ficha enlazada en el footer, junto a Caseros 1191, Córdoba (datos compartidos por Sebastián el 17/10/2026). Pendiente confirmar su gestión y sumar reseñas reales verificadas.
 4. **Dominio propio** — conectado: `aquatechsolutions.com.ar`, publicado con HTTPS. Pendiente confirmar el alta en Google Search Console, el envío del sitemap y la medición del nuevo hostname en Cloudflare; configuración en [CLAUDE.md](CLAUDE.md).
 5. **Difusión orgánica** — reels semanales ([docs/videos.md](docs/videos.md)), Google Business, grupos de barrio, B2B y referidos ([docs/plan-marketing.md](docs/plan-marketing.md)). Sin anuncios pagos.

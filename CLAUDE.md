@@ -28,13 +28,13 @@ Cada push a `main` con cambios de la web publica en GitHub Pages con `.github/wo
 ### Pre-render y SEO
 
 `npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que:
-- genera la portada y las cuatro rutas de `src/routes.ts` como archivos `index.html` pre-renderizados. El cliente **hidrata** la página correspondiente: no leer datos del navegador durante el render inicial;
+- genera todas las rutas de `src/routes.ts` como archivos `index.html` pre-renderizados. El cliente **hidrata** la página correspondiente: no leer datos del navegador durante el render inicial;
 - inserta los datos estructurados `HomeAndConstructionBusiness` (marcador `<!--jsonld-->`), armados en `jsonLd()` de `entry-server.tsx` **solo con datos confirmados**;
 - genera metadatos por página, `sitemap.xml` con todas las rutas y `robots.txt`. Un `<base>` relativo en cada HTML mantiene funcionando recursos y enlaces desde rutas anidadas. No publicar todas las páginas con el canonical de la portada.
 
-**`site.config.json` es la única fuente** de URL, nombre, título, descripción y teléfono del sitio (la usan `vite.config.ts` para completar `%SITE_URL%`, `%TITLE%` y `%DESCRIPTION%` en `index.html`, y el pre-render). La imagen para compartir es `public/og-image.png` (1200×630).
+**`site.config.json` es la única fuente** de URL, nombre, título, descripción, teléfono, dirección y enlace de Google Maps del sitio (la usan `vite.config.ts` para completar `%SITE_URL%`, `%TITLE%` y `%DESCRIPTION%` en `index.html`, y el pre-render). La imagen para compartir es `public/og-image.png` (1200×630).
 
-Los títulos y descripciones de páginas internas viven en `src/routes.ts`; la portada usa los de `site.config.json`. `src/data/serviceDetails.ts` contiene los textos de los tres servicios. La página de GreenVille usa únicamente los datos confirmados y enlaza las imágenes originales en Instagram.
+Los títulos y descripciones de páginas internas viven en `src/routes.ts`; la portada usa los de `site.config.json`. `src/data/serviceDetails.ts` contiene los textos de los tres servicios. La página de GreenVille usa únicamente los datos confirmados y enlaza las imágenes originales en Instagram. `src/pages/BusinessPage.tsx` contiene la página para consorcios y empresas, con consulta por WhatsApp; sus campos no se guardan ni se mandan a un servidor del sitio.
 
 La atribución vive en `src/attribution.ts` y se agrega a los enlaces de WhatsApp al hacer clic, sin cambiar el HTML de hidratación. Ver `docs/medicion-consultas.md`. `npm run test:web` comprueba escritorio y celular contra la build estática; localmente usa Chrome y en CI Chromium.
 
@@ -112,7 +112,7 @@ public/
 ## Reglas sobre los datos
 
 - `src/data/mockData.ts` tiene **solo datos confirmados** por el dueño (Martín Emiliano Nieto) o por Sebastián: desde 2008, +15.000 m², garantía por sistema y por escrito, presupuesto sin cargo en menos de 24 h, respuesta en ~20 min, horario todos los días de 8 a 20 h (barrios privados: lunes a viernes), cuotas con Mercado Pago, zonas (Córdoba y provincias limítrofes), seguro, obras que se pueden nombrar, email, Instagram y Facebook. La fuente y la lista de lo que falta están en `docs/negocio-y-marca.md`.
-- **No inventar datos del negocio** ni poner lo no confirmado: precios fuera de la promo, medios de pago distintos de Mercado Pago, tipo de factura (A/B/C), "visita sin cargo" (la visita puede cobrar viáticos), marcas de materiales, certificados, testimonios o la dirección (es la casa del dueño: solo "Córdoba"). Si falta un dato, dejarlo afuera y avisar.
+- **No inventar datos del negocio** ni poner lo no confirmado: precios fuera de la promo, medios de pago distintos de Mercado Pago, tipo de factura (A/B/C), "visita sin cargo" (la visita puede cobrar viáticos), marcas de materiales, certificados o testimonios. La dirección **Caseros 1191, Córdoba**, y el enlace de Google Maps fueron proporcionados por Sebastián el 17/10/2026 con instrucción expresa de publicarlos en el footer; esa instrucción reemplaza la indicación anterior de ocultar la calle. No afirmar que hay atención presencial sin confirmarlo. Si falta un dato, dejarlo afuera y avisar.
 - La garantía se muestra **por sistema**, no por servicio. Lo que no encaja en un sistema: "Garantía según el sistema".
 - Fotos: el hero, la sección "En obra" (`WorkGallerySection`, `WORK_PHOTOS`) y `og-image.png` usan fotos reales de Martín. Trabajos muestra obras reales de las redes (`WORKS`), con link al posteo. Ya no quedan imágenes de IA. El comparador antes/después se sacó y está en el historial de git (`ComparisonSlider`), para volver a usarlo cuando lleguen las fotos originales. Las fotos nuevas van en WebP, y el hero tiene versión de 960 px para celular (`srcSet`).
 - Testimonios: solo la reseña autorizada de Alejandra G. (Muovi). Sumar únicamente reseñas reales (Google) o con autorización expresa de quien la escribió.

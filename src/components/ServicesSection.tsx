@@ -1,10 +1,10 @@
 import React from 'react';
-import { ArrowUpRight, PaintRoller } from 'lucide-react';
+import { ArrowUpRight, Building2, PaintRoller } from 'lucide-react';
 import { SERVICES, SECONDARY_SERVICE } from '../data/mockData';
 import { PROMO } from '../data/promo';
 import { usePromoActive } from './PromoSection';
 import { Reveal, SectionHeader, waLink } from './ui';
-import { serviceHref } from '../routes';
+import { BUSINESS_PATH, serviceHref } from '../routes';
 
 interface ServicesSectionProps {
   onSelectServiceForQuote: (serviceTitle: string) => void;
@@ -117,6 +117,12 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onSelectServic
               </a>
             </div>
           </div>
+        </Reveal>
+        <Reveal className="mt-5">
+          <a href={`.${BUSINESS_PATH}`} className="group flex flex-col sm:flex-row sm:items-center justify-between gap-6 rounded-3xl bg-silver-disc p-7 sm:p-8 ring-1 ring-line">
+            <div className="flex items-start gap-4"><Building2 size={24} strokeWidth={1.5} className="shrink-0 mt-1" /><div><h3 className="font-headline text-xl font-bold">¿Administrás un edificio o una empresa?</h3><p className="mt-2 text-sm text-graphite leading-relaxed">Conocé nuestras obras y prepará una consulta para consorcios, countries y empresas.</p></div></div>
+            <span className="inline-flex items-center gap-2 text-sm font-semibold shrink-0">Conocer la propuesta <ArrowUpRight size={18} /></span>
+          </a>
         </Reveal>
       </div>
     </section>

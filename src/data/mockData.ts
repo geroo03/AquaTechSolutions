@@ -5,6 +5,7 @@
  */
 import { House, Building2, Droplets, CloudRain, Waves, Wrench, Camera, MapPin, ReceiptText, ShieldCheck } from 'lucide-react';
 import { ServiceItem, WorkItem, FaqItem, ZoneItem, WarrantyItem } from '../types';
+import site from '../../site.config.json' with { type: 'json' };
 
 // Ruta relativa: igual en el pre-render y en el navegador, funcione bajo /AquaTechSolutions/ o en un dominio propio
 const img = (name: string) => `./images/${name}`;
@@ -21,6 +22,9 @@ export const EMAIL = 'aquatech.cba@gmail.com';
 export const INSTAGRAM_URL = 'https://www.instagram.com/aqua.tech.solutions/';
 export const INSTAGRAM_HANDLE = '@aqua.tech.solutions';
 export const FACEBOOK_URL = 'https://www.facebook.com/p/Aquatech-Solutions-61563827794730/';
+/** Dirección y ficha compartidas por Sebastián el 17/10/2026 para publicar en la web. */
+export const STREET_ADDRESS = site.streetAddress;
+export const GOOGLE_MAPS_URL = site.mapsUrl;
 export const FOUNDED_YEAR = 2008;
 export const SQUARE_METERS = '15.000 m²';
 export const OPENING_HOURS = 'Todos los días de 8 a 20 h';
