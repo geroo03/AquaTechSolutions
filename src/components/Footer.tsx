@@ -13,6 +13,7 @@ import {
 } from '../data/mockData';
 import { Logo, WhatsAppIcon, InstagramIcon, FacebookIcon } from './Brand';
 import { waLink } from './ui';
+import { serviceHref, GREENVILLE_PATH } from '../routes';
 
 const socialClass =
   'w-10 h-10 rounded-full ring-1 ring-white/15 flex items-center justify-center text-white/80 hover:bg-white hover:text-ink transition-colors';
@@ -57,7 +58,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-white/75">
               {SERVICES.map((s) => (
                 <li key={s.id}>
-                  <a href="#servicios" className="hover:text-white transition-colors">{s.title}</a>
+                  <a href={serviceHref(s.id)} className="hover:text-white transition-colors">{s.title}</a>
                 </li>
               ))}
               <li>
@@ -70,6 +71,7 @@ export const Footer: React.FC = () => {
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60 mb-5">Empresa</h2>
             <ul className="space-y-3 text-sm text-white/75">
               <li><a href="#trabajos" className="hover:text-white transition-colors">Trabajos</a></li>
+              <li><a href={`.${GREENVILLE_PATH}`} className="hover:text-white transition-colors">Obra en GreenVille</a></li>
               <li><a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a></li>
               <li><a href="#zonas" className="hover:text-white transition-colors">Zonas</a></li>
               <li><a href="#preguntas" className="hover:text-white transition-colors">Preguntas</a></li>

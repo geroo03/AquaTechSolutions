@@ -33,8 +33,8 @@ function siteHtml(env: Record<string, string>): Plugin {
     name: 'aquatech-site-html',
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) =>
-        html
+      handler: (html, ctx) =>
+        (ctx.server ? html.replace('<!--base-->', '<base href="/">') : html)
           .replaceAll('%SITE_URL%', site.url)
           .replaceAll('%TITLE%', site.title)
           .replaceAll('%DESCRIPTION%', site.description)

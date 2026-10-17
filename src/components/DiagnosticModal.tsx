@@ -3,6 +3,8 @@ import { Camera, ImagePlus } from 'lucide-react';
 import { WhatsAppIcon } from './Brand';
 import { Modal, Select, waLink } from './ui';
 import { track } from '../analytics';
+import { trackedWhatsAppLink, attributionProperties } from '../attribution';
+import { pageForPath } from '../routes';
 
 interface DiagnosticModalProps {
   isOpen: boolean;
@@ -39,8 +41,9 @@ export const DiagnosticModal: React.FC<DiagnosticModalProps> = ({ isOpen, onClos
 - Inmueble: ${property}
 - Barrio o localidad: ${place || 'a confirmar'}
 Ahora les mando las fotos.`;
-    track('WhatsApp', { origen: 'Diagnóstico por fotos' });
-    window.open(waLink(msg), '_blank', 'noopener');
+    const page = pageForPath(window.location.pathname).label;
+    track('WhatsApp', { origen: 'Diagnóstico por fotos', pagina: page, ...attributionProperties() });
+    window.open(trackedWhatsAppLink(waLink(msg), page), '_blank', 'noopener');
     onClose();
   };
 

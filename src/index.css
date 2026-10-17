@@ -52,6 +52,20 @@
   }
 }
 
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  background: white;
+  color: var(--color-ink);
+  transform: translateY(-160%);
+}
+.skip-link:focus { transform: translateY(0); }
+summary::-webkit-details-marker { display: none; }
+
 /* Disco plateado del logo, reutilizado como fondo de secciones claras */
 .bg-silver-disc {
   background:

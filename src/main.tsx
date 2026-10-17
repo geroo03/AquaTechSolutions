@@ -2,20 +2,18 @@ import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/montserrat/wght.css';
-import App from './App.tsx';
-import { initAnalytics } from './analytics';
+import { pageForPath } from './routes';
 import './index.css';
 
 const root = document.getElementById('root')!;
-const app = (
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
 
-// En producción el HTML viene pre-renderizado (scripts/prerender.mjs): se hidrata.
-// En desarrollo #root está vacío: se renderiza desde cero.
-if (root.firstElementChild) hydrateRoot(root, app);
-else createRoot(root).render(app);
-
-initAnalytics();
+async function start() {
+  const page = pageForPath(window.location.pathname);
+  const content = page.kind === 'home'
+    ? (() => import('./App.tsx').then(({ default: App }) => <App />))
+    : (() => import('./pages/DetailPage.tsx').then(({ default: DetailPage }) => <DetailPage page={page} />));
+  const app = <StrictMode>{await content()}</StrictMode>;
+  if (root.firstElementChild) hydrateRoot(root, app);
+  else createRoot(root).render(app);
+}
+void start();

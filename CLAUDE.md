@@ -23,16 +23,20 @@ npm run preview    # sirve dist/ para revisar la build
 
 ## Deploy
 
-Cada push a `main` publica solo en GitHub Pages con `.github/workflows/deploy.yml` (lint → build → Pages). Tarda ~30 s. `vite.config.ts` usa `base: './'`, así que las rutas son relativas: no cambiarlo o se rompen las imágenes bajo `/AquaTechSolutions/`.
+Cada push a `main` con cambios de la web publica en GitHub Pages con `.github/workflows/deploy.yml` (lint → build → pruebas de navegador → Pages). Los cambios exclusivos de `bots/` no publican la web. `vite.config.ts` usa `base: './'`: conservarlo para soportar el dominio propio y el prefijo `/AquaTechSolutions/`.
 
 ### Pre-render y SEO
 
 `npm run build` hace tres pasos: build del cliente, build SSR de `src/entry-server.tsx` y `scripts/prerender.mjs`, que:
-- mete el HTML de la app ya renderizado en `dist/index.html` (marcador `<!--app-->`); el cliente lo **hidrata** (`hydrateRoot` en `main.tsx`), así que lo que renderiza el servidor y el cliente tiene que coincidir: nada de `window`, `Date.now()` ni azar durante el render, solo en `useEffect`;
+- genera la portada y las cuatro rutas de `src/routes.ts` como archivos `index.html` pre-renderizados. El cliente **hidrata** la página correspondiente: no leer datos del navegador durante el render inicial;
 - inserta los datos estructurados `HomeAndConstructionBusiness` (marcador `<!--jsonld-->`), armados en `jsonLd()` de `entry-server.tsx` **solo con datos confirmados**;
-- genera `sitemap.xml` y `robots.txt`.
+- genera metadatos por página, `sitemap.xml` con todas las rutas y `robots.txt`. Un `<base>` relativo en cada HTML mantiene funcionando recursos y enlaces desde rutas anidadas. No publicar todas las páginas con el canonical de la portada.
 
 **`site.config.json` es la única fuente** de URL, nombre, título, descripción y teléfono del sitio (la usan `vite.config.ts` para completar `%SITE_URL%`, `%TITLE%` y `%DESCRIPTION%` en `index.html`, y el pre-render). La imagen para compartir es `public/og-image.png` (1200×630).
+
+Los títulos y descripciones de páginas internas viven en `src/routes.ts`; la portada usa los de `site.config.json`. `src/data/serviceDetails.ts` contiene los textos de los tres servicios. La página de GreenVille usa únicamente los datos confirmados y enlaza las imágenes originales en Instagram.
+
+La atribución vive en `src/attribution.ts` y se agrega a los enlaces de WhatsApp al hacer clic, sin cambiar el HTML de hidratación. Ver `docs/medicion-consultas.md`. `npm run test:web` comprueba escritorio y celular contra la build estática; localmente usa Chrome y en CI Chromium.
 
 ### Promos temporales
 

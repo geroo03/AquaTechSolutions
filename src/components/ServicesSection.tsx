@@ -4,6 +4,7 @@ import { SERVICES, SECONDARY_SERVICE } from '../data/mockData';
 import { PROMO } from '../data/promo';
 import { usePromoActive } from './PromoSection';
 import { Reveal, SectionHeader, waLink } from './ui';
+import { serviceHref } from '../routes';
 
 interface ServicesSectionProps {
   onSelectServiceForQuote: (serviceTitle: string) => void;
@@ -56,11 +57,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onSelectServic
                     )}
                   </div>
 
-                  <h3 className="font-headline text-xl font-bold text-ink mb-3">{service.title}</h3>
+                  <h3 className="font-headline text-xl font-bold text-ink mb-3"><a href={serviceHref(service.id)} className="hover:underline underline-offset-4">{service.title}</a></h3>
                   <p className="text-[15px] text-muted leading-relaxed mb-6">{service.shortDesc}</p>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-graphite mb-8">
                     {service.warranty}
                   </p>
+
+                  {['techos', 'cimientos', 'terrazas'].includes(service.id) && <a href={serviceHref(service.id)} className="inline-flex items-center gap-2 text-[13px] font-semibold mb-6">Conocer el servicio <ArrowUpRight size={15} /></a>}
 
                   <div className="mt-auto pt-5 border-t border-line flex items-center justify-between">
                     <button

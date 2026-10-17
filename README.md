@@ -12,6 +12,20 @@ npm run build    # dist/ — cada push a main se publica solo en GitHub Pages
 
 El contexto completo para trabajar con Claude Code está en [CLAUDE.md](CLAUDE.md) y en [docs/](docs/).
 
+## Servicios, obras y medición
+
+La portada se complementa con páginas de techos, humedad de cimientos y terrazas/balcones, y con el caso de Country GreenVille. Todas se generan como HTML estático con URL propia, metadatos y entrada en el sitemap. `src/routes.ts` define las rutas y `src/data/serviceDetails.ts` sus contenidos.
+
+Los mensajes de WhatsApp incluyen el origen de la visita cuando se puede identificar. La guía de enlaces de campaña y la planilla comercial están en [docs/medicion-consultas.md](docs/medicion-consultas.md).
+
+```bash
+npm run lint
+npm run build
+npm run test:web  # requiere Chrome en local; GitHub Actions instala Chromium
+```
+
+Las pruebas recorren las páginas en escritorio y celular, revisan recursos, metadatos, ausencia de errores de hidratación, navegación, cotizador y atribución. También comprueban el contenido sin JavaScript. Las capturas y trazas se guardan en `test-results/`, fuera de Git. El workflow de Pages ejecuta estas pruebas antes de publicar.
+
 ## Bot de WhatsApp
 
 El servidor del bot vive separado en [`bots/whatsapp/`](bots/whatsapp/README.md). Tiene su propio `package.json`, configuración, pruebas y Docker; los comandos de esta raíz siguen siendo los de la web. GitHub Pages publica únicamente la web: el bot requiere un servidor con almacenamiento persistente.

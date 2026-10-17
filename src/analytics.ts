@@ -4,6 +4,9 @@
  * Con Plausible o GA4 se registra el evento "WhatsApp" con el botón de origen. Cloudflare no
  * registra eventos: ahí el origen se ve en el texto del mensaje que llega al WhatsApp.
  */
+import { attributionProperties, captureAttribution, trackedWhatsAppLink } from './attribution';
+import { pageForPath } from './routes';
+
 type Props = Record<string, string>;
 
 declare global {
@@ -30,12 +33,21 @@ function originOf(el: Element): string {
 }
 
 export function initAnalytics() {
-  document.addEventListener(
-    'click',
-    (e) => {
-      const link = (e.target as Element | null)?.closest?.('a[href^="https://wa.me/"]');
-      if (link) track('WhatsApp', { origen: originOf(link) });
-    },
-    { capture: true },
-  );
+  const page = pageForPath(window.location.pathname).label;
+  captureAttribution(page);
+  const original = new WeakMap<HTMLAnchorElement, string>();
+  const onClick = (e: MouseEvent) => {
+      const link = (e.target as Element | null)?.closest?.<HTMLAnchorElement>('a[href^="https://wa.me/"]');
+      if (link) {
+        // Decorar al interactuar, después de hidratar: el HTML inicial coincide con el servidor.
+        const href = link.getAttribute('href')!;
+        const previous = original.get(link);
+        const base = previous && href === trackedWhatsAppLink(previous, page) ? previous : href;
+        original.set(link, base);
+        link.href = trackedWhatsAppLink(base, page);
+        track('WhatsApp', { origen: originOf(link), pagina: page, ...attributionProperties() });
+      }
+  };
+  document.addEventListener('click', onClick, { capture: true });
+  return () => document.removeEventListener('click', onClick, true);
 }

@@ -3,6 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { WORKS, FOUNDED_YEAR, SQUARE_METERS, INSTAGRAM_URL } from '../data/mockData';
 import { InstagramIcon } from './Brand';
 import { Reveal, SectionHeader } from './ui';
+import { GREENVILLE_PATH } from '../routes';
 
 /**
  * Trabajos realizados: obras reales con link al posteo de Instagram.
@@ -43,9 +44,9 @@ export const BeforeAfterSection: React.FC = () => {
           {WORKS.map((work, i) => (
             <Reveal key={work.id} delay={(i % 3) * 0.06} className="h-full">
               <a
-                href={work.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={work.id === 'greenville' ? `.${GREENVILLE_PATH}` : work.url}
+                target={work.id === 'greenville' ? undefined : '_blank'}
+                rel={work.id === 'greenville' ? undefined : 'noopener noreferrer'}
                 className="group h-full flex flex-col p-7 rounded-3xl bg-paper ring-1 ring-line hover:ring-ink/25 hover:bg-white hover:shadow-[0_24px_48px_-24px_rgba(11,11,12,0.25)] transition-all duration-300"
               >
                 <div className="flex items-center justify-between gap-4 mb-6">
@@ -58,7 +59,7 @@ export const BeforeAfterSection: React.FC = () => {
                 <p className="mt-1.5 text-[13px] font-semibold uppercase tracking-[0.12em] text-graphite">{work.type}</p>
                 {work.detail && <p className="mt-4 text-[15px] text-muted leading-relaxed">{work.detail}</p>}
                 <span className="mt-auto pt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-ink">
-                  <InstagramIcon size={15} /> Ver la obra en Instagram
+                  {work.id === 'greenville' ? <>Conocer la obra <ArrowUpRight size={15} /></> : <><InstagramIcon size={15} /> Ver la obra en Instagram</>}
                 </span>
               </a>
             </Reveal>
