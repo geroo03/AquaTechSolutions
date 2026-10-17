@@ -115,6 +115,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
             }`}
             aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={mobileMenuOpen}
+            aria-controls="menu-movil"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -122,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
       </div>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-line px-5 sm:px-8 pb-6 pt-3 animate-fade-in">
+        <div id="menu-movil" className="lg:hidden bg-white border-t border-line px-5 sm:px-8 pb-6 pt-3 animate-fade-in">
           <nav className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <a

@@ -80,6 +80,50 @@ test('el servicio abre su cotizador y las preguntas funcionan', async ({ page })
   await expect(faq).toHaveAttribute('open', '');
 });
 
+for (const kind of ['Cotizador', 'Diagnóstico por fotos']) {
+  test(`${kind}: el teclado queda dentro y vuelve al botón al cerrar`, async ({ page, isMobile }, info) => {
+    await page.goto(kind === 'Cotizador' ? '/servicios/humedad-cimientos/' : '/');
+    await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
+    const opener = page.getByRole('button', { name: kind === 'Cotizador' ? 'Armar mi consulta' : 'Empezar', exact: true });
+    const openerElement = await opener.elementHandle();
+    await opener.focus();
+    await page.keyboard.press('Enter');
+    const dialog = page.getByRole('dialog', { name: kind, exact: true });
+    const close = dialog.getByRole('button', { name: 'Cerrar', exact: true });
+    const last = kind === 'Cotizador'
+      ? dialog.getByRole('link', { name: 'Enviar consulta por WhatsApp' })
+      : dialog.getByRole('button', { name: 'Continuar en WhatsApp' });
+    await expect(close).toBeFocused();
+    await page.screenshot({ path: info.outputPath('consulta-abierta.png'), animations: 'disabled' });
+    await page.keyboard.press('Shift+Tab');
+    await expect(last).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
+    for (let step = 0; step < 20; step++) {
+      await page.keyboard.press('Tab');
+      expect(await dialog.evaluate(element => element.contains(document.activeElement))).toBe(true);
+    }
+    // Ni el foco programático puede saltar a un control de fondo.
+    await openerElement!.evaluate(element => (element as HTMLElement).focus());
+    expect(await dialog.evaluate(element => element.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(opener).toBeFocused();
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
+    await expect(page.locator('main')).not.toHaveAttribute('inert');
+
+    if (isMobile && kind === 'Cotizador') {
+      // El botón del menú desaparece al abrir: volver al control que permite reabrirlo.
+      const menu = page.getByRole('button', { name: 'Abrir menú', exact: true });
+      await menu.click();
+      await page.getByRole('button', { name: 'Cotizador', exact: true }).click();
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(menu).toBeFocused();
+    }
+  });
+}
+
 test('el diagnóstico por fotos incluye el origen al abrir WhatsApp desde el formulario', async ({ page }) => {
   await page.goto('/?utm_source=facebook&utm_campaign=diagnostico');
   await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');

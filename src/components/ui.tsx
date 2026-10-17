@@ -102,24 +102,67 @@ interface ModalProps {
   label: string;
 }
 
-/** Contenedor de modal: cierra con Esc o tocando afuera, y bloquea el scroll de fondo */
+/** Modal con foco contenido, fondo inerte y devolución del foco al cerrar. */
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, maxWidth = 'max-w-2xl', label }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  useEffect(() => { closeRef.current = onClose; }, [onClose]);
+
   useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const dialog = dialogRef.current;
+    if (!isOpen || !dialog) return;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const background = [...(dialog.parentElement?.children ?? [])]
+      .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== dialog)
+      .map(element => ({ element, wasInert: element.inert }));
+    background.forEach(({ element }) => { element.inert = true; });
+    const controls = () => [...dialog.querySelectorAll<HTMLElement>(
+      'a[href], button, input, select, textarea, [tabindex]',
+    )].filter(element => element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length > 0);
+    const focusFirst = () => (controls()[0] ?? dialog).focus({ preventScroll: true });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeRef.current();
+      } else if (e.key === 'Tab') {
+        const elements = controls();
+        const first = elements[0];
+        const last = elements.at(-1);
+        if (!first || !dialog.contains(document.activeElement) ||
+          (e.shiftKey && document.activeElement === first) ||
+          (!e.shiftKey && document.activeElement === last)) {
+          e.preventDefault();
+          (e.shiftKey ? last ?? dialog : first ?? dialog).focus();
+        }
+      }
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (e.target instanceof Node && !dialog.contains(e.target)) focusFirst();
+    };
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('focusin', onFocus);
+    focusFirst();
     return () => {
       document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('focusin', onFocus);
+      background.forEach(({ element, wasInert }) => { element.inert = wasInert; });
+      // Al abrir desde el menú móvil, su botón se desmonta: volver al menú.
+      const returnTo = opener?.isConnected && opener !== document.body
+        ? opener
+        : document.querySelector<HTMLElement>('button[aria-controls="menu-movil"]');
+      returnTo?.focus({ preventScroll: true });
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-6 bg-ink/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="dialog"
@@ -133,7 +176,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, maxWidt
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-mist text-graphite hover:bg-line hover:text-ink flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-mist text-graphite hover:bg-line hover:text-ink flex items-center justify-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           aria-label="Cerrar"
         >
           <X size={18} />

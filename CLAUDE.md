@@ -1,8 +1,8 @@
 # AquaTech Solutions — contexto para Claude Code
 
-Web de **AquaTech Solutions**, empresa de impermeabilizaciones de Córdoba, Argentina. Hoy es una **demo** para presentarle al dueño; el objetivo es convertirla en la web real que genere consultas por WhatsApp.
+Web de **AquaTech Solutions**, empresa de impermeabilizaciones de Córdoba, Argentina. La web está publicada con dominio propio y permite pedir presupuestos por WhatsApp.
 
-- Demo publicada: https://geroo03.github.io/AquaTechSolutions/
+- Web publicada: https://aquatechsolutions.com.ar/ (github.io redirige al dominio propio)
 - Repo: https://github.com/geroo03/AquaTechSolutions
 - Trabaja en esto Sebastián (desarrollador, le arma el marketing digital al cliente). Escribirle en **español rioplatense**, informal. "Subir" = commitear y pushear.
 
@@ -14,7 +14,7 @@ Más contexto en `docs/`:
 ## Comandos
 
 ```bash
-npm install        # Node 22+
+npm install        # Node 24 (igual que GitHub Actions)
 npm run dev        # http://localhost:3000
 npm run lint       # tsc --noEmit (tiene que pasar sin errores)
 npm run build      # build del cliente + build SSR + pre-render (scripts/prerender.mjs) → dist/
@@ -48,9 +48,9 @@ Para una promo nueva: editar `promo.ts` y subir. Para probar el vencimiento: Pla
 
 ### Pasar al dominio propio
 
-**Estado (16/10/2026):** dominio registrado (titular Martín, vence 15/10/2027). En Cloudflare (cuenta de Sebastián) ya está creada la zona, en plan Free, con nameservers `angelina.ns.cloudflare.com` y `rohin.ns.cloudflare.com`, los 4 `A` y el `CNAME www`, todos en DNS only, y SSL en "Full" (nunca "Flexible"). Delegación en NIC hecha y propagada el 16/10/2026 a las 13:12. **La web vive en https://aquatechsolutions.com.ar/** (custom domain en GitHub Pages; la URL de github.io redirige ahí).
+**Estado verificado (17/10/2026):** dominio registrado (titular Martín, vence 15/10/2027) y conectado a GitHub Pages mediante Cloudflare Free, con nameservers `angelina.ns.cloudflare.com` y `rohin.ns.cloudflare.com`. La web responde en HTTPS y HTTP redirige a HTTPS. El DNS público del dominio muestra el proxy de Cloudflare activo; la anotación anterior de "DNS only" correspondía a la configuración inicial. El modo SSL actual de la cuenta no se comprobó. La API de Pages todavía informa el certificado de origen en `authorization_created` y `https_enforced: false`; eso es distinto del HTTPS público, que funciona. No cambiar DNS o SSL basándose en la configuración histórica sin revisar el panel.
 
-Dominio elegido: **aquatechsolutions.com.ar**. NIC Argentina solo **delega** el dominio a servidores DNS (no permite cargar registros A), así que el DNS va en Cloudflare (gratis):
+Referencia de conexión inicial para **aquatechsolutions.com.ar** (ver el estado actual arriba). NIC Argentina solo **delega** el dominio a servidores DNS (no permite cargar registros A), así que el DNS va en Cloudflare (gratis):
 1. El titular (Martín, con su CUIT) lo registra en [nic.ar](https://nic.ar) entrando con su Clave Fiscal de ARCA.
 2. En Cloudflare: "Add a domain" → `aquatechsolutions.com.ar` → plan Free. Cloudflare da dos nameservers.
 3. En NIC Argentina → el dominio → "Delegaciones": cargar esos dos nameservers. Puede tardar unas horas.
@@ -75,7 +75,8 @@ src/
   main.tsx                hidrata (prod) o renderiza (dev), fuentes, analítica
   entry-server.tsx        render() y jsonLd() para el pre-render
   analytics.ts            track() y clics a WhatsApp
-  App.tsx                 orden de secciones + estado de los 3 modales (cargados con lazy)
+  App.tsx                 orden de secciones de la portada
+  components/SiteLayout.tsx cabecera, pie y estado de los modales (cargados con lazy)
   index.css               tokens de color (@theme), estilos base (@layer base), animaciones
   data/mockData.ts        TODOS los datos del negocio (solo confirmados): servicios, garantías, obra, zonas, FAQ, contacto
   types.ts
@@ -86,7 +87,7 @@ src/
     CoverageZonesSection, TestimonialSection, FaqSection, CallToAction, Footer, PromoSection,
     FloatingWhatsApp, QuoteCalculatorModal (sin precios), DiagnosticModal
 public/
-  images/*.webp           fotos en WebP (hoy son de ejemplo generadas por IA, 512 px)
+  images/*.webp           fotos reales de obra en WebP; hero con variante para celular
   og-image.png            imagen para compartir en WhatsApp/redes (1200×630)
   logo-aquatech.png       logo original del cliente (disco plateado)
   favicon.svg
@@ -100,7 +101,7 @@ public/
 - Formas: tarjetas `rounded-3xl ring-1 ring-line`, botones `rounded-full`.
 - Textos en español rioplatense (vos, mandá, pedí).
 - Todo contacto sale por `waLink(texto)` de `ui.tsx` (número en `PHONE_NUMBER` de `mockData.ts`).
-- Modales: usar el componente `Modal` (cierra con Esc / tocando afuera y bloquea el scroll). Los modales de `App.tsx` se montan solo cuando están abiertos y se cargan con `lazy`.
+- Modales: usar el componente `Modal` (contiene el foco, vuelve al botón de apertura, cierra con Esc / tocando afuera y bloquea el fondo). Los modales de `SiteLayout.tsx` se montan solo cuando están abiertos y se cargan con `lazy`.
 - Animaciones de aparición: `<Reveal>` (sin librerías). Solo oculta contenido si `<html>` tiene la clase `js`, para que el HTML pre-renderizado se lea sin JavaScript. **El hero no lleva animación de entrada** (es el LCP en celular). La foto del hero es decorativa: **sin preload y con `fetchPriority="low"`** (precargarla retrasaba el texto, que es el LCP: el rendimiento en celular bajaba de 97 a 85).
 - Imágenes nuevas: en WebP, con `width`/`height`, y `loading="lazy"` si no están arriba de todo.
 - Rutas de archivos de `public/`: siempre relativas (`./images/...`). **No usar `import.meta.env.BASE_URL`**: en la build SSR vale `/` y el HTML pre-renderizado apunta a la raíz del dominio (en Pages da 404). En local no se nota porque `preview` sirve desde la raíz: verificar siempre en la URL publicada.
