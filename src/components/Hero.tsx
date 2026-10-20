@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDown, Calculator, Award, ClipboardCheck, ShieldCheck } from 'lucide-react';
+import { ArrowDown, ArrowRight, Building2, Calculator, Award, ClipboardCheck, ShieldCheck } from 'lucide-react';
 import { ASSETS, FOUNDED_YEAR } from '../data/mockData';
 import { PROMO } from '../data/promo';
 import { LogoMark, WhatsAppIcon } from './Brand';
@@ -44,19 +44,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
       />
 
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-36 pb-16 sm:pt-44 lg:pt-48 lg:pb-24">
-        <div className="max-w-3xl">
-          {promoActive && (
-            <a
-              href="#promo"
-              className="group inline-flex items-center gap-2.5 mb-8 pl-1.5 pr-4 py-1.5 rounded-2xl sm:rounded-full bg-white/10 ring-1 ring-white/20 text-[13px] text-white hover:bg-white/15 transition-colors"
-            >
-              <span className="px-2.5 py-1 rounded-full bg-white text-ink text-[11px] font-bold uppercase tracking-[0.12em]">
-                Promo
-              </span>
-              Mano de obra a {PROMO.items[0].price} el m²{PROMO.validUntilLabel && ` hasta el ${PROMO.validUntilLabel}`}
-              <ArrowDown size={14} className="transition-transform group-hover:translate-y-0.5" />
-            </a>
-          )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+        <div className="lg:col-span-7">
           <div className="flex items-center gap-3 mb-7">
             <span className="h-px w-10 bg-white/60" />
             <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/75">
@@ -64,7 +53,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             </span>
           </div>
 
-          <h1 className="font-headline text-[clamp(1.75rem,7.6vw,4.75rem)] leading-[1.05] font-bold tracking-tight">
+          <h1 className="font-headline text-[clamp(1.75rem,7.6vw,4.25rem)] lg:text-[clamp(2.4rem,3.6vw,3.35rem)] leading-[1.05] font-bold tracking-tight">
             Impermeabilizaciones
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#d9d9dd] to-[#9a9aa0]">
@@ -95,6 +84,62 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
               Cotizar online
             </button>
           </div>
+        </div>
+
+        {/* Destacados: la promo de mano de obra y el plan para inmobiliarias, visibles al entrar */}
+        <div className="lg:col-span-5 grid gap-4">
+          {promoActive && (
+            <a
+              href="#promo"
+              className="promo-shine promo-breathe group block p-6 sm:p-7 rounded-3xl bg-white text-ink shadow-[0_30px_60px_-30px_rgba(0,0,0,0.7)]"
+            >
+              <div className="relative z-10">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink text-white text-[11px] font-bold uppercase tracking-[0.14em]">
+                    <span className="relative flex w-1.5 h-1.5">
+                      <span className="absolute inset-0 rounded-full bg-white/70 animate-ping motion-reduce:animate-none" />
+                      <span className="relative w-1.5 h-1.5 rounded-full bg-white" />
+                    </span>
+                    Promo
+                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">{PROMO.badge}</span>
+                </div>
+                <div className="mt-5 text-[13px] font-semibold uppercase tracking-[0.14em] text-graphite">{PROMO.priceLabel}</div>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-headline text-5xl font-bold leading-none">{PROMO.items[0].price}</span>
+                  <span className="text-sm font-semibold text-muted">{PROMO.items[0].unit}</span>
+                </div>
+                <p className="mt-3 text-[14px] text-graphite leading-snug">
+                  Membranas asfálticas con aluminio o geotextil y membrana líquida. Materiales no incluidos.
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold">
+                  Ver la promo <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+            </a>
+          )}
+
+          <a
+            href="#inmobiliarias"
+            className="group block p-6 sm:p-7 rounded-3xl bg-white/[0.06] ring-1 ring-white/20 backdrop-blur-md hover:bg-white/10 transition-colors"
+          >
+            <div className="flex items-start gap-4">
+              <span className="w-11 h-11 shrink-0 rounded-2xl bg-white text-ink flex items-center justify-center">
+                <Building2 size={20} strokeWidth={1.7} aria-hidden="true" />
+              </span>
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">Inmobiliarias</div>
+                <div className="mt-1 font-headline text-lg font-bold leading-snug">Plan de Mantenimiento con abono mensual</div>
+                <p className="mt-2 text-[14px] text-white/65 leading-snug">
+                  Una visita por mes, reparaciones menores e informe con fotos para cada propietario.
+                </p>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+                  Conocer el plan <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
         </div>
 
         <div className="mt-16 lg:mt-24 grid grid-cols-1 sm:grid-cols-3 gap-px rounded-2xl overflow-hidden bg-white/10 ring-1 ring-white/10">
