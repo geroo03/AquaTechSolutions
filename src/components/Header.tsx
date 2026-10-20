@@ -10,6 +10,7 @@ interface HeaderProps {
 
 const NAV_LINKS = [
   { label: 'Servicios', id: 'servicios' },
+  { label: 'Inmobiliarias', id: 'inmobiliarias' },
   { label: 'Trabajos', id: 'trabajos' },
   { label: 'Proceso', id: 'proceso' },
   { label: 'Garantía', id: 'garantia' },

@@ -2,6 +2,7 @@ import { SiteLayout } from './components/SiteLayout';
 import { Hero } from './components/Hero';
 import { PromoSection } from './components/PromoSection';
 import { ServicesSection } from './components/ServicesSection';
+import { MaintenancePlanSection } from './components/MaintenancePlanSection';
 import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
 import { WorkGallerySection } from './components/WorkGallerySection';
@@ -17,6 +18,7 @@ export default function App() {
         <Hero onOpenQuote={() => openQuote()} />
         <PromoSection />
         <ServicesSection onSelectServiceForQuote={openQuote} />
+        <MaintenancePlanSection />
         <BeforeAfterSection />
         <ProcessSection onOpenDiagnostic={openDiagnostic} />
         <WorkGallerySection />

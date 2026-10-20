@@ -5,6 +5,7 @@ import { SERVICES, SECONDARY_SERVICE } from './data/mockData';
 import DetailPage from './pages/DetailPage';
 import BusinessPage from './pages/BusinessPage';
 import { PAGES, pageForPath, type SitePage } from './routes';
+import { MAINTENANCE_PLAN } from './data/mantenimiento';
 
 export const pages = PAGES;
 
@@ -71,10 +72,23 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Servicios de impermeabilización',
-      itemListElement: [...SERVICES.map((s) => s.title), SECONDARY_SERVICE.title].map((name) => ({
-        '@type': 'Offer',
-        itemOffered: { '@type': 'Service', name },
-      })),
+      itemListElement: [
+        ...[...SERVICES.map((s) => s.title), SECONDARY_SERVICE.title].map((name) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name } as Record<string, unknown>,
+        })),
+        // Plan de Mantenimiento: sin precio (se ajusta por IPC)
+        {
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: 'Plan de Mantenimiento',
+            description: MAINTENANCE_PLAN.subtitle,
+            audience: { '@type': 'BusinessAudience', name: 'Inmobiliarias' },
+            areaServed: { '@type': 'Place', name: MAINTENANCE_PLAN.areaServed },
+          },
+        },
+      ],
     },
   };
   if (page.kind === 'home') return business;
