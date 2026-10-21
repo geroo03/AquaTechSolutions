@@ -1,13 +1,11 @@
 import React from 'react';
-import { ArrowUpRight, Mail, MapPin, MessageSquare, Clock } from 'lucide-react';
+import { Mail, MapPin, MessageSquare, Clock } from 'lucide-react';
 import {
   PHONE_DISPLAY,
   EMAIL,
   INSTAGRAM_URL,
   FACEBOOK_URL,
-  GOOGLE_MAPS_URL,
   GOOGLE_REVIEW_URL,
-  STREET_ADDRESS,
   FOUNDED_YEAR,
   OPENING_HOURS,
   SERVICES,
@@ -97,16 +95,8 @@ export const Footer: React.FC = () => {
                   <WhatsAppIcon size={16} className="shrink-0" /> {PHONE_DISPLAY}
                 </a>
               </li>
-              <li>
-                <a
-                  href={GOOGLE_MAPS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 hover:text-white transition-colors"
-                >
-                  <MapPin size={16} strokeWidth={1.8} className="shrink-0 mt-0.5" />
-                  <span><span className="block font-medium text-white">{STREET_ADDRESS}</span><span className="block mt-1">Córdoba, Argentina</span><span className="inline-flex items-center gap-1.5 mt-2 text-xs underline underline-offset-4">Ver en Google Maps <ArrowUpRight size={13} /></span></span>
-                </a>
+              <li className="flex items-center gap-3">
+                <MapPin size={16} strokeWidth={1.8} className="shrink-0" /> Córdoba, Argentina · trabajamos a domicilio
               </li>
               <li>
                 <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 hover:text-white transition-colors">

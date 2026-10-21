@@ -14,7 +14,7 @@ Fuentes: "Datos para la web de AquaTech" (15/10/2026) y respuestas de Martín (1
 | Email | aquatech.cba@gmail.com |
 | Instagram | https://www.instagram.com/aqua.tech.solutions/ |
 | Facebook | https://www.facebook.com/p/Aquatech-Solutions-61563827794730/ |
-| Dirección | **Caseros 1191, Córdoba, Argentina**. Sebastián pidió publicarla en el footer el 17/10/2026; reemplaza la indicación anterior de ocultar la calle. El trabajo se realiza a domicilio; no se afirma atención presencial. |
+| Dirección | **No se publica** (21/10/2026, contrato del Plan de Mantenimiento): es la casa de Martín y trabaja a domicilio. En la web solo va "Córdoba, Argentina". Tampoco se publican CUIT, CBU ni el contrato en PDF. |
 | Google Maps | https://share.google/DewBH416dEBKgWxEs — enlace de la ficha de AquaTech proporcionado por Sebastián el 17/10/2026. |
 | Servicios | Techos (membrana asfáltica + geotextil + poliuretano), terrazas y balcones, humedad de cimientos, filtraciones, tanques y piletas, mantenimiento preventivo. Secundario: pintura interior y exterior. |
 | Metros trabajados | Más de 15.000 m² (actualizado por Sebastián el 16/10/2026; antes figuraba 5.000 m²) |
