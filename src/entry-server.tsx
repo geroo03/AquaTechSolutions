@@ -77,21 +77,35 @@ export function jsonLd(site: Site, page: SitePage = PAGES[0]) {
           '@type': 'Offer',
           itemOffered: { '@type': 'Service', name } as Record<string, unknown>,
         })),
-        // Plan de Mantenimiento: sin precio (se ajusta por IPC)
+        // Plan de Mantenimiento (contrato 1.0): sin precio, se ajusta por IPC
         {
           '@type': 'Offer',
           itemOffered: {
             '@type': 'Service',
-            name: 'Plan de Mantenimiento',
+            '@id': `${site.url}#plan-mantenimiento`,
+            name: MAINTENANCE_PLAN.title,
             description: MAINTENANCE_PLAN.subtitle,
-            audience: { '@type': 'BusinessAudience', name: 'Inmobiliarias' },
+            provider: { '@id': `${site.url}#negocio` },
             areaServed: { '@type': 'Place', name: MAINTENANCE_PLAN.areaServed },
           },
         },
       ],
     },
   };
-  if (page.kind === 'home') return business;
+  if (page.kind === 'home') {
+    // Preguntas del Plan de Mantenimiento (sección nueva de la home)
+    const faq = {
+      '@type': 'FAQPage',
+      '@id': `${site.url}#preguntas-plan`,
+      mainEntity: MAINTENANCE_PLAN.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    };
+    const { '@context': context, ...businessNode } = business;
+    return { '@context': context, '@graph': [businessNode, faq] };
+  }
   const url = new URL(page.path.slice(1), site.url).href;
   const isService = page.kind === 'service' || page.kind === 'business';
   const entityId = `${url}#${isService ? 'servicio' : 'obra'}`;

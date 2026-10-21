@@ -120,7 +120,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           )}
 
           <a
-            href="#inmobiliarias"
+            href="#plan-mantenimiento"
             className="group block p-6 sm:p-7 rounded-3xl bg-white/[0.06] ring-1 ring-white/20 backdrop-blur-md hover:bg-white/10 transition-colors"
           >
             <div className="flex items-start gap-4">
@@ -128,10 +128,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                 <Building2 size={20} strokeWidth={1.7} aria-hidden="true" />
               </span>
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">Inmobiliarias</div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">Casas, inmobiliarias e inquilinos</div>
                 <div className="mt-1 font-headline text-lg font-bold leading-snug">Plan de Mantenimiento con abono mensual</div>
                 <p className="mt-2 text-[14px] text-white/65 leading-snug">
-                  Una visita por mes, reparaciones menores e informe con fotos para cada propietario.
+                  Tu casa revisada todos los meses, reparaciones menores incluidas e informe con fotos.
                 </p>
                 <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
                   Conocer el plan <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
