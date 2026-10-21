@@ -158,49 +158,127 @@ input[type='range'] {
   }
 }
 
-/* Animación del techo (RoofAnimationSection) */
-@keyframes tool-move {
-  from { transform: translateX(170px); }
-  to { transform: translateX(700px); }
+/* Animación del techo (RoofAnimationSection) — easing tipo video explicativo */
+.roof-scene {
+  transform-box: view-box;
+  transform-origin: 440px 250px;
+  transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
 }
-.tool-move {
-  animation: tool-move 2.6s linear forwards;
+@keyframes worker-walk {
+  0% { opacity: 0; transform: translate(var(--x0), calc(var(--y0) - 14px)); }
+  10% { opacity: 1; transform: translate(var(--x0), var(--y0)); }
+  13% { transform: translate(var(--x0), var(--y0)); animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+  100% { opacity: 1; transform: translate(var(--x1), var(--y1)); }
+}
+.worker-walk {
+  animation: worker-walk 3s linear forwards;
+}
+@keyframes worker-arm {
+  from { rotate: -9deg; }
+  to { rotate: 7deg; }
+}
+.worker-arm {
+  transform-box: view-box;
+  transform-origin: 6px -52px;
+  animation: worker-arm 0.32s ease-in-out infinite alternate;
+}
+@keyframes worker-bob {
+  from { translate: 0 0; }
+  to { translate: 0 -1.6px; }
+}
+.worker-bob {
+  animation: worker-bob 0.32s ease-in-out infinite alternate;
 }
 @keyframes roll-spin {
-  to { transform: rotate(360deg); }
+  to { rotate: 360deg; }
 }
 .roll-spin {
   transform-box: fill-box;
   transform-origin: center;
-  animation: roll-spin 0.9s linear infinite;
+  animation: roll-spin 0.7s linear infinite;
 }
 @keyframes chip-fly {
   0% { opacity: 0; translate: 0 0; rotate: 0deg; }
-  15% { opacity: 1; }
-  100% { opacity: 0; translate: 26px -70px; rotate: 160deg; }
+  20% { opacity: 1; }
+  100% { opacity: 0; translate: -34px -46px; rotate: -220deg; }
 }
 .chip-fly {
   opacity: 0;
   transform-box: fill-box;
-  animation: chip-fly 1s ease-out both;
+  transform-origin: center;
+  animation: chip-fly 0.8s cubic-bezier(0.2, 0.7, 0.4, 1) infinite;
 }
 @keyframes dust-puff {
-  0% { opacity: 0; scale: 0.4; }
-  30% { opacity: 0.9; }
-  100% { opacity: 0; scale: 2.4; translate: 0 -22px; }
+  0% { opacity: 0; scale: 0.3; translate: 0 0; }
+  30% { opacity: 0.85; }
+  100% { opacity: 0; scale: 2.2; translate: -18px -16px; }
 }
 .dust-puff {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  animation: dust-puff 1.1s ease-out both;
+  animation: dust-puff 0.9s ease-out infinite;
 }
-@keyframes rain-drop {
+@keyframes drip {
   0% { opacity: 0; translate: 0 0; }
   15% { opacity: 1; }
-  80% { opacity: 1; translate: -14px 86px; }
-  100% { opacity: 0; translate: -16px 92px; }
+  85% { opacity: 1; translate: 0 46px; }
+  100% { opacity: 0; translate: 0 52px; }
 }
-.rain-drop {
-  animation: rain-drop 0.9s ease-in infinite;
+.drip {
+  animation: drip 1.4s cubic-bezier(0.55, 0, 1, 0.45) infinite;
+}
+@keyframes rain-fall {
+  0% { opacity: 0; translate: 0 -110px; }
+  10% { opacity: 1; }
+  60% { opacity: 1; translate: 0 0; }
+  61%, 100% { opacity: 0; translate: 0 0; }
+}
+.rain-fall {
+  animation: rain-fall 1s cubic-bezier(0.55, 0, 1, 0.45) infinite;
+}
+@keyframes splash {
+  0%, 58% { opacity: 0; scale: 0.2; }
+  65% { opacity: 0.9; }
+  100% { opacity: 0; scale: 1.5; }
+}
+.splash {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: splash 1s ease-out infinite;
+}
+@keyframes cloud-in {
+  from { opacity: 0; translate: -60px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+.cloud-in {
+  animation: cloud-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes stamp-pop {
+  0% { opacity: 0; scale: 0.3; }
+  60% { opacity: 1; scale: 1.15; }
+  100% { opacity: 1; scale: 1; }
+}
+.stamp-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: stamp-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s both;
+}
+@keyframes caption-in {
+  from { opacity: 0; translate: 0 10px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.caption-in {
+  animation: caption-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes progress-run {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.progress-run {
+  animation: progress-run linear forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .roof-scene { transition: none; }
 }
