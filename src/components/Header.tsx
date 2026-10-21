@@ -10,7 +10,7 @@ interface HeaderProps {
 
 const NAV_LINKS = [
   { label: 'Servicios', id: 'servicios' },
-  { label: 'Inmobiliarias', id: 'inmobiliarias' },
+  { label: 'Plan de Mantenimiento', id: 'plan-mantenimiento' },
   { label: 'Trabajos', id: 'trabajos' },
   { label: 'Proceso', id: 'proceso' },
   { label: 'Garantía', id: 'garantia' },
@@ -61,14 +61,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
           <Logo tone={solid ? 'dark' : 'light'} />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-1" aria-label="Secciones">
+        <nav className="hidden xl:flex items-center gap-1" aria-label="Secciones">
           {NAV_LINKS.map((link) => {
             const isActive = activeSection === link.id;
             return (
               <a
                 key={link.id}
                 href={`#${link.id}`}
-                className={`relative px-3.5 py-2 text-[13.5px] font-medium transition-colors ${
+                className={`relative px-3 py-2 text-[13.5px] font-medium whitespace-nowrap transition-colors ${
                   solid
                     ? isActive ? 'text-ink' : 'text-muted hover:text-ink'
                     : isActive ? 'text-white' : 'text-white/70 hover:text-white'
@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
               >
                 {link.label}
                 <span
-                  className={`absolute left-3.5 right-3.5 -bottom-0.5 h-px transition-opacity ${
+                  className={`absolute left-3 right-3 -bottom-0.5 h-px transition-opacity ${
                     solid ? 'bg-ink' : 'bg-white'
                   } ${isActive ? 'opacity-100' : 'opacity-0'}`}
                 />
@@ -100,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
             href={waLink('Hola AquaTech, quiero pedir un presupuesto de impermeabilización')}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 h-10 px-4 sm:px-5 rounded-full text-[13px] font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 h-10 px-4 sm:px-5 rounded-full text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all ${
               solid ? 'bg-ink text-white hover:bg-graphite' : 'bg-white text-ink hover:bg-white/90'
             }`}
           >
@@ -111,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`lg:hidden w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+            className={`xl:hidden w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
               solid ? 'text-ink hover:bg-mist' : 'text-white hover:bg-white/10'
             }`}
             aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote, onOpenDiagnostic })
       </div>
 
       {mobileMenuOpen && (
-        <div id="menu-movil" className="lg:hidden bg-white border-t border-line px-5 sm:px-8 pb-6 pt-3 animate-fade-in">
+        <div id="menu-movil" className="xl:hidden bg-white border-t border-line px-5 sm:px-8 pb-6 pt-3 animate-fade-in">
           <nav className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <a

@@ -22,9 +22,6 @@ export const EMAIL = 'aquatech.cba@gmail.com';
 export const INSTAGRAM_URL = 'https://www.instagram.com/aqua.tech.solutions/';
 export const INSTAGRAM_HANDLE = '@aqua.tech.solutions';
 export const FACEBOOK_URL = 'https://www.facebook.com/p/Aquatech-Solutions-61563827794730/';
-/** Dirección y ficha compartidas por Sebastián el 17/10/2026 para publicar en la web. */
-export const STREET_ADDRESS = site.streetAddress;
-export const GOOGLE_MAPS_URL = site.mapsUrl;
 export const GOOGLE_REVIEW_URL = site.reviewUrl;
 export const FOUNDED_YEAR = 2008;
 export const SQUARE_METERS = '15.000 m²';
@@ -205,7 +202,7 @@ export const FAQS: FaqItem[] = [
     id: 'factura',
     question: '¿Hacen factura?',
     answer:
-      'Sí. Contanos qué tipo de factura necesitás cuando pidas el presupuesto: el precio de la mano de obra puede variar según la factura.',
+      'Sí, con factura.',
   },
   {
     id: 'cuotas',

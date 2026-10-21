@@ -9,7 +9,7 @@ Documento completo, para compartir con el dueño: https://claude.ai/code/artifac
 ## 1. Arreglos rápidos (semana 1, sin costo)
 
 - **Google Business Profile** (prioridad nº 1): categoría "Servicio de impermeabilización", área de servicio sin dirección pública, más de 10 fotos y pedir reseña a cada cliente anterior.
-- **Bio de Instagram**: cuenta Empresa, categoría "Contratista", nombre "AquaTech | Impermeabilizaciones Córdoba" y link a `https://wa.me/543516134658?text=Hola%20AquaTech%2C%20quiero%20un%20presupuesto`. Destacadas: Antes/Después · Techos · Humedad · Garantía · Opiniones · Presupuesto.
+- **Bio de Instagram**: cuenta Empresa, categoría "Contratista", nombre "AquaTech | Impermeabilizaciones Córdoba" y link a `https://wa.me/5493516134658?text=Hola%20AquaTech%2C%20quiero%20un%20presupuesto`. Destacadas: Antes/Después · Techos · Humedad · Garantía · Opiniones · Presupuesto.
 - **WhatsApp Business**: catálogo con los 6 servicios, mensaje de bienvenida que pida fotos, zona y m², respuestas rápidas y etiquetas (Nuevo · Visita agendada · Presupuestado · Cerrado · Perdido).
 - **Facebook**: vincularlo con Instagram en Meta Business Suite.
 
