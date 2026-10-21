@@ -5,6 +5,7 @@ import { ServicesSection } from './components/ServicesSection';
 import { MaintenancePlanSection } from './components/MaintenancePlanSection';
 import { BeforeAfterSection } from './components/BeforeAfterSection';
 import { ProcessSection } from './components/ProcessSection';
+import { RoofAnimationSection } from './components/RoofAnimationSection';
 import { WorkGallerySection } from './components/WorkGallerySection';
 import { WarrantySection } from './components/WarrantySection';
 import { CoverageZonesSection } from './components/CoverageZonesSection';
@@ -21,6 +22,7 @@ export default function App() {
         <MaintenancePlanSection />
         <BeforeAfterSection />
         <ProcessSection onOpenDiagnostic={openDiagnostic} />
+        <RoofAnimationSection />
         <WorkGallerySection />
         <WarrantySection />
         <CoverageZonesSection />
