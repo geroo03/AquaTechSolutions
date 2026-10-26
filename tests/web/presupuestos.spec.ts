@@ -60,7 +60,7 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   await page.getByRole('button', { name: 'Agregar trabajo' }).click();
   await page.getByLabel('Unidad').nth(1).selectOption('global');
   await page.getByLabel(/^Precio/).nth(1).fill('85.000');
-  await page.getByLabel('Descuento (%)').fill('10');
+  await page.getByLabel(/Descuento sobre la mano de obra/).fill('10');
   await expect(page.locator('[data-total]')).toHaveText('$1.336.500');
   // Materiales en su propia sección: el descuento no se les aplica
   const materials = page.locator('section[aria-labelledby="t-material"]');
