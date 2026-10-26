@@ -51,6 +51,8 @@ export default defineConfig(({ mode }) => {
     // Rutas relativas: la web funciona igual en GitHub Pages (/AquaTechSolutions/) y con dominio propio
     base: './',
     plugins: [react(), tailwindcss(), siteHtml(env)],
+    // Dos páginas: la web y el panel interno de presupuestos (/presupuestos/, sin indexar)
+    build: { rollupOptions: { input: { web: 'index.html', presupuestos: 'presupuestos/index.html' } } },
     // Fecha de compilación: decide qué promos se generan (ver src/data/promo.ts)
     define: { __BUILD_TIME__: JSON.stringify(Date.now()) },
   };

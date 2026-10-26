@@ -22,3 +22,10 @@ test('la política mantiene solo los proveedores configurados y escapa el HTML',
   assert.match(html, /connect-src &#39;self&#39; https:\/\/cloudflareinsights\.com;/);
   assert.equal(escapeHtml('<img title="x" onerror=\'alert(1)\'>&'), '&lt;img title=&quot;x&quot; onerror=&#39;alert(1)&#39;&gt;&amp;');
 });
+
+test('los orígenes de conexión extra se validan y se agregan a connect-src', () => {
+  const html = secureHtml('<meta charset="UTF-8">', ['https://abc.supabase.co']);
+  assert.match(html, /connect-src &#39;self&#39; https:\/\/abc\.supabase\.co;/);
+  assert.throws(() => secureHtml('<meta charset="UTF-8">', ["https://x.supabase.co; script-src *"]), /Origen de conexión inválido/);
+  assert.throws(() => secureHtml('<meta charset="UTF-8">', ['http://x.supabase.co']), /Origen de conexión inválido/);
+});

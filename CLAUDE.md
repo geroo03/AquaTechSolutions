@@ -71,6 +71,19 @@ Referencia de conexión inicial para **aquatechsolutions.com.ar** (ver el estado
 
 **Activa: Cloudflare Web Analytics** (gratis, sin cookies) con la variable `VITE_CF_BEACON_TOKEN` del repo (desde el 15/10/2026, hostname `geroo03.github.io`, cuenta de Cloudflare de Sebastián; panel en Observability → Analytics → Web analytics). Al pasar al dominio propio hay que agregar el hostname nuevo en Cloudflare y actualizar el token. Cuenta visitas pero no clics por botón, así que **cada mensaje de WhatsApp de la web es distinto según el botón y termina con "(Enviado desde la web)"** (lo agrega `waLink()`): el dueño cuenta las consultas en su propio WhatsApp. Alternativas: `VITE_PLAUSIBLE_DOMAIN` (pago) o `VITE_GA_ID` (GA4); con esas, `src/analytics.ts` registra además el evento "WhatsApp" con su `origen`. Las variables se cargan en GitHub → Settings → Secrets and variables → Actions → **Variables**; `vite.config.ts` inyecta el script solo si existe la variable.
 
+### Panel de presupuestos (/presupuestos/, con login)
+
+Herramienta interna para que Martín arme presupuestos y se los mande al cliente: https://aquatechsolutions.com.ar/presupuestos/ (26/10/2026). Es una segunda página de Vite (`presupuestos/index.html` → `src/presupuestos/`), sin pre-render, con `noindex`, `Disallow` en `robots.txt`, fuera del sitemap y sin enlaces desde la web. `prerender.mjs` le aplica la misma CSP, más el origen de Supabase en `connect-src`.
+- **Login y datos en Supabase**: proyecto `aquatech-presupuestos` (ref `vbfmtbdilgbqnyegsgco`, sa-east-1, plan gratis, org "hackatoh" de Sebastián). URL y clave publicable en `src/presupuestos/supabase.json` (públicas a propósito). Tablas `presupuestos` (el presupuesto entero en `data` jsonb) y `emisor` (dirección, CUIT, etc. del PDF), con RLS: cada usuario ve y edita solo lo suyo, y `anon` no tiene acceso.
+- **Solo existe la cuenta de Martín** (`aquatech.cba@gmail.com`): el trigger `private.solo_permitidos` rechaza cualquier alta que no esté en `private.usuarios_permitidos`. Para sumar a alguien: insertar su mail en esa tabla y crear el usuario. La contraseña se cambia desde el panel (botón de cuenta). No hay "olvidé mi contraseña" por mail (el SMTP gratis de Supabase no manda a mails externos): si la olvida, Sebastián la resetea desde Supabase.
+- El plan gratis pausa el proyecto tras 7 días sin uso: `.github/workflows/supabase-activo.yml` llama a la función `ping()` cada 3 días.
+- `Gate.tsx`: login y carga. `BudgetApp.tsx`: el panel; guarda en la nube con una espera de 0,7 s, reintenta si no hay conexión y avisa antes de cerrar con cambios sin guardar. `cloud.ts`: Supabase. `model.ts`: datos y cálculos (cantidad × precio, "global" = precio total, descuento %), número correlativo, copia de seguridad en JSON.
+- `pdf.ts`: PDF A4 con jsPDF (se carga solo en el panel, no pesa en la web): cabecera negra con el logo, marca de agua (la "Λ", "AQUATECH" y trama diagonal), tabla, total, garantía, detalle, condiciones y firma del cliente. Helvetica (WinAnsi): `clean()` saca emojis.
+- **Dirección y CUIT no están en el código** (no se publican): Martín los carga una vez en "Datos del negocio" y quedan en su cuenta.
+- "Enviar por WhatsApp": en el celular comparte el PDF con el menú del sistema; en la compu lo descarga y abre el chat del cliente con el mensaje (el PDF se adjunta a mano).
+- Precios: solo el de la promo ($10.000/m² de mano de obra) viene cargado; el resto lo pone Martín en cada presupuesto.
+- La prueba de `tests/web/presupuestos.spec.ts` simula Supabase: no toca la base real.
+
 ## Stack y estructura
 
 React 19 + TypeScript (strict) + Vite 8 + Tailwind CSS 4 (`@tailwindcss/vite`) + `lucide-react` (íconos). Fuentes Inter y Montserrat servidas desde el repo (`@fontsource-variable`), sin Google Fonts. Sin backend: todo es estático, pre-renderizado, y los formularios abren WhatsApp con el mensaje armado.
@@ -96,8 +109,9 @@ src/
 public/
   images/*.webp           fotos reales de obra en WebP; hero con variante para celular
   og-image.png            imagen para compartir en WhatsApp/redes (1200×630)
-  logo-aquatech.png       logo original del cliente (disco plateado)
+  logo-aquatech.png       logo original del cliente (disco plateado; también va en el PDF)
   favicon.svg
+presupuestos/index.html   panel interno de presupuestos (src/presupuestos/)
 ```
 
 ## Convenciones de diseño (respetarlas)

@@ -53,7 +53,13 @@ ${pages.map(page => `  <url><loc>${escape(new URL(page.path.slice(1), site.url).
 </urlset>
 `,
 );
-fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site.url}sitemap.xml\n`);
+// Panel interno de presupuestos (con login): no se pre-renderiza ni va al sitemap; misma política de seguridad + Supabase.
+const budgetsPath = path.join(dist, 'presupuestos', 'index.html');
+const supabase = JSON.parse(fs.readFileSync(path.join(root, 'src/presupuestos/supabase.json'), 'utf8'));
+fs.writeFileSync(budgetsPath, secureHtml(fs.readFileSync(budgetsPath, 'utf8'), [new URL(supabase.url).origin]));
+console.log('✓ /presupuestos/ (panel interno, sin indexar)');
+
+fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /presupuestos/\n\nSitemap: ${site.url}sitemap.xml\n`);
 
 fs.rmSync(path.join(root, 'dist-ssr'), { recursive: true, force: true });
 console.log(`✓ ${pages.length} páginas + sitemap.xml + robots.txt → ${site.url}`);
