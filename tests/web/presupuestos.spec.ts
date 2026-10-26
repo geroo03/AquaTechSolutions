@@ -40,7 +40,7 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   await page.goto('/presupuestos/');
   await expect(page.locator('html')).toHaveAttribute('data-ready', 'true');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
-  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute('content', new RegExp(`connect-src 'self' ${supabase.url.replace(/\./g, '\\.')};`));
+  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute('content', new RegExp(`connect-src 'self' ${supabase.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')};`));
 
   // Sin login no se ve el panel
   await expect(page.getByRole('heading', { name: 'Ingresar' })).toBeVisible();
