@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Building2, Copy, Download, Eye, FileText, FolderOpen, History, Plus, Search, Trash2, Upload, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { Building2, CircleUser, Cloud, CloudOff, Copy, Download, Eye, FileText, FolderOpen, History, LoaderCircle, Plus, Search, Trash2, Upload, X } from 'lucide-react';
 import { LogoMark, WhatsAppIcon } from '../components/Brand';
 import { Modal } from '../components/ui';
 import {
   PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS,
-  exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal, loadBudgets, loadIssuer,
-  newBudget, newLine, nextNumber, saveBudgets, saveIssuer, saveSeq, totals, waNumber,
+  exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal,
+  newBudget, newLine, nextNumber, totals, waNumber,
   type Budget, type Issuer, type Line, type Status, type Unit,
 } from './model';
 import { buildPdf, loadPdfKit, type PdfKit } from './pdf';
+import { changePassword, deleteBudgetRemote, saveBudgetsRemote, saveIssuerRemote, signOut } from './cloud';
 
 const field = 'mt-1.5 w-full rounded-2xl bg-paper ring-1 ring-line px-4 py-3 text-[15px] text-ink placeholder:text-muted outline-none focus:ring-2 focus:ring-ink';
 const card = 'rounded-3xl bg-white ring-1 ring-line p-5 sm:p-7';
@@ -33,19 +34,68 @@ const hasContent = (b: Budget) =>
   Boolean(b.client.name.trim() || b.client.phone.trim() || b.client.address.trim() || b.work.trim() || b.notes.trim() ||
     b.lines.some(l => l.qty.trim() || l.detail.trim()));
 
-export default function BudgetApp() {
-  const [budgets, setBudgets] = useState<Budget[]>(() => loadBudgets());
-  const [issuer, setIssuer] = useState<Issuer>(() => loadIssuer());
-  const [budget, setBudget] = useState<Budget>(() => newBudget(nextNumber(budgets)));
+type SaveState = 'ok' | 'saving' | 'error';
+
+interface Props {
+  email: string;
+  initialBudgets: Budget[];
+  initialIssuer: Issuer;
+}
+
+export default function BudgetApp({ email, initialBudgets, initialIssuer }: Props) {
+  const [budgets, setBudgets] = useState<Budget[]>(initialBudgets);
+  const [issuer, setIssuer] = useState<Issuer>(initialIssuer);
+  const [budget, setBudget] = useState<Budget>(() => newBudget(nextNumber(initialBudgets)));
   const [kit, setKit] = useState<PdfKit | null>(null);
   const [kitError, setKitError] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [issuerOpen, setIssuerOpen] = useState(() => !loadIssuer().address || !loadIssuer().cuit);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [issuerOpen, setIssuerOpen] = useState(() => !initialIssuer.address || !initialIssuer.cuit);
   const [notice, setNotice] = useState('');
+  const [saveState, setSaveState] = useState<SaveState>('ok');
   const noticeTimer = useRef<number>(undefined);
+  // Guardado en la nube con una pequeña espera: no se manda un pedido por cada tecla.
+  const pending = useRef(new Map<string, Budget>());
+  const pendingIssuer = useRef<Issuer | null>(null);
+  const saveTimer = useRef<number>(undefined);
 
   useEffect(() => {
-    loadPdfKit().then(setKit, () => setKitError(true)).finally(() => { document.documentElement.dataset.ready = 'true'; });
+    loadPdfKit().then(setKit, () => setKitError(true));
+  }, []);
+
+  const flushSaves = async () => {
+    window.clearTimeout(saveTimer.current);
+    const budgetsToSave = [...pending.current.values()];
+    const issuerToSave = pendingIssuer.current;
+    if (!budgetsToSave.length && !issuerToSave) return;
+    pending.current.clear();
+    pendingIssuer.current = null;
+    setSaveState('saving');
+    try {
+      await Promise.all([saveBudgetsRemote(budgetsToSave), issuerToSave && saveIssuerRemote(issuerToSave)]);
+      setSaveState(pending.current.size || pendingIssuer.current ? 'saving' : 'ok');
+    } catch {
+      // Se vuelven a encolar (sin pisar cambios más nuevos) y se reintenta.
+      budgetsToSave.forEach(b => { if (!pending.current.has(b.id)) pending.current.set(b.id, b); });
+      if (issuerToSave && !pendingIssuer.current) pendingIssuer.current = issuerToSave;
+      setSaveState('error');
+      saveTimer.current = window.setTimeout(flushSaves, 8000);
+    }
+  };
+  const queueSave = (items: Budget[], nextIssuer?: Issuer) => {
+    items.forEach(b => pending.current.set(b.id, b));
+    if (nextIssuer) pendingIssuer.current = nextIssuer;
+    setSaveState(state => (state === 'error' ? 'error' : 'saving'));
+    window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(flushSaves, 700);
+  };
+
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (pending.current.size || pendingIssuer.current) e.preventDefault();
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
   }, []);
 
   const flash = (text: string) => {
@@ -61,8 +111,7 @@ export default function BudgetApp() {
     if (!hasContent(stamped) && !budgets.some(b => b.id === stamped.id)) return;
     const list = budgets.some(b => b.id === stamped.id) ? budgets.map(b => (b.id === stamped.id ? stamped : b)) : [stamped, ...budgets];
     setBudgets(list);
-    saveBudgets(list);
-    saveSeq(Math.max(stamped.number, ...list.map(b => b.number)));
+    queueSave([stamped]);
   };
   const set = <K extends keyof Budget>(key: K, value: Budget[K]) => commit({ ...budget, [key]: value });
   const setClient = (key: keyof Budget['client'], value: string) => commit({ ...budget, client: { ...budget.client, [key]: value } });
@@ -70,7 +119,7 @@ export default function BudgetApp() {
   const updateIssuer = (key: keyof Issuer, value: string) => {
     const next = { ...issuer, [key]: value };
     setIssuer(next);
-    saveIssuer(next);
+    queueSave([], next);
   };
 
   const sum = useMemo(() => totals(budget), [budget]);
@@ -123,10 +172,8 @@ export default function BudgetApp() {
   };
   const duplicate = (b: Budget) => {
     const copy: Budget = { ...structuredClone(b), id: newBudget(0).id, number: nextNumber(budgets), date: newBudget(0).date, status: 'borrador', updatedAt: Date.now() };
-    const list = [copy, ...budgets];
-    setBudgets(list);
-    saveBudgets(list);
-    saveSeq(copy.number);
+    setBudgets([copy, ...budgets]);
+    queueSave([copy]);
     open(copy);
     flash(`Copia creada: presupuesto N° ${formatNumber(copy.number)}.`);
   };
@@ -134,14 +181,18 @@ export default function BudgetApp() {
     if (!window.confirm(`¿Borrar el presupuesto N° ${formatNumber(b.number)}${b.client.name ? ` de ${b.client.name}` : ''}? No se puede deshacer.`)) return;
     const list = budgets.filter(x => x.id !== b.id);
     setBudgets(list);
-    saveBudgets(list);
+    pending.current.delete(b.id);
     if (budget.id === b.id) setBudget(newBudget(nextNumber(list)));
+    deleteBudgetRemote(b.id).catch(() => {
+      setBudgets(current => (current.some(x => x.id === b.id) ? current : [b, ...current]));
+      flash('No se pudo borrar: revisá la conexión e intentá de nuevo.');
+    });
   };
   const setStatus = (b: Budget, status: Status) => {
-    const list = budgets.map(x => (x.id === b.id ? { ...x, status } : x));
-    setBudgets(list);
-    saveBudgets(list);
-    if (budget.id === b.id) setBudget({ ...budget, status });
+    const changed = { ...b, status, updatedAt: Date.now() };
+    setBudgets(budgets.map(x => (x.id === b.id ? changed : x)));
+    queueSave([changed]);
+    if (budget.id === b.id) setBudget(changed);
   };
 
   const onExport = () => download(new Blob([exportBackup(budgets, issuer)], { type: 'application/json' }), `presupuestos-aquatech-${newBudget(0).date}.json`);
@@ -151,13 +202,12 @@ export default function BudgetApp() {
       const ids = new Set(data.budgets.map(b => b.id));
       const list = [...data.budgets, ...budgets.filter(b => !ids.has(b.id))].sort((a, b) => b.updatedAt - a.updatedAt);
       setBudgets(list);
-      saveBudgets(list);
-      saveSeq(nextNumber(list) - 1);
+      let merged: Issuer | undefined;
       if (data.issuer && (!issuer.address || !issuer.cuit)) {
-        const merged = { ...issuer, ...data.issuer };
+        merged = { ...issuer, ...data.issuer };
         setIssuer(merged);
-        saveIssuer(merged);
       }
+      queueSave(data.budgets, merged);
       flash(`Se importaron ${data.budgets.length} presupuestos.`);
     } catch (error) {
       flash(error instanceof Error ? error.message : 'No se pudo leer el archivo.');
@@ -179,10 +229,13 @@ export default function BudgetApp() {
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setHistoryOpen(true)} className="inline-flex items-center gap-2 h-10 px-4 rounded-full ring-1 ring-white/25 text-sm font-semibold hover:bg-white/10">
-              <History size={16} aria-hidden="true" /> Historial <span className="text-white/70">({budgets.length})</span>
+              <History size={16} aria-hidden="true" /> <span className="max-sm:sr-only">Historial</span> <span className="text-white/70">({budgets.length})</span>
             </button>
             <button type="button" onClick={startNew} className="inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white text-ink text-sm font-semibold hover:bg-mist">
               <Plus size={16} aria-hidden="true" /> <span className="max-sm:sr-only">Nuevo</span>
+            </button>
+            <button type="button" onClick={() => setAccountOpen(true)} className="w-10 h-10 rounded-full ring-1 ring-white/25 flex items-center justify-center hover:bg-white/10" aria-label="Cuenta">
+              <CircleUser size={18} aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -195,7 +248,7 @@ export default function BudgetApp() {
           <section className={card} aria-labelledby="t-presupuesto">
             <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-5">
               <h2 id="t-presupuesto" className="font-headline text-xl font-bold">Presupuesto N° {formatNumber(budget.number)}</h2>
-              <span className="text-xs text-muted">{budgets.some(b => b.id === budget.id) ? 'Guardado en este dispositivo' : 'Sin guardar todavía'}</span>
+              <SaveBadge state={saveState} saved={budgets.some(b => b.id === budget.id)} onRetry={flushSaves} />
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <label className={labelText}>Número
@@ -356,7 +409,7 @@ export default function BudgetApp() {
                 <label className={labelText}>Web
                   <input value={issuer.web} onChange={e => updateIssuer('web', e.target.value)} maxLength={80} className={field} />
                 </label>
-                <p className="text-xs text-muted leading-relaxed">Se guardan solo en este dispositivo. No se publican en la web.</p>
+                <p className="text-xs text-muted leading-relaxed">Se guardan en tu cuenta y salen en el PDF. No se publican en la web.</p>
               </div>
             )}
           </section>
@@ -388,6 +441,10 @@ export default function BudgetApp() {
           <button type="button" onClick={() => setNotice('')} aria-label="Cerrar aviso" className="text-white/70 hover:text-white"><X size={16} /></button>
         </div>
       )}
+
+      <Modal isOpen={accountOpen} onClose={() => setAccountOpen(false)} label="Cuenta" maxWidth="max-w-md">
+        <AccountPanel email={email} onSignOut={async () => { await flushSaves(); await signOut(); }} />
+      </Modal>
 
       <Modal isOpen={historyOpen} onClose={() => setHistoryOpen(false)} label="Historial de presupuestos" maxWidth="max-w-3xl">
         <HistoryPanel budgets={budgets} currentId={budget.id} onOpen={open} onDuplicate={duplicate} onRemove={remove} onStatus={setStatus}
@@ -424,7 +481,7 @@ function HistoryPanel({ budgets, currentId, onOpen, onDuplicate, onRemove, onSta
     <div className="p-5 sm:p-8">
       <h2 className="font-headline text-2xl font-bold pr-10">Historial</h2>
       <p className="mt-1 text-sm text-muted">
-        {budgets.length === 1 ? '1 presupuesto guardado' : `${budgets.length} presupuestos guardados`} en este dispositivo
+        {budgets.length === 1 ? '1 presupuesto guardado' : `${budgets.length} presupuestos guardados`}
         {accepted > 0 && <> · aceptados por {formatMoney(accepted)}</>}
       </p>
 
@@ -446,7 +503,7 @@ function HistoryPanel({ budgets, currentId, onOpen, onDuplicate, onRemove, onSta
       {list.length === 0 ? (
         <div className="mt-6 rounded-2xl bg-paper p-8 text-center">
           <FileText size={28} className="mx-auto text-muted" aria-hidden="true" />
-          <p className="mt-3 text-sm text-graphite">{budgets.length ? 'No hay presupuestos con ese filtro.' : 'Todavía no hay presupuestos guardados. Se guardan solos apenas cargás un dato.'}</p>
+          <p className="mt-3 text-sm text-graphite">{budgets.length ? 'No hay presupuestos con ese filtro.' : 'Todavía no hay presupuestos. Se guardan solos apenas cargás un dato.'}</p>
           <button type="button" onClick={onNew} className={`${btnDark} mt-4 h-10 px-5 text-sm`}><Plus size={15} aria-hidden="true" /> Nuevo presupuesto</button>
         </div>
       ) : (
@@ -475,13 +532,60 @@ function HistoryPanel({ budgets, currentId, onOpen, onDuplicate, onRemove, onSta
       )}
 
       <div className="mt-6 rounded-2xl bg-paper p-4 sm:p-5">
-        <p className="text-sm text-graphite">Los presupuestos se guardan en este navegador. Para pasarlos a otro dispositivo o tener un respaldo, exportá una copia.</p>
+        <p className="text-sm text-graphite">Los presupuestos se guardan en tu cuenta y los ves desde cualquier dispositivo. Si querés un respaldo aparte, exportá una copia.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" onClick={onExport} disabled={!budgets.length} className={`${btnLight} h-10 px-4 text-sm`}><Download size={15} aria-hidden="true" /> Exportar copia</button>
           <button type="button" onClick={() => fileInput.current?.click()} className={`${btnLight} h-10 px-4 text-sm`}><Upload size={15} aria-hidden="true" /> Importar copia</button>
           <input ref={fileInput} type="file" accept="application/json,.json" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) onImport(f); e.target.value = ''; }} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function SaveBadge({ state, saved, onRetry }: { state: SaveState; saved: boolean; onRetry: () => void }) {
+  if (state === 'error') {
+    return (
+      <button type="button" onClick={onRetry} className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-2">
+        <CloudOff size={14} aria-hidden="true" /> Sin conexión: reintentar
+      </button>
+    );
+  }
+  if (state === 'saving') return <span className="inline-flex items-center gap-1.5 text-xs text-muted"><LoaderCircle size={14} className="animate-spin" aria-hidden="true" /> Guardando…</span>;
+  return <span className="inline-flex items-center gap-1.5 text-xs text-muted"><Cloud size={14} aria-hidden="true" /> {saved ? 'Guardado en la nube' : 'Se guarda al cargar un dato'}</span>;
+}
+
+function AccountPanel({ email, onSignOut }: { email: string; onSignOut: () => Promise<void> }) {
+  const [password, setPassword] = useState('');
+  const [repeat, setRepeat] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (password.length < 8) return setMessage('Usá al menos 8 caracteres.');
+    if (password !== repeat) return setMessage('Las contraseñas no coinciden.');
+    setBusy(true);
+    const error = await changePassword(password);
+    setBusy(false);
+    setMessage(error ?? 'Listo: la contraseña nueva ya funciona.');
+    if (!error) { setPassword(''); setRepeat(''); }
+  };
+  return (
+    <div className="p-6 sm:p-8">
+      <h2 className="font-headline text-2xl font-bold pr-10">Cuenta</h2>
+      <p className="mt-1 text-sm text-muted break-all">{email}</p>
+      <form onSubmit={submit} className="mt-6 grid gap-3.5">
+        <h3 className="font-headline text-base font-bold">Cambiar contraseña</h3>
+        <label className={labelText}>Contraseña nueva
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" className={field} />
+        </label>
+        <label className={labelText}>Repetila
+          <input type="password" value={repeat} onChange={e => setRepeat(e.target.value)} autoComplete="new-password" className={field} />
+        </label>
+        {message && <p role="status" className="text-sm text-graphite">{message}</p>}
+        <button type="submit" disabled={busy} className={`${btnDark} h-11 px-5 text-sm`}>Guardar contraseña</button>
+      </form>
+      <button type="button" onClick={onSignOut} className={`${btnLight} mt-6 w-full h-11 text-sm`}>Cerrar sesión</button>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 /**
- * Datos del panel de presupuestos. Todo se guarda solo en el navegador de quien lo usa (localStorage):
- * la web no tiene servidor y la dirección y el CUIT no se publican en el código del sitio.
+ * Datos y cálculos del panel de presupuestos. Se guardan en la nube con la cuenta de Martín (cloud.ts):
+ * la dirección y el CUIT no están en el código del sitio.
  */
 import { EMAIL, PHONE_DISPLAY } from '../data/mockData';
 
@@ -60,8 +60,6 @@ export const PRESETS: { description: string; unit: Unit; price: string }[] = [
 ];
 
 export const DEFAULT_ISSUER: Issuer = { address: '', cuit: '', phone: PHONE_DISPLAY, email: EMAIL, web: 'aquatechsolutions.com.ar' };
-
-const KEYS = { budgets: 'aquatech.presupuestos.v1', issuer: 'aquatech.emisor.v1', seq: 'aquatech.presupuestos.numero' };
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
@@ -140,37 +138,8 @@ export const fileName = (budget: Budget) => {
   return `Presupuesto-AquaTech-${formatNumber(budget.number)}${name ? `-${name}` : ''}.pdf`;
 };
 
-// ───────────── Guardado local ─────────────
-
-function read<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function write(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export const loadBudgets = () => read<Budget[]>(KEYS.budgets, []).filter(b => b && b.id && Array.isArray(b.lines));
-export const saveBudgets = (budgets: Budget[]) => write(KEYS.budgets, budgets);
-export const loadIssuer = () => ({ ...DEFAULT_ISSUER, ...read<Partial<Issuer>>(KEYS.issuer, {}) });
-export const saveIssuer = (issuer: Issuer) => write(KEYS.issuer, issuer);
-
-/** Próximo número: el mayor entre el contador y los guardados, más uno. */
-export function nextNumber(budgets: Budget[]) {
-  const seq = read<number>(KEYS.seq, 0);
-  return Math.max(seq, ...budgets.map(b => b.number || 0)) + 1;
-}
-export const saveSeq = (n: number) => write(KEYS.seq, n);
+/** Próximo número correlativo */
+export const nextNumber = (budgets: Budget[]) => Math.max(0, ...budgets.map(b => b.number || 0)) + 1;
 
 /** Copia de seguridad para pasar los presupuestos a otro dispositivo */
 export const exportBackup = (budgets: Budget[], issuer: Issuer) => JSON.stringify({ app: 'aquatech-presupuestos', version: 1, budgets, issuer }, null, 2);

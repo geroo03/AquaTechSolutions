@@ -18,9 +18,14 @@ export function validateAnalytics(env: Record<string, string>) {
 }
 
 /** Se aplica al HTML final, después de Vite y del pre-render, para calcular los hashes exactos. */
-export function secureHtml(html: string) {
+/** `connect`: orígenes HTTPS extra a los que la página puede llamar (el panel de presupuestos usa Supabase). */
+export function secureHtml(html: string, connect: string[] = []) {
   const scripts = new Set(["'self'"]);
   const connections = new Set(["'self'"]);
+  for (const origin of connect) {
+    if (!/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(origin)) throw new Error('Origen de conexión inválido');
+    connections.add(origin);
+  }
   const images = new Set(["'self'", 'data:']);
   let charsetEnd: number | undefined;
   const visit = (node: DefaultTreeAdapterMap['node']) => {
