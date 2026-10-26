@@ -29,7 +29,10 @@ async function mockSupabase(page: Page) {
 }
 
 test.beforeEach(async ({ context }) => {
-  await context.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.fulfill({ contentType: 'text/html', body: '' }));
+  await context.route(/^https?:\/\/(?!127\.0\.0\.1:4173)/, route => route.fulfill({
+    contentType: route.request().resourceType() === 'script' ? 'application/javascript' : 'text/html',
+    body: '',
+  }));
 });
 
 test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el PDF', async ({ page }) => {
