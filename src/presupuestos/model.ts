@@ -4,7 +4,8 @@
  */
 import { EMAIL, PHONE_DISPLAY } from '../data/mockData';
 
-export type Unit = 'm²' | 'ml' | 'u' | 'global' | 'rollos' | 'baldes' | 'litros' | 'kg';
+/** Unidad libre: las de UNITS son sugerencias (en materiales se puede escribir cualquiera) */
+export type Unit = string;
 /** Sección del presupuesto: mano de obra o materiales */
 export type Kind = 'mano' | 'material';
 export type Status = 'borrador' | 'enviado' | 'aceptado' | 'rechazado';
@@ -45,8 +46,16 @@ export interface Issuer {
 
 export const UNITS: Record<Kind, Unit[]> = {
   mano: ['m²', 'ml', 'u', 'global'],
-  material: ['u', 'rollos', 'baldes', 'litros', 'kg', 'm²', 'ml', 'global'],
+  material: ['u', 'rollos', 'baldes', 'latas', 'litros', 'kg', 'bolsas', 'm²', 'ml', 'global'],
 };
+
+/** Un material de la lista propia de Martín (se edita desde el panel y se guarda en su cuenta) */
+export interface CatalogItem {
+  id: string;
+  description: string;
+  unit: Unit;
+  price: string;
+}
 export const KIND_LABEL: Record<Kind, string> = { mano: 'Mano de obra', material: 'Materiales' };
 export const kindOf = (line: Line): Kind => line.kind ?? 'mano';
 export const STATUSES: Status[] = ['borrador', 'enviado', 'aceptado', 'rechazado'];
@@ -78,6 +87,10 @@ export const PRESETS: Record<Kind, { description: string; unit: Unit; price: str
 export const DEFAULT_ISSUER: Issuer = { address: '', cuit: '', phone: PHONE_DISPLAY, email: EMAIL, web: 'aquatechsolutions.com.ar' };
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+/** Lista inicial de materiales, sin precios: Martín la edita a su gusto */
+export const defaultCatalog = (): CatalogItem[] => PRESETS.material.map(p => ({ id: uid(), ...p }));
+export const newCatalogItem = (): CatalogItem => ({ id: uid(), description: '', unit: 'u', price: '' });
 
 export const newLine = (preset?: Partial<Line>): Line => ({ id: uid(), description: '', detail: '', qty: '', unit: 'm²', price: '', ...preset });
 
@@ -126,7 +139,12 @@ const money = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 });
 export const formatMoney = (n: number) => `$${money.format(n)}`;
 export const formatQty = (line: Line) => (line.unit === 'global' ? (line.qty.trim() ? `${line.qty} gl.` : 'Global') : `${line.qty || 0} ${line.unit}`);
 /** Para el precio unitario: "$4.500 / balde" */
-export const unitSingular = (unit: Unit) => ({ rollos: 'rollo', baldes: 'balde', litros: 'litro' } as Partial<Record<Unit, string>>)[unit] ?? unit;
+export const unitSingular = (unit: Unit) => {
+  const u = unit.trim();
+  const known: Record<string, string> = { rollos: 'rollo', baldes: 'balde', latas: 'lata', litros: 'litro', bolsas: 'bolsa', unidades: 'unidad' };
+  // "cajas" → "caja", "tachos" → "tacho"; lo demás queda como está
+  return known[u.toLowerCase()] ?? (/^[a-záéíóúñ]+[ao]s$/i.test(u) ? u.slice(0, -1) : u);
+};
 export const formatNumber = (n: number) => String(n).padStart(4, '0');
 
 export function formatDate(iso: string) {

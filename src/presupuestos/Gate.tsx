@@ -2,10 +2,10 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { LoaderCircle, Lock } from 'lucide-react';
 import { LogoMark } from '../components/Brand';
 import { fetchAll, signIn, signOut, supabase, type Session } from './cloud';
-import type { Budget, Issuer } from './model';
+import type { Budget, CatalogItem, Issuer } from './model';
 import BudgetApp from './BudgetApp';
 
-type Data = { budgets: Budget[]; issuer: Issuer };
+type Data = { budgets: Budget[]; issuer: Issuer; catalog: CatalogItem[] };
 
 /** Login: sin sesión no se ve el panel, y la base no devuelve nada sin la cuenta de Martín. */
 export default function Gate() {
@@ -33,7 +33,7 @@ export default function Gate() {
   }, [ready]);
 
   if (session === null) return <Login />;
-  if (session && data) return <BudgetApp key={session.user.id} email={session.user.email ?? ''} initialBudgets={data.budgets} initialIssuer={data.issuer} />;
+  if (session && data) return <BudgetApp key={session.user.id} email={session.user.email ?? ''} initialBudgets={data.budgets} initialIssuer={data.issuer} initialCatalog={data.catalog} />;
   return (
     <Screen>
       {loadError ? (

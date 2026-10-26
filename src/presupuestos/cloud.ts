@@ -5,7 +5,7 @@
  */
 import { createClient, type Session } from '@supabase/supabase-js';
 import config from './supabase.json' with { type: 'json' };
-import { DEFAULT_ISSUER, type Budget, type Issuer } from './model';
+import { DEFAULT_ISSUER, defaultCatalog, type Budget, type CatalogItem, type Issuer } from './model';
 
 export const supabase = createClient(config.url, config.publishableKey, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'aquatech.sesion' },
@@ -27,16 +27,20 @@ export async function changePassword(password: string) {
   return error ? (error.code === 'same_password' ? 'Es la misma contraseña que ya tenías.' : 'No se pudo cambiar la contraseña.') : null;
 }
 
-export async function fetchAll(): Promise<{ budgets: Budget[]; issuer: Issuer }> {
-  const [budgets, issuer] = await Promise.all([
+export async function fetchAll(): Promise<{ budgets: Budget[]; issuer: Issuer; catalog: CatalogItem[] }> {
+  const [budgets, issuer, catalog] = await Promise.all([
     supabase.from('presupuestos').select('data').order('updated_at', { ascending: false }),
     supabase.from('emisor').select('data').maybeSingle(),
+    supabase.from('catalogo').select('data').maybeSingle(),
   ]);
   if (budgets.error) throw budgets.error;
   if (issuer.error) throw issuer.error;
+  if (catalog.error) throw catalog.error;
+  const items = (catalog.data?.data as { materials?: CatalogItem[] } | undefined)?.materials;
   return {
     budgets: budgets.data.map(row => row.data as Budget).filter(b => b && b.id && Array.isArray(b.lines)),
     issuer: { ...DEFAULT_ISSUER, ...(issuer.data?.data as Partial<Issuer> | undefined) },
+    catalog: Array.isArray(items) ? items.filter(i => i && i.id) : defaultCatalog(),
   };
 }
 
@@ -53,5 +57,10 @@ export async function deleteBudgetRemote(id: string) {
 
 export async function saveIssuerRemote(issuer: Issuer) {
   const { error } = await supabase.from('emisor').upsert({ data: issuer, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
+
+export async function saveCatalogRemote(materials: CatalogItem[]) {
+  const { error } = await supabase.from('catalogo').upsert({ data: { materials }, updated_at: new Date().toISOString() });
   if (error) throw error;
 }

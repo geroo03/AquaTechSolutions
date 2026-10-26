@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { Building2, CircleUser, Cloud, CloudOff, Copy, Download, Eye, FileText, FolderOpen, History, LoaderCircle, Plus, Search, Trash2, Upload, X } from 'lucide-react';
+import { BookmarkPlus, Building2, CircleUser, ListChecks, Cloud, CloudOff, Copy, Download, Eye, FileText, FolderOpen, History, LoaderCircle, Plus, Search, Trash2, Upload, X } from 'lucide-react';
 import { LogoMark, WhatsAppIcon } from '../components/Brand';
 import { Modal } from '../components/ui';
 import {
   KIND_LABEL, PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS, kindOf,
   exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal, unitSingular,
   newBudget, newLine, nextNumber, totals, waNumber,
-  type Budget, type Issuer, type Kind, type Line, type Status, type Unit,
+  newCatalogItem, type Budget, type CatalogItem, type Issuer, type Kind, type Line, type Status,
 } from './model';
 import { buildPdf, loadPdfKit, type PdfKit } from './pdf';
-import { changePassword, deleteBudgetRemote, saveBudgetsRemote, saveIssuerRemote, signOut } from './cloud';
+import { changePassword, deleteBudgetRemote, saveBudgetsRemote, saveCatalogRemote, saveIssuerRemote, signOut } from './cloud';
 
 const field = 'mt-1.5 w-full rounded-2xl bg-paper ring-1 ring-line px-4 py-3 text-[15px] text-ink placeholder:text-muted outline-none focus:ring-2 focus:ring-ink';
 const card = 'rounded-3xl bg-white ring-1 ring-line p-5 sm:p-7';
@@ -40,9 +40,12 @@ interface Props {
   email: string;
   initialBudgets: Budget[];
   initialIssuer: Issuer;
+  initialCatalog: CatalogItem[];
 }
 
-export default function BudgetApp({ email, initialBudgets, initialIssuer }: Props) {
+export default function BudgetApp({ email, initialBudgets, initialIssuer, initialCatalog }: Props) {
+  const [catalog, setCatalog] = useState<CatalogItem[]>(initialCatalog);
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const [budgets, setBudgets] = useState<Budget[]>(initialBudgets);
   const [issuer, setIssuer] = useState<Issuer>(initialIssuer);
   const [budget, setBudget] = useState<Budget>(() => newBudget(nextNumber(initialBudgets)));
@@ -57,6 +60,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
   // Guardado en la nube con una pequeña espera: no se manda un pedido por cada tecla.
   const pending = useRef(new Map<string, Budget>());
   const pendingIssuer = useRef<Issuer | null>(null);
+  const pendingCatalog = useRef<CatalogItem[] | null>(null);
   const saveTimer = useRef<number>(undefined);
 
   useEffect(() => {
@@ -67,24 +71,32 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
     window.clearTimeout(saveTimer.current);
     const budgetsToSave = [...pending.current.values()];
     const issuerToSave = pendingIssuer.current;
-    if (!budgetsToSave.length && !issuerToSave) return;
+    const catalogToSave = pendingCatalog.current;
+    if (!budgetsToSave.length && !issuerToSave && !catalogToSave) return;
     pending.current.clear();
     pendingIssuer.current = null;
+    pendingCatalog.current = null;
     setSaveState('saving');
     try {
-      await Promise.all([saveBudgetsRemote(budgetsToSave), issuerToSave && saveIssuerRemote(issuerToSave)]);
-      setSaveState(pending.current.size || pendingIssuer.current ? 'saving' : 'ok');
+      await Promise.all([
+        saveBudgetsRemote(budgetsToSave),
+        issuerToSave && saveIssuerRemote(issuerToSave),
+        catalogToSave && saveCatalogRemote(catalogToSave),
+      ]);
+      setSaveState(pending.current.size || pendingIssuer.current || pendingCatalog.current ? 'saving' : 'ok');
     } catch {
       // Se vuelven a encolar (sin pisar cambios más nuevos) y se reintenta.
       budgetsToSave.forEach(b => { if (!pending.current.has(b.id)) pending.current.set(b.id, b); });
       if (issuerToSave && !pendingIssuer.current) pendingIssuer.current = issuerToSave;
+      if (catalogToSave && !pendingCatalog.current) pendingCatalog.current = catalogToSave;
       setSaveState('error');
       saveTimer.current = window.setTimeout(flushSaves, 8000);
     }
   };
-  const queueSave = (items: Budget[], nextIssuer?: Issuer) => {
+  const queueSave = (items: Budget[], nextIssuer?: Issuer, nextCatalog?: CatalogItem[]) => {
     items.forEach(b => pending.current.set(b.id, b));
     if (nextIssuer) pendingIssuer.current = nextIssuer;
+    if (nextCatalog) pendingCatalog.current = nextCatalog;
     setSaveState(state => (state === 'error' ? 'error' : 'saving'));
     window.clearTimeout(saveTimer.current);
     saveTimer.current = window.setTimeout(flushSaves, 700);
@@ -92,7 +104,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
 
   useEffect(() => {
     const warn = (e: BeforeUnloadEvent) => {
-      if (pending.current.size || pendingIssuer.current) e.preventDefault();
+      if (pending.current.size || pendingIssuer.current || pendingCatalog.current) e.preventDefault();
     };
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
@@ -116,6 +128,20 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
   const set = <K extends keyof Budget>(key: K, value: Budget[K]) => commit({ ...budget, [key]: value });
   const setClient = (key: keyof Budget['client'], value: string) => commit({ ...budget, client: { ...budget.client, [key]: value } });
   const setLine = (id: string, patch: Partial<Line>) => commit({ ...budget, lines: budget.lines.map(l => (l.id === id ? { ...l, ...patch } : l)) });
+  const updateCatalog = (next: CatalogItem[]) => {
+    setCatalog(next);
+    queueSave([], undefined, next);
+  };
+  /** Guarda (o actualiza, si ya está con el mismo nombre) un material del presupuesto en la lista propia */
+  const saveToCatalog = (line: Line) => {
+    const name = line.description.trim();
+    if (!name) return flash('Escribí el nombre del material antes de guardarlo.');
+    const existing = catalog.find(i => i.description.trim().toLowerCase() === name.toLowerCase());
+    updateCatalog(existing
+      ? catalog.map(i => (i === existing ? { ...i, description: name, unit: line.unit, price: line.price } : i))
+      : [...catalog, { ...newCatalogItem(), description: name, unit: line.unit, price: line.price }]);
+    flash(existing ? `Actualicé "${name}" en tus materiales.` : `Guardé "${name}" en tus materiales.`);
+  };
   const updateIssuer = (key: keyof Issuer, value: string) => {
     const next = { ...issuer, [key]: value };
     setIssuer(next);
@@ -283,6 +309,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
 
           {(['mano', 'material'] as Kind[]).map(kind => (
             <LinesSection key={kind} kind={kind} lines={budget.lines.filter(l => kindOf(l) === kind)}
+              catalog={catalog} onOpenCatalog={() => setCatalogOpen(true)} onSaveToCatalog={saveToCatalog}
               onChange={setLine}
               onAdd={() => commit({ ...budget, lines: [...budget.lines, newLine({ kind, unit: kind === 'mano' ? 'm²' : 'u' })] })}
               onRemove={id => commit({ ...budget, lines: budget.lines.filter(l => l.id !== id) })} />
@@ -397,6 +424,10 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
           <button type="button" onClick={() => setNotice('')} aria-label="Cerrar aviso" className="text-white/70 hover:text-white"><X size={16} /></button>
         </div>
       )}
+
+      <Modal isOpen={catalogOpen} onClose={() => setCatalogOpen(false)} label="Mis materiales" maxWidth="max-w-3xl">
+        <CatalogPanel items={catalog} onChange={updateCatalog} />
+      </Modal>
 
       <Modal isOpen={accountOpen} onClose={() => setAccountOpen(false)} label="Cuenta" maxWidth="max-w-md">
         <AccountPanel email={email} onSignOut={async () => { await flushSaves(); await signOut(); }} />
@@ -549,18 +580,23 @@ function AccountPanel({ email, onSignOut }: { email: string; onSignOut: () => Pr
 interface LinesProps {
   kind: Kind;
   lines: Line[];
+  catalog: CatalogItem[];
+  onOpenCatalog: () => void;
+  onSaveToCatalog: (line: Line) => void;
   onChange: (id: string, patch: Partial<Line>) => void;
   onAdd: () => void;
   onRemove: (id: string) => void;
 }
 
 /** Una sección del presupuesto: mano de obra o materiales, con su subtotal. */
-function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
+function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, onChange, onAdd, onRemove }: LinesProps) {
   const labor = kind === 'mano';
   const title = KIND_LABEL[kind];
   const listId = `frecuentes-${kind}`;
   const subtotal = lines.reduce((sum, line) => sum + lineTotal(line), 0);
   const item = labor ? 'trabajo' : 'material';
+  // Trabajos: lista fija. Materiales: la lista propia de Martín, editable.
+  const suggestions = labor ? PRESETS.mano : catalog.filter(i => i.description.trim());
   return (
     <section className={card} aria-labelledby={`t-${kind}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -571,8 +607,13 @@ function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
         {labor ? 'Cantidad por precio unitario. En "global" va el precio total del trabajo.' : 'Si el cliente compra los materiales, dejá esta sección vacía: el PDF dice que no están incluidos.'}
       </p>
       <datalist id={listId}>
-        {PRESETS[kind].map(p => <option key={p.description} value={p.description} />)}
+        {suggestions.map(p => <option key={p.description} value={p.description} />)}
       </datalist>
+      {!labor && (
+        <datalist id="unidades-material">
+          {UNITS.material.map(u => <option key={u} value={u} />)}
+        </datalist>
+      )}
       {lines.length > 0 && (
         <ol className="mt-5 space-y-4">
           {lines.map((line, i) => (
@@ -582,8 +623,8 @@ function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
                 <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-[1fr_96px_112px_132px] gap-3">
                   <label className={`${labelText} col-span-2 sm:col-span-4`}>Descripción
                     <input value={line.description} onChange={e => {
-                      const preset = PRESETS[kind].find(p => p.description === e.target.value);
-                      onChange(line.id, preset ? { description: preset.description, unit: preset.unit, price: line.price || preset.price } : { description: e.target.value });
+                      const preset = suggestions.find(p => p.description === e.target.value);
+                      onChange(line.id, preset ? { description: preset.description, unit: preset.unit, price: (labor ? line.price || preset.price : preset.price || line.price) } : { description: e.target.value });
                     }} list={listId} maxLength={140} placeholder={labor ? 'Elegí un trabajo frecuente o escribilo' : 'Elegí un material frecuente o escribilo'} className={field} />
                   </label>
                   <label className={`${labelText} col-span-2 sm:col-span-4`}>Detalle <span className="text-muted font-normal">(opcional)</span>
@@ -593,9 +634,13 @@ function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
                     <input value={line.qty} onChange={e => onChange(line.id, { qty: e.target.value })} inputMode="decimal" maxLength={12} placeholder={line.unit === 'global' ? '1' : '0'} className={field} />
                   </label>
                   <label className={labelText}>Unidad
-                    <select value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value as Unit })} className={field}>
-                      {UNITS[kind].map(u => <option key={u} value={u}>{u}</option>)}
-                    </select>
+                    {labor ? (
+                      <select value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} className={field}>
+                        {UNITS.mano.map(u => <option key={u} value={u}>{u}</option>)}
+                      </select>
+                    ) : (
+                      <input value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} list="unidades-material" maxLength={20} placeholder="u" className={field} />
+                    )}
                   </label>
                   <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}
                     <span className="relative block">
@@ -606,7 +651,12 @@ function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
                 </div>
               </div>
               <div className="mt-3 sm:pl-9 flex items-center justify-between gap-3">
-                <p className="text-sm text-graphite">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>
+                <p className="text-sm text-graphite whitespace-nowrap">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>
+                {!labor && (
+                  <button type="button" onClick={() => onSaveToCatalog(line)} className="ml-auto inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
+                    <BookmarkPlus size={15} aria-hidden="true" /> <span className="sm:hidden">Guardar</span><span className="max-sm:hidden">Guardar en mis materiales</span>
+                  </button>
+                )}
                 <button type="button" onClick={() => onRemove(line.id)} disabled={labor && lines.length === 1}
                   className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink disabled:invisible" aria-label={`Quitar ${item} ${i + 1}`}>
                   <Trash2 size={15} aria-hidden="true" /> Quitar
@@ -616,9 +666,61 @@ function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
           ))}
         </ol>
       )}
-      <button type="button" onClick={onAdd} className={`${btnLight} mt-4 h-11 px-5 text-sm`}>
-        <Plus size={16} aria-hidden="true" /> Agregar {item}
-      </button>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button type="button" onClick={onAdd} className={`${btnLight} h-11 px-5 text-sm`}>
+          <Plus size={16} aria-hidden="true" /> Agregar {item}
+        </button>
+        {!labor && (
+          <button type="button" onClick={onOpenCatalog} className={`${btnLight} h-11 px-5 text-sm`}>
+            <ListChecks size={16} aria-hidden="true" /> Mis materiales <span className="text-muted">({suggestions.length})</span>
+          </button>
+        )}
+      </div>
     </section>
+  );
+}
+
+/** Lista propia de materiales: nombre, unidad y precio, todo editable. Se usa para completar los presupuestos. */
+function CatalogPanel({ items, onChange }: { items: CatalogItem[]; onChange: (items: CatalogItem[]) => void }) {
+  const set = (id: string, patch: Partial<CatalogItem>) => onChange(items.map(i => (i.id === id ? { ...i, ...patch } : i)));
+  const small = 'mt-1 w-full rounded-xl bg-paper ring-1 ring-line px-3 py-2.5 text-[15px] outline-none focus:ring-2 focus:ring-ink';
+  return (
+    <div className="p-5 sm:p-8">
+      <h2 className="font-headline text-2xl font-bold pr-10">Mis materiales</h2>
+      <p className="mt-1 text-sm text-muted">Editá nombres, unidades y precios. Al elegir un material en un presupuesto se completan solos. Los cambios se guardan en tu cuenta.</p>
+      <datalist id="unidades-catalogo">
+        {UNITS.material.map(u => <option key={u} value={u} />)}
+      </datalist>
+      {items.length === 0 ? (
+        <p className="mt-6 rounded-2xl bg-paper p-6 text-center text-sm text-graphite">Todavía no hay materiales en tu lista.</p>
+      ) : (
+        <ul className="mt-5 divide-y divide-line border-y border-line">
+          {items.map((item, i) => (
+            <li key={item.id} className="py-3 grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_110px_140px_auto] gap-x-3 gap-y-2 items-end">
+              <label className="text-xs font-medium text-muted col-span-1">Material
+                <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small} />
+              </label>
+              <button type="button" onClick={() => onChange(items.filter(x => x.id !== item.id))} className="sm:order-last mb-1 w-10 h-10 rounded-full bg-mist hover:bg-line flex items-center justify-center" aria-label={`Quitar el material ${i + 1}${item.description ? `: ${item.description}` : ''}`}>
+                <Trash2 size={16} aria-hidden="true" />
+              </button>
+              <div className="col-span-2 sm:col-span-2 grid grid-cols-[110px_1fr] sm:grid-cols-[110px_140px] gap-3">
+                <label className="text-xs font-medium text-muted">Unidad
+                  <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="u" className={small} />
+                </label>
+                <label className="text-xs font-medium text-muted">Precio por {item.unit.trim() ? unitSingular(item.unit) : 'unidad'}
+                  <span className="relative block">
+                    <span className="absolute left-3 top-[calc(50%+2px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
+                    <input value={item.price} onChange={e => set(item.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${small} pl-7`} />
+                  </span>
+                </label>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <button type="button" onClick={() => onChange([...items, newCatalogItem()])} className={`${btnDark} mt-5 h-11 px-5 text-sm`}>
+        <Plus size={16} aria-hidden="true" /> Agregar material
+      </button>
+    </div>
   );
 }
