@@ -5,7 +5,10 @@
  */
 import type { GState as GStateClass, jsPDF as JsPDF } from 'jspdf';
 import { INSTAGRAM_HANDLE } from '../data/mockData';
-import { addDays, formatDate, formatMoney, formatNumber, formatQty, lineTotal, parseNumber, totals, type Budget, type Issuer } from './model';
+import {
+  KIND_LABEL, addDays, formatDate, formatMoney, formatNumber, formatQty, kindOf, lineTotal, parseNumber, totals, unitSingular,
+  type Budget, type Issuer, type Kind,
+} from './model';
 
 export interface PdfKit {
   JsPDF: typeof JsPDF;
@@ -174,7 +177,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   toLines.forEach((t, i) => doc.text(t, M + colW + 11, toY + i * 4.6));
   y += boxH + 9;
 
-  // ── Tabla ──
+  // ── Tablas: mano de obra y materiales, cada una con su subtotal ──
   const cx = { desc: M + 4, qty: 128, price: 160, sub: W - M - 4 };
   const descW = 98;
   const tableHeader = () => {
@@ -186,50 +189,68 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
     label('SUBTOTAL', cx.sub, y + 5.9, [255, 255, 255], 'right');
     y += 9;
   };
-  tableHeader();
-  const lines = budget.lines.filter(l => l.description.trim() || parseNumber(l.price) || parseNumber(l.qty));
-  for (const line of lines) {
+  const filled = budget.lines.filter(l => l.description.trim() || parseNumber(l.price) || parseNumber(l.qty));
+  for (const kind of ['mano', 'material'] as Kind[]) {
+    const lines = filled.filter(l => kindOf(l) === kind);
+    if (!lines.length) continue;
+    ensure(30);
     font(10, 'bold');
-    const desc = wrap(line.description || 'Trabajo', descW);
-    font(8.5);
-    const detail = line.detail.trim() ? wrap(line.detail, descW) : [];
-    const rowH = 6 + desc.length * 4.6 + detail.length * 3.9 + 1;
-    if (y + rowH > BOTTOM) {
-      y = newPage();
-      tableHeader();
+    spaced(KIND_LABEL[kind].toUpperCase(), M, y + 4, 0.5);
+    y += 7;
+    tableHeader();
+    for (const line of lines) {
+      font(10, 'bold');
+      const desc = wrap(line.description || (kind === 'mano' ? 'Trabajo' : 'Material'), descW);
+      font(8.5);
+      const detail = line.detail.trim() ? wrap(line.detail, descW) : [];
+      const rowH = 6 + desc.length * 4.6 + detail.length * 3.9 + 1;
+      if (y + rowH > BOTTOM) {
+        y = newPage();
+        tableHeader();
+      }
+      const top = y + 6.2;
+      font(10, 'bold');
+      doc.text(desc, cx.desc, top, { lineHeightFactor: 1.3 });
+      if (detail.length) {
+        font(8.5, 'normal', MUTED);
+        doc.text(detail, cx.desc, top + desc.length * 4.6, { lineHeightFactor: 1.3 });
+      }
+      font(9.5, 'normal', GRAPHITE);
+      doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
+      doc.text(formatMoney(parseNumber(line.price)) + (line.unit === 'global' ? '' : ` / ${unitSingular(line.unit)}`), cx.price, top, { align: 'right' });
+      font(10, 'bold');
+      doc.text(formatMoney(lineTotal(line)), cx.sub, top, { align: 'right' });
+      y += rowH;
+      doc.setDrawColor(...LINE);
+      doc.setLineWidth(0.3);
+      doc.line(M, y, W - M, y);
     }
-    const top = y + 6.2;
-    font(10, 'bold');
-    doc.text(desc, cx.desc, top, { lineHeightFactor: 1.3 });
-    if (detail.length) {
-      font(8.5, 'normal', MUTED);
-      doc.text(detail, cx.desc, top + desc.length * 4.6, { lineHeightFactor: 1.3 });
-    }
+    ensure(9);
     font(9.5, 'normal', GRAPHITE);
-    doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
-    doc.text(formatMoney(parseNumber(line.price)) + (line.unit === 'global' ? '' : ` / ${line.unit}`), cx.price, top, { align: 'right' });
-    font(10, 'bold');
-    doc.text(formatMoney(lineTotal(line)), cx.sub, top, { align: 'right' });
-    y += rowH;
-    doc.setDrawColor(...LINE);
-    doc.setLineWidth(0.3);
-    doc.line(M, y, W - M, y);
+    doc.text(`Subtotal ${KIND_LABEL[kind].toLowerCase()}`, cx.price - 30, y + 6, { align: 'right' });
+    font(10.5, 'bold');
+    doc.text(formatMoney(kind === 'mano' ? sum.labor : sum.materials), cx.sub, y + 6, { align: 'right' });
+    y += 14;
   }
-  y += 7;
+  y += 1;
 
   // ── Garantía (izquierda) y total (derecha) ──
-  const totalsH = sum.pct ? 32 : 18;
+  const breakdown: [string, string][] = sum.pct || sum.materials ? [
+    ['Mano de obra', formatMoney(sum.labor)],
+    ...(sum.pct ? [[`Descuento mano de obra (${String(sum.pct).replace('.', ',')}%)`, `- ${formatMoney(sum.discount)}`] as [string, string]] : []),
+    ...(sum.materials ? [['Materiales', formatMoney(sum.materials)] as [string, string]] : []),
+  ] : [];
+  const totalsH = 18 + breakdown.length * 6;
   ensure(Math.max(totalsH, 28) + 4);
   const tx = 116;
   let ty = y;
-  if (sum.pct) {
-    font(9.5, 'normal', GRAPHITE);
-    doc.text('Subtotal', tx, ty + 5);
-    doc.text(formatMoney(sum.subtotal), W - M - 4, ty + 5, { align: 'right' });
-    doc.text(`Descuento (${String(sum.pct).replace('.', ',')}%)`, tx, ty + 11);
-    doc.text(`- ${formatMoney(sum.discount)}`, W - M - 4, ty + 11, { align: 'right' });
-    ty += 15;
+  font(9.5, 'normal', GRAPHITE);
+  for (const [name, value] of breakdown) {
+    doc.text(name, tx, ty + 5);
+    doc.text(value, W - M - 4, ty + 5, { align: 'right' });
+    ty += 6;
   }
+  if (breakdown.length) ty += 3;
   doc.setFillColor(...INK);
   doc.roundedRect(tx - 4, ty, W - M - tx + 4, 15, 3, 3, 'F');
   label('TOTAL', tx + 1, ty + 9.3, [255, 255, 255]);
@@ -280,7 +301,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   };
   if (budget.work.trim()) section('DETALLE DEL TRABAJO', budget.work.split(/\n+/).filter(t => t.trim()), false);
   const conditions = [
-    budget.materialsIncluded ? 'El presupuesto incluye materiales.' : 'El presupuesto no incluye materiales: se cotizan aparte.',
+    sum.materials ? 'Los materiales detallados están incluidos en el total.' : 'El presupuesto no incluye materiales: se cotizan aparte.',
     days > 0 ? `Presupuesto válido por ${days} días, hasta el ${formatDate(addDays(budget.date, days))}.` : '',
     budget.warranty && budget.warranty !== 'Sin garantía' ? `Garantía de ${budget.warranty} por escrito, según el sistema aplicado.` : '',
     ...budget.notes.split(/\n+/),

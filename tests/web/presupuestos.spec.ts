@@ -62,6 +62,14 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   await page.getByLabel(/^Precio/).nth(1).fill('85.000');
   await page.getByLabel('Descuento (%)').fill('10');
   await expect(page.locator('[data-total]')).toHaveText('$1.336.500');
+  // Materiales en su propia sección: el descuento no se les aplica
+  const materials = page.locator('section[aria-labelledby="t-material"]');
+  await materials.getByRole('button', { name: 'Agregar material' }).click();
+  await materials.getByLabel('Descripción').fill('Pintura poliuretánica');
+  await materials.getByLabel('Cantidad').fill('2');
+  await materials.getByLabel(/^Precio/).fill('50000');
+  await expect(page.locator('[data-subtotal="material"]')).toHaveText('$100.000');
+  await expect(page.locator('[data-total]')).toHaveText('$1.436.500');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(page.getByText('Guardado en la nube')).toBeVisible();
   expect(JSON.stringify(saved)).toContain('Cliente de Prueba');

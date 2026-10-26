@@ -4,7 +4,9 @@
  */
 import { EMAIL, PHONE_DISPLAY } from '../data/mockData';
 
-export type Unit = 'm²' | 'ml' | 'u' | 'global';
+export type Unit = 'm²' | 'ml' | 'u' | 'global' | 'rollos' | 'baldes' | 'litros' | 'kg';
+/** Sección del presupuesto: mano de obra o materiales */
+export type Kind = 'mano' | 'material';
 export type Status = 'borrador' | 'enviado' | 'aceptado' | 'rechazado';
 
 export interface Line {
@@ -14,6 +16,7 @@ export interface Line {
   qty: string;
   unit: Unit;
   price: string;
+  kind?: Kind; // los presupuestos anteriores no lo tienen: son mano de obra
 }
 
 export interface Budget {
@@ -24,7 +27,7 @@ export interface Budget {
   lines: Line[];
   discount: string; // porcentaje
   work: string; // detalle del trabajo
-  materialsIncluded: boolean;
+  materialsIncluded?: boolean; // ya no se usa: se deduce de la sección Materiales
   warranty: string;
   validityDays: string;
   notes: string;
@@ -40,15 +43,20 @@ export interface Issuer {
   web: string;
 }
 
-export const UNITS: Unit[] = ['m²', 'ml', 'u', 'global'];
+export const UNITS: Record<Kind, Unit[]> = {
+  mano: ['m²', 'ml', 'u', 'global'],
+  material: ['u', 'rollos', 'baldes', 'litros', 'kg', 'm²', 'ml', 'global'],
+};
+export const KIND_LABEL: Record<Kind, string> = { mano: 'Mano de obra', material: 'Materiales' };
+export const kindOf = (line: Line): Kind => line.kind ?? 'mano';
 export const STATUSES: Status[] = ['borrador', 'enviado', 'aceptado', 'rechazado'];
 export const STATUS_LABEL: Record<Status, string> = { borrador: 'Borrador', enviado: 'Enviado', aceptado: 'Aceptado', rechazado: 'Rechazado' };
 
 /** Garantías por sistema confirmadas por Martín (ver WARRANTIES en mockData.ts) */
 export const WARRANTY_OPTIONS = ['10 años', '5 años', '2 años', '15 años', '20 años', '25 años', 'Sin garantía'];
 
-/** Trabajos frecuentes. Solo el precio de la promo está confirmado; el resto lo completa Martín. */
-export const PRESETS: { description: string; unit: Unit; price: string }[] = [
+/** Trabajos y materiales frecuentes. Solo el precio de la promo está confirmado; el resto lo completa Martín. */
+export const PRESETS: Record<Kind, { description: string; unit: Unit; price: string }[]> = { mano: [
   { description: 'Impermeabilización (mano de obra)', unit: 'm²', price: '10000' },
   { description: 'Membrana asfáltica con geotextil', unit: 'm²', price: '' },
   { description: 'Membrana asfáltica con aluminio', unit: 'm²', price: '' },
@@ -57,7 +65,15 @@ export const PRESETS: { description: string; unit: Unit; price: string }[] = [
   { description: 'Tratamiento de humedad de cimientos', unit: 'ml', price: '' },
   { description: 'Impermeabilización de tanque / pileta', unit: 'u', price: '' },
   { description: 'Pintura exterior', unit: 'm²', price: '' },
-];
+], material: [
+  { description: 'Membrana asfáltica con geotextil 4 mm', unit: 'rollos', price: '' },
+  { description: 'Membrana asfáltica con aluminio', unit: 'rollos', price: '' },
+  { description: 'Pintura poliuretánica', unit: 'baldes', price: '' },
+  { description: 'Imprimación asfáltica', unit: 'litros', price: '' },
+  { description: 'Venda / malla de refuerzo', unit: 'rollos', price: '' },
+  { description: 'Membrana líquida', unit: 'baldes', price: '' },
+  { description: 'Sellador', unit: 'u', price: '' },
+] };
 
 export const DEFAULT_ISSUER: Issuer = { address: '', cuit: '', phone: PHONE_DISPLAY, email: EMAIL, web: 'aquatechsolutions.com.ar' };
 
@@ -75,10 +91,9 @@ export const newBudget = (number: number): Budget => ({
   number,
   date: today(),
   client: { name: '', phone: '', address: '' },
-  lines: [newLine({ description: 'Impermeabilización (mano de obra)', unit: 'm²', price: '10000' })],
+  lines: [newLine({ description: 'Impermeabilización (mano de obra)', unit: 'm²', price: '10000', kind: 'mano' })],
   discount: '',
   work: '',
-  materialsIncluded: false,
   warranty: '10 años',
   validityDays: '30',
   notes: '',
@@ -97,16 +112,21 @@ export function parseNumber(value: string): number {
 
 export const lineTotal = (line: Line) => (line.unit === 'global' && !line.qty.trim() ? 1 : parseNumber(line.qty)) * parseNumber(line.price);
 
+/** El descuento se aplica solo a la mano de obra; los materiales van al costo. */
 export function totals(budget: Budget) {
-  const subtotal = budget.lines.reduce((sum, line) => sum + lineTotal(line), 0);
+  const sumOf = (kind: Kind) => budget.lines.filter(l => kindOf(l) === kind).reduce((sum, line) => sum + lineTotal(line), 0);
+  const labor = sumOf('mano');
+  const materials = sumOf('material');
   const pct = Math.min(100, Math.max(0, parseNumber(budget.discount)));
-  const discount = Math.round(subtotal * pct) / 100;
-  return { subtotal, pct, discount, total: subtotal - discount };
+  const discount = Math.round(labor * pct) / 100;
+  return { labor, materials, pct, discount, total: labor - discount + materials };
 }
 
 const money = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 });
 export const formatMoney = (n: number) => `$${money.format(n)}`;
 export const formatQty = (line: Line) => (line.unit === 'global' ? (line.qty.trim() ? `${line.qty} gl.` : 'Global') : `${line.qty || 0} ${line.unit}`);
+/** Para el precio unitario: "$4.500 / balde" */
+export const unitSingular = (unit: Unit) => ({ rollos: 'rollo', baldes: 'balde', litros: 'litro' } as Partial<Record<Unit, string>>)[unit] ?? unit;
 export const formatNumber = (n: number) => String(n).padStart(4, '0');
 
 export function formatDate(iso: string) {

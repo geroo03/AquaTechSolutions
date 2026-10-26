@@ -3,10 +3,10 @@ import { Building2, CircleUser, Cloud, CloudOff, Copy, Download, Eye, FileText, 
 import { LogoMark, WhatsAppIcon } from '../components/Brand';
 import { Modal } from '../components/ui';
 import {
-  PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS,
-  exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal,
+  KIND_LABEL, PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS, kindOf,
+  exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal, unitSingular,
   newBudget, newLine, nextNumber, totals, waNumber,
-  type Budget, type Issuer, type Line, type Status, type Unit,
+  type Budget, type Issuer, type Kind, type Line, type Status, type Unit,
 } from './model';
 import { buildPdf, loadPdfKit, type PdfKit } from './pdf';
 import { changePassword, deleteBudgetRemote, saveBudgetsRemote, saveIssuerRemote, signOut } from './cloud';
@@ -281,58 +281,12 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
             </div>
           </section>
 
-          {/* Trabajos */}
-          <section className={card} aria-labelledby="t-trabajos">
-            <h2 id="t-trabajos" className="font-headline text-xl font-bold">Trabajos</h2>
-            <p className="mt-1 text-sm text-muted">Cantidad por precio unitario. En "global" va el precio total del trabajo.</p>
-            <datalist id="trabajos-frecuentes">
-              {PRESETS.map(p => <option key={p.description} value={p.description} />)}
-            </datalist>
-            <ol className="mt-5 space-y-4">
-              {budget.lines.map((line, i) => (
-                <li key={line.id} className="rounded-2xl ring-1 ring-line p-4">
-                  <div className="flex items-start gap-3">
-                    <span className="max-sm:hidden mt-[38px] w-6 h-6 shrink-0 rounded-full bg-ink text-white text-xs font-bold flex items-center justify-center" aria-hidden="true">{i + 1}</span>
-                    <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-[1fr_96px_104px_132px] gap-3">
-                      <label className={`${labelText} col-span-2 sm:col-span-4`}>Descripción
-                        <input value={line.description} onChange={e => {
-                          const preset = PRESETS.find(p => p.description === e.target.value);
-                          setLine(line.id, preset ? { description: preset.description, unit: preset.unit, price: line.price || preset.price } : { description: e.target.value });
-                        }} list="trabajos-frecuentes" maxLength={140} placeholder="Elegí un trabajo frecuente o escribilo" className={field} />
-                      </label>
-                      <label className={`${labelText} col-span-2 sm:col-span-4`}>Detalle <span className="text-muted font-normal">(opcional)</span>
-                        <input value={line.detail} onChange={e => setLine(line.id, { detail: e.target.value })} maxLength={240} placeholder="Ej: techo y parapetos, con venda" className={field} />
-                      </label>
-                      <label className={labelText}>Cantidad
-                        <input value={line.qty} onChange={e => setLine(line.id, { qty: e.target.value })} inputMode="decimal" maxLength={12} placeholder={line.unit === 'global' ? '1' : '0'} className={field} />
-                      </label>
-                      <label className={labelText}>Unidad
-                        <select value={line.unit} onChange={e => setLine(line.id, { unit: e.target.value as Unit })} className={field}>
-                          {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
-                        </select>
-                      </label>
-                      <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${line.unit}`}
-                        <span className="relative block">
-                          <span className="absolute left-4 top-[calc(50%+3px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
-                          <input value={line.price} onChange={e => setLine(line.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${field} pl-8`} />
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="mt-3 sm:pl-9 flex items-center justify-between gap-3">
-                    <p className="text-sm text-graphite">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>
-                    <button type="button" onClick={() => commit({ ...budget, lines: budget.lines.filter(l => l.id !== line.id) })} disabled={budget.lines.length === 1}
-                      className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink disabled:invisible" aria-label={`Quitar el trabajo ${i + 1}`}>
-                      <Trash2 size={15} aria-hidden="true" /> Quitar
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <button type="button" onClick={() => commit({ ...budget, lines: [...budget.lines, newLine()] })} className={`${btnLight} mt-4 h-11 px-5 text-sm`}>
-              <Plus size={16} aria-hidden="true" /> Agregar trabajo
-            </button>
-          </section>
+          {(['mano', 'material'] as Kind[]).map(kind => (
+            <LinesSection key={kind} kind={kind} lines={budget.lines.filter(l => kindOf(l) === kind)}
+              onChange={setLine}
+              onAdd={() => commit({ ...budget, lines: [...budget.lines, newLine({ kind, unit: kind === 'mano' ? 'm²' : 'u' })] })}
+              onRemove={id => commit({ ...budget, lines: budget.lines.filter(l => l.id !== id) })} />
+          ))}
 
           {/* Detalle y condiciones */}
           <section className={card} aria-labelledby="t-condiciones">
@@ -349,12 +303,8 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
               <label className={labelText}>Validez (días)
                 <input value={budget.validityDays} onChange={e => set('validityDays', e.target.value)} inputMode="numeric" maxLength={3} className={field} />
               </label>
-              <label className={labelText}>Descuento (%) <span className="text-muted font-normal">(opcional)</span>
-                <input value={budget.discount} onChange={e => set('discount', e.target.value)} inputMode="decimal" maxLength={5} placeholder="0" className={field} />
-              </label>
-              <label className="flex items-center gap-3 self-end rounded-2xl bg-paper ring-1 ring-line px-4 py-3 text-[15px] cursor-pointer">
-                <input type="checkbox" checked={budget.materialsIncluded} onChange={e => set('materialsIncluded', e.target.checked)} className="w-5 h-5 accent-ink" />
-                Incluye materiales
+              <label className={`${labelText} sm:col-span-2`}>Descuento sobre la mano de obra (%) <span className="text-muted font-normal">(opcional)</span>
+                <input value={budget.discount} onChange={e => set('discount', e.target.value)} inputMode="decimal" maxLength={5} placeholder="0" className={`${field} sm:max-w-[calc(50%-8px)]`} />
               </label>
               <label className={`${labelText} sm:col-span-2`}>Otras condiciones <span className="text-muted font-normal">(una por renglón, opcional)</span>
                 <textarea value={budget.notes} onChange={e => set('notes', e.target.value)} rows={2} maxLength={1500} placeholder="Ej: Se puede pagar en cuotas con Mercado Pago." className={`${field} resize-y`} />
@@ -368,7 +318,13 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer }: Prop
           <section className="rounded-3xl bg-ink text-white p-6 sm:p-7" aria-labelledby="t-resumen">
             <h2 id="t-resumen" className="text-xs font-semibold tracking-[0.3em] text-white/70">TOTAL</h2>
             <p className="mt-2 font-headline text-4xl font-bold tracking-tight break-words" data-total>{formatMoney(sum.total)}</p>
-            {sum.pct > 0 && <p className="mt-1 text-sm text-white/70">Subtotal {formatMoney(sum.subtotal)} · descuento {formatMoney(sum.discount)}</p>}
+            {(sum.pct > 0 || sum.materials > 0) && (
+              <dl className="mt-3 grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm text-white/70">
+                <dt>Mano de obra</dt><dd className="text-right">{formatMoney(sum.labor)}</dd>
+                {sum.pct > 0 && <><dt>Descuento ({String(sum.pct).replace('.', ',')}%)</dt><dd className="text-right">- {formatMoney(sum.discount)}</dd></>}
+                {sum.materials > 0 && <><dt>Materiales</dt><dd className="text-right">{formatMoney(sum.materials)}</dd></>}
+              </dl>
+            )}
             <p className="mt-3 text-sm text-white/70">{budget.client.name.trim() || 'Sin cliente'} · {formatDate(budget.date)}</p>
             <div className="mt-6 grid gap-2.5 max-lg:hidden">
               <button type="button" onClick={onSend} disabled={!ready} className="inline-flex items-center justify-center gap-2 h-12 rounded-full bg-white text-ink font-semibold hover:bg-mist disabled:opacity-50">
@@ -587,5 +543,82 @@ function AccountPanel({ email, onSignOut }: { email: string; onSignOut: () => Pr
       </form>
       <button type="button" onClick={onSignOut} className={`${btnLight} mt-6 w-full h-11 text-sm`}>Cerrar sesión</button>
     </div>
+  );
+}
+
+interface LinesProps {
+  kind: Kind;
+  lines: Line[];
+  onChange: (id: string, patch: Partial<Line>) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+}
+
+/** Una sección del presupuesto: mano de obra o materiales, con su subtotal. */
+function LinesSection({ kind, lines, onChange, onAdd, onRemove }: LinesProps) {
+  const labor = kind === 'mano';
+  const title = KIND_LABEL[kind];
+  const listId = `frecuentes-${kind}`;
+  const subtotal = lines.reduce((sum, line) => sum + lineTotal(line), 0);
+  const item = labor ? 'trabajo' : 'material';
+  return (
+    <section className={card} aria-labelledby={`t-${kind}`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h2 id={`t-${kind}`} className="font-headline text-xl font-bold">{title}</h2>
+        <p className="text-sm text-graphite">Subtotal: <strong className="text-ink" data-subtotal={kind}>{formatMoney(subtotal)}</strong></p>
+      </div>
+      <p className="mt-1 text-sm text-muted">
+        {labor ? 'Cantidad por precio unitario. En "global" va el precio total del trabajo.' : 'Si el cliente compra los materiales, dejá esta sección vacía: el PDF dice que no están incluidos.'}
+      </p>
+      <datalist id={listId}>
+        {PRESETS[kind].map(p => <option key={p.description} value={p.description} />)}
+      </datalist>
+      {lines.length > 0 && (
+        <ol className="mt-5 space-y-4">
+          {lines.map((line, i) => (
+            <li key={line.id} className="rounded-2xl ring-1 ring-line p-4">
+              <div className="flex items-start gap-3">
+                <span className="max-sm:hidden mt-[38px] w-6 h-6 shrink-0 rounded-full bg-ink text-white text-xs font-bold flex items-center justify-center" aria-hidden="true">{i + 1}</span>
+                <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-[1fr_96px_112px_132px] gap-3">
+                  <label className={`${labelText} col-span-2 sm:col-span-4`}>Descripción
+                    <input value={line.description} onChange={e => {
+                      const preset = PRESETS[kind].find(p => p.description === e.target.value);
+                      onChange(line.id, preset ? { description: preset.description, unit: preset.unit, price: line.price || preset.price } : { description: e.target.value });
+                    }} list={listId} maxLength={140} placeholder={labor ? 'Elegí un trabajo frecuente o escribilo' : 'Elegí un material frecuente o escribilo'} className={field} />
+                  </label>
+                  <label className={`${labelText} col-span-2 sm:col-span-4`}>Detalle <span className="text-muted font-normal">(opcional)</span>
+                    <input value={line.detail} onChange={e => onChange(line.id, { detail: e.target.value })} maxLength={240} placeholder={labor ? 'Ej: techo y parapetos, con venda' : 'Ej: rollos de 10 m², color blanco'} className={field} />
+                  </label>
+                  <label className={labelText}>Cantidad
+                    <input value={line.qty} onChange={e => onChange(line.id, { qty: e.target.value })} inputMode="decimal" maxLength={12} placeholder={line.unit === 'global' ? '1' : '0'} className={field} />
+                  </label>
+                  <label className={labelText}>Unidad
+                    <select value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value as Unit })} className={field}>
+                      {UNITS[kind].map(u => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </label>
+                  <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}
+                    <span className="relative block">
+                      <span className="absolute left-4 top-[calc(50%+3px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
+                      <input value={line.price} onChange={e => onChange(line.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${field} pl-8`} />
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <div className="mt-3 sm:pl-9 flex items-center justify-between gap-3">
+                <p className="text-sm text-graphite">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>
+                <button type="button" onClick={() => onRemove(line.id)} disabled={labor && lines.length === 1}
+                  className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink disabled:invisible" aria-label={`Quitar ${item} ${i + 1}`}>
+                  <Trash2 size={15} aria-hidden="true" /> Quitar
+                </button>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+      <button type="button" onClick={onAdd} className={`${btnLight} mt-4 h-11 px-5 text-sm`}>
+        <Plus size={16} aria-hidden="true" /> Agregar {item}
+      </button>
+    </section>
   );
 }

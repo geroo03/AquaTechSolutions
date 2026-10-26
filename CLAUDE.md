@@ -81,6 +81,7 @@ Herramienta interna para que Martín arme presupuestos y se los mande al cliente
 - `pdf.ts`: PDF A4 con jsPDF (se carga solo en el panel, no pesa en la web): cabecera negra con el logo, marca de agua (la "Λ", "AQUATECH" y trama diagonal), tabla, total, garantía, detalle, condiciones y firma del cliente. Helvetica (WinAnsi): `clean()` saca emojis.
 - **Dirección y CUIT no están en el código** (no se publican): Martín los carga una vez en "Datos del negocio" y quedan en su cuenta.
 - "Enviar por WhatsApp": en el celular comparte el PDF con el menú del sistema; en la compu lo descarga y abre el chat del cliente con el mensaje (el PDF se adjunta a mano).
+- Dos secciones, **Mano de obra** y **Materiales** (`kind` de cada línea; los presupuestos viejos sin `kind` son mano de obra), cada una con su subtotal en el panel y en el PDF. El descuento se aplica solo a la mano de obra. Si no hay materiales, el PDF dice que no están incluidos.
 - Precios: solo el de la promo ($10.000/m² de mano de obra) viene cargado; el resto lo pone Martín en cada presupuesto.
 - La prueba de `tests/web/presupuestos.spec.ts` simula Supabase: no toca la base real.
 
