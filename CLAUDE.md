@@ -71,6 +71,15 @@ Referencia de conexión inicial para **aquatechsolutions.com.ar** (ver el estado
 
 **Activa: Cloudflare Web Analytics** (gratis, sin cookies) con la variable `VITE_CF_BEACON_TOKEN` del repo (desde el 15/10/2026, hostname `geroo03.github.io`, cuenta de Cloudflare de Sebastián; panel en Observability → Analytics → Web analytics). Al pasar al dominio propio hay que agregar el hostname nuevo en Cloudflare y actualizar el token. Cuenta visitas pero no clics por botón, así que **cada mensaje de WhatsApp de la web es distinto según el botón y termina con "(Enviado desde la web)"** (lo agrega `waLink()`): el dueño cuenta las consultas en su propio WhatsApp. Alternativas: `VITE_PLAUSIBLE_DOMAIN` (pago) o `VITE_GA_ID` (GA4); con esas, `src/analytics.ts` registra además el evento "WhatsApp" con su `origen`. Las variables se cargan en GitHub → Settings → Secrets and variables → Actions → **Variables**; `vite.config.ts` inyecta el script solo si existe la variable.
 
+### Panel de presupuestos (/presupuestos/)
+
+Herramienta interna para que Martín arme presupuestos y se los mande al cliente: https://aquatechsolutions.com.ar/presupuestos/ (26/10/2026). Es una segunda página de Vite (`presupuestos/index.html` → `src/presupuestos/`), sin pre-render, con `noindex`, `Disallow` en `robots.txt`, fuera del sitemap y sin enlaces desde la web; `prerender.mjs` le aplica la misma CSP.
+- `model.ts`: datos, cálculos (cantidad × precio, "global" = precio total, descuento %), número correlativo y guardado en `localStorage` del dispositivo (no hay servidor). Historial con estados, duplicar, borrar y copia de seguridad en JSON para pasar a otro dispositivo.
+- `pdf.ts`: PDF A4 con jsPDF (se carga solo en el panel, no pesa en la web): cabecera negra con el logo, marca de agua (la "Λ", "AQUATECH" y trama diagonal), tabla, total, garantía, detalle, condiciones y firma del cliente. Helvetica (WinAnsi): `clean()` saca emojis.
+- **Dirección y CUIT no están en el código** (no se publican): Martín los carga una vez en "Datos del negocio" y quedan en su dispositivo.
+- "Enviar por WhatsApp": en el celular comparte el PDF con el menú del sistema; en la compu lo descarga y abre el chat del cliente con el mensaje (el PDF se adjunta a mano).
+- Precios: solo el de la promo ($10.000/m² de mano de obra) viene cargado; el resto lo pone Martín en cada presupuesto.
+
 ## Stack y estructura
 
 React 19 + TypeScript (strict) + Vite 8 + Tailwind CSS 4 (`@tailwindcss/vite`) + `lucide-react` (íconos). Fuentes Inter y Montserrat servidas desde el repo (`@fontsource-variable`), sin Google Fonts. Sin backend: todo es estático, pre-renderizado, y los formularios abren WhatsApp con el mensaje armado.
@@ -96,8 +105,9 @@ src/
 public/
   images/*.webp           fotos reales de obra en WebP; hero con variante para celular
   og-image.png            imagen para compartir en WhatsApp/redes (1200×630)
-  logo-aquatech.png       logo original del cliente (disco plateado)
+  logo-aquatech.png       logo original del cliente (disco plateado; también va en el PDF)
   favicon.svg
+presupuestos/index.html   panel interno de presupuestos (src/presupuestos/)
 ```
 
 ## Convenciones de diseño (respetarlas)
