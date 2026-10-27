@@ -168,7 +168,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
     const blob = makePdf();
     if (!blob) return;
     const first = budget.client.name.trim().split(/\s+/)[0];
-    const text = `Hola${first ? ` ${first}` : ''}, ¿cómo estás? Te paso el presupuesto N° ${formatNumber(budget.number)} de AquaTech Solutions por ${formatMoney(sum.total)}. Cualquier consulta, avisame.`;
+    const text = `Hola${first ? ` ${first}` : ''}, ¿cómo estás? Te paso el presupuesto N° ${formatNumber(budget.number)} de AquaTech Solutions por ${formatMoney(sum.total)}${sum.unpriced ? ' de mano de obra (los materiales se cotizan al momento de comprarlos)' : ''}. Cualquier consulta, avisame.`;
     const file = new File([blob], fileName(budget), { type: 'application/pdf' });
     const mobile = window.matchMedia('(pointer: coarse)').matches;
     if (mobile && navigator.canShare?.({ files: [file] })) {
@@ -310,6 +310,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
           {(['mano', 'material'] as Kind[]).map(kind => (
             <LinesSection key={kind} kind={kind} lines={budget.lines.filter(l => kindOf(l) === kind)}
               catalog={catalog} onOpenCatalog={() => setCatalogOpen(true)} onSaveToCatalog={saveToCatalog}
+              unpriced={kind === 'material' && Boolean(budget.materialsUnpriced)} onToggleUnpriced={value => set('materialsUnpriced', value)}
               onChange={setLine}
               onAdd={() => commit({ ...budget, lines: [...budget.lines, newLine({ kind, unit: kind === 'mano' ? 'm²' : 'u' })] })}
               onRemove={id => commit({ ...budget, lines: budget.lines.filter(l => l.id !== id) })} />
@@ -345,11 +346,12 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
           <section className="rounded-3xl bg-ink text-white p-6 sm:p-7" aria-labelledby="t-resumen">
             <h2 id="t-resumen" className="text-xs font-semibold tracking-[0.3em] text-white/70">TOTAL</h2>
             <p className="mt-2 font-headline text-4xl font-bold tracking-tight break-words" data-total>{formatMoney(sum.total)}</p>
-            {(sum.pct > 0 || sum.materials > 0) && (
+            {(sum.pct > 0 || sum.materials > 0 || sum.unpriced) && (
               <dl className="mt-3 grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm text-white/70">
                 <dt>Mano de obra</dt><dd className="text-right">{formatMoney(sum.labor)}</dd>
                 {sum.pct > 0 && <><dt>Descuento ({String(sum.pct).replace('.', ',')}%)</dt><dd className="text-right">- {formatMoney(sum.discount)}</dd></>}
                 {sum.materials > 0 && <><dt>Materiales</dt><dd className="text-right">{formatMoney(sum.materials)}</dd></>}
+                {sum.unpriced && <><dt>Materiales</dt><dd className="text-right">A cotizar</dd></>}
               </dl>
             )}
             <p className="mt-3 text-sm text-white/70">{budget.client.name.trim() || 'Sin cliente'} · {formatDate(budget.date)}</p>
@@ -583,13 +585,15 @@ interface LinesProps {
   catalog: CatalogItem[];
   onOpenCatalog: () => void;
   onSaveToCatalog: (line: Line) => void;
+  unpriced: boolean;
+  onToggleUnpriced: (value: boolean) => void;
   onChange: (id: string, patch: Partial<Line>) => void;
   onAdd: () => void;
   onRemove: (id: string) => void;
 }
 
 /** Una sección del presupuesto: mano de obra o materiales, con su subtotal. */
-function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, onChange, onAdd, onRemove }: LinesProps) {
+function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, unpriced, onToggleUnpriced, onChange, onAdd, onRemove }: LinesProps) {
   const labor = kind === 'mano';
   const title = KIND_LABEL[kind];
   const listId = `frecuentes-${kind}`;
@@ -601,11 +605,22 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, on
     <section className={card} aria-labelledby={`t-${kind}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h2 id={`t-${kind}`} className="font-headline text-xl font-bold">{title}</h2>
-        <p className="text-sm text-graphite">Subtotal: <strong className="text-ink" data-subtotal={kind}>{formatMoney(subtotal)}</strong></p>
+        {unpriced
+          ? <p className="text-sm font-semibold text-ink" data-subtotal={kind}>A cotizar</p>
+          : <p className="text-sm text-graphite">Subtotal: <strong className="text-ink" data-subtotal={kind}>{formatMoney(subtotal)}</strong></p>}
       </div>
       <p className="mt-1 text-sm text-muted">
         {labor ? 'Cantidad por precio unitario. En "global" va el precio total del trabajo.' : 'Si el cliente compra los materiales, dejá esta sección vacía: el PDF dice que no están incluidos.'}
       </p>
+      {!labor && (
+        <label className="mt-4 flex items-start gap-3 rounded-2xl bg-paper ring-1 ring-line px-4 py-3 cursor-pointer">
+          <input type="checkbox" checked={unpriced} onChange={e => onToggleUnpriced(e.target.checked)} className="mt-0.5 w-5 h-5 shrink-0 accent-ink" />
+          <span className="text-[15px]">
+            <span className="font-medium">Sin precios de materiales</span>
+            <span className="block text-sm text-muted">Se listan sin precio y no suman al total: se cotizan al momento de comprar, porque los precios varían.</span>
+          </span>
+        </label>
+      )}
       <datalist id={listId}>
         {suggestions.map(p => <option key={p.description} value={p.description} />)}
       </datalist>
@@ -642,16 +657,18 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, on
                       <input value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} list="unidades-material" maxLength={20} placeholder="u" className={field} />
                     )}
                   </label>
-                  <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}
+                  {!unpriced && <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}
                     <span className="relative block">
                       <span className="absolute left-4 top-[calc(50%+3px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
                       <input value={line.price} onChange={e => onChange(line.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${field} pl-8`} />
                     </span>
-                  </label>
+                  </label>}
                 </div>
               </div>
               <div className="mt-3 sm:pl-9 flex items-center justify-between gap-3">
-                <p className="text-sm text-graphite whitespace-nowrap">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>
+                {unpriced
+                  ? <p className="text-sm text-muted whitespace-nowrap">Precio a cotizar</p>
+                  : <p className="text-sm text-graphite whitespace-nowrap">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>}
                 {!labor && (
                   <button type="button" onClick={() => onSaveToCatalog(line)} className="ml-auto inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
                     <BookmarkPlus size={15} aria-hidden="true" /> <span className="sm:hidden">Guardar</span><span className="max-sm:hidden">Guardar en mis materiales</span>

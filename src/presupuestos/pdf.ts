@@ -180,24 +180,28 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   // ── Tablas: mano de obra y materiales, cada una con su subtotal ──
   const cx = { desc: M + 4, qty: 128, price: 160, sub: W - M - 4 };
   const descW = 98;
-  const tableHeader = () => {
+  // Materiales sin precio: solo descripción y cantidad (se cotizan al comprar)
+  const tableHeader = (priced = true) => {
     doc.setFillColor(...INK);
     doc.roundedRect(M, y, W - 2 * M, 9, 1.5, 1.5, 'F');
     label('DESCRIPCIÓN', cx.desc, y + 5.9, [255, 255, 255]);
-    label('CANT.', cx.qty, y + 5.9, [255, 255, 255], 'right');
-    label('PRECIO UNIT.', cx.price, y + 5.9, [255, 255, 255], 'right');
-    label('SUBTOTAL', cx.sub, y + 5.9, [255, 255, 255], 'right');
+    if (priced) {
+      label('CANT.', cx.qty, y + 5.9, [255, 255, 255], 'right');
+      label('PRECIO UNIT.', cx.price, y + 5.9, [255, 255, 255], 'right');
+      label('SUBTOTAL', cx.sub, y + 5.9, [255, 255, 255], 'right');
+    } else label('CANTIDAD', cx.sub, y + 5.9, [255, 255, 255], 'right');
     y += 9;
   };
   const filled = budget.lines.filter(l => l.description.trim() || parseNumber(l.price) || parseNumber(l.qty));
   for (const kind of ['mano', 'material'] as Kind[]) {
     const lines = filled.filter(l => kindOf(l) === kind);
     if (!lines.length) continue;
+    const priced = !(kind === 'material' && sum.unpriced);
     ensure(30);
     font(10, 'bold');
     spaced(KIND_LABEL[kind].toUpperCase(), M, y + 4, 0.5);
     y += 7;
-    tableHeader();
+    tableHeader(priced);
     for (const line of lines) {
       font(10, 'bold');
       const desc = wrap(line.description || (kind === 'mano' ? 'Trabajo' : 'Material'), descW);
@@ -206,7 +210,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
       const rowH = 6 + desc.length * 4.6 + detail.length * 3.9 + 1;
       if (y + rowH > BOTTOM) {
         y = newPage();
-        tableHeader();
+        tableHeader(priced);
       }
       const top = y + 6.2;
       font(10, 'bold');
@@ -216,29 +220,37 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
         doc.text(detail, cx.desc, top + desc.length * 4.6, { lineHeightFactor: 1.3 });
       }
       font(9.5, 'normal', GRAPHITE);
-      doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
-      doc.text(formatMoney(parseNumber(line.price)) + (line.unit === 'global' ? '' : ` / ${unitSingular(line.unit)}`), cx.price, top, { align: 'right' });
-      font(10, 'bold');
-      doc.text(formatMoney(lineTotal(line)), cx.sub, top, { align: 'right' });
+      if (priced) {
+        doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
+        doc.text(formatMoney(parseNumber(line.price)) + (line.unit === 'global' ? '' : ` / ${unitSingular(line.unit)}`), cx.price, top, { align: 'right' });
+        font(10, 'bold');
+        doc.text(formatMoney(lineTotal(line)), cx.sub, top, { align: 'right' });
+      } else doc.text(clean(formatQty(line)), cx.sub, top, { align: 'right' });
       y += rowH;
       doc.setDrawColor(...LINE);
       doc.setLineWidth(0.3);
       doc.line(M, y, W - M, y);
     }
     ensure(9);
-    font(9.5, 'normal', GRAPHITE);
-    doc.text(`Subtotal ${KIND_LABEL[kind].toLowerCase()}`, cx.price - 30, y + 6, { align: 'right' });
-    font(10.5, 'bold');
-    doc.text(formatMoney(kind === 'mano' ? sum.labor : sum.materials), cx.sub, y + 6, { align: 'right' });
+    if (priced) {
+      font(9.5, 'normal', GRAPHITE);
+      doc.text(`Subtotal ${KIND_LABEL[kind].toLowerCase()}`, cx.price - 30, y + 6, { align: 'right' });
+      font(10.5, 'bold');
+      doc.text(formatMoney(kind === 'mano' ? sum.labor : sum.materials), cx.sub, y + 6, { align: 'right' });
+    } else {
+      font(9, 'normal', MUTED);
+      doc.text('Precios a cotizar al momento de la compra, porque varían según el proveedor.', cx.sub, y + 6, { align: 'right' });
+    }
     y += 14;
   }
   y += 1;
 
   // ── Garantía (izquierda) y total (derecha) ──
-  const breakdown: [string, string][] = sum.pct || sum.materials ? [
+  const breakdown: [string, string][] = sum.pct || sum.materials || sum.unpriced ? [
     ['Mano de obra', formatMoney(sum.labor)],
     ...(sum.pct ? [[`Descuento mano de obra (${String(sum.pct).replace('.', ',')}%)`, `- ${formatMoney(sum.discount)}`] as [string, string]] : []),
     ...(sum.materials ? [['Materiales', formatMoney(sum.materials)] as [string, string]] : []),
+    ...(sum.unpriced ? [['Materiales', 'A cotizar'] as [string, string]] : []),
   ] : [];
   const totalsH = 18 + breakdown.length * 6;
   ensure(Math.max(totalsH, 28) + 4);
@@ -253,7 +265,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   if (breakdown.length) ty += 3;
   doc.setFillColor(...INK);
   doc.roundedRect(tx - 4, ty, W - M - tx + 4, 15, 3, 3, 'F');
-  label('TOTAL', tx + 1, ty + 9.3, [255, 255, 255]);
+  label(sum.unpriced ? 'TOTAL MANO DE OBRA' : 'TOTAL', tx + 1, ty + 9.3, [255, 255, 255]);
   font(16, 'bold', [255, 255, 255]);
   doc.text(formatMoney(sum.total), W - M - 4, ty + 10, { align: 'right' });
 
@@ -301,7 +313,9 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   };
   if (budget.work.trim()) section('DETALLE DEL TRABAJO', budget.work.split(/\n+/).filter(t => t.trim()), false);
   const conditions = [
-    sum.materials ? 'Los materiales detallados están incluidos en el total.' : 'El presupuesto no incluye materiales: se cotizan aparte.',
+    sum.unpriced
+      ? 'Los materiales detallados no están incluidos en el total: se cotizan al momento de la compra, porque sus precios varían.'
+      : sum.materials ? 'Los materiales detallados están incluidos en el total.' : 'El presupuesto no incluye materiales: se cotizan aparte.',
     days > 0 ? `Presupuesto válido por ${days} días, hasta el ${formatDate(addDays(budget.date, days))}.` : '',
     budget.warranty && budget.warranty !== 'Sin garantía' ? `Garantía de ${budget.warranty} por escrito, según el sistema aplicado.` : '',
     ...budget.notes.split(/\n+/),

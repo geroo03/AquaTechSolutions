@@ -29,6 +29,7 @@ export interface Budget {
   discount: string; // porcentaje
   work: string; // detalle del trabajo
   materialsIncluded?: boolean; // ya no se usa: se deduce de la sección Materiales
+  materialsUnpriced?: boolean; // materiales listados sin precio: se cotizan al comprar
   warranty: string;
   validityDays: string;
   notes: string;
@@ -129,10 +130,13 @@ export const lineTotal = (line: Line) => (line.unit === 'global' && !line.qty.tr
 export function totals(budget: Budget) {
   const sumOf = (kind: Kind) => budget.lines.filter(l => kindOf(l) === kind).reduce((sum, line) => sum + lineTotal(line), 0);
   const labor = sumOf('mano');
-  const materials = sumOf('material');
+  const unpriced = Boolean(budget.materialsUnpriced);
+  // Sin precio: los materiales se listan pero no suman (sus precios varían y se cotizan al comprar)
+  const materials = unpriced ? 0 : sumOf('material');
+  const materialsListed = budget.lines.some(l => kindOf(l) === 'material' && l.description.trim());
   const pct = Math.min(100, Math.max(0, parseNumber(budget.discount)));
   const discount = Math.round(labor * pct) / 100;
-  return { labor, materials, pct, discount, total: labor - discount + materials };
+  return { labor, materials, unpriced: unpriced && materialsListed, materialsListed, pct, discount, total: labor - discount + materials };
 }
 
 const money = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 });

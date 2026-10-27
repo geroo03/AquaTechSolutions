@@ -86,6 +86,12 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   await materials.getByLabel('Cantidad').last().fill('2');
   await expect(page.locator('[data-total]')).toHaveText('$1.455.500');
   await expect.poll(() => JSON.stringify(saved)).toContain('Cinta de aluminio');
+
+  // Materiales sin precio: se listan pero no suman al total
+  await materials.getByLabel(/Sin precios de materiales/).check();
+  await expect(materials.getByLabel(/^Precio/)).toHaveCount(0);
+  await expect(page.locator('[data-subtotal="material"]')).toHaveText('A cotizar');
+  await expect(page.locator('[data-total]')).toHaveText('$1.336.500');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(page.getByText('Guardado en la nube')).toBeVisible();
   expect(JSON.stringify(saved)).toContain('Cliente de Prueba');
