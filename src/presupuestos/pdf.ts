@@ -6,7 +6,7 @@
 import type { GState as GStateClass, jsPDF as JsPDF } from 'jspdf';
 import { INSTAGRAM_HANDLE } from '../data/mockData';
 import {
-  KIND_LABEL, addDays, formatDate, formatMoney, formatNumber, formatQty, kindOf, lineTotal, parseNumber, totals, unitSingular,
+  KIND_LABEL, addDays, isToQuote, formatDate, formatMoney, formatNumber, formatQty, kindOf, lineTotal, parseNumber, totals, unitSingular,
   type Budget, type Issuer, type Kind,
 } from './model';
 
@@ -196,7 +196,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   for (const kind of ['mano', 'material'] as Kind[]) {
     const lines = filled.filter(l => kindOf(l) === kind);
     if (!lines.length) continue;
-    const priced = !(kind === 'material' && sum.unpriced);
+    const priced = !(kind === 'material' && sum.allUnpriced);
     ensure(30);
     font(10, 'bold');
     spaced(KIND_LABEL[kind].toUpperCase(), M, y + 4, 0.5);
@@ -220,7 +220,12 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
         doc.text(detail, cx.desc, top + desc.length * 4.6, { lineHeightFactor: 1.3 });
       }
       font(9.5, 'normal', GRAPHITE);
-      if (priced) {
+      if (priced && isToQuote(budget, line)) {
+        doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
+        font(9.5, 'normal', MUTED);
+        doc.text('A cotizar', cx.price, top, { align: 'right' });
+        doc.text('-', cx.sub, top, { align: 'right' });
+      } else if (priced) {
         doc.text(clean(formatQty(line)), cx.qty, top, { align: 'right' });
         doc.text(formatMoney(parseNumber(line.price)) + (line.unit === 'global' ? '' : ` / ${unitSingular(line.unit)}`), cx.price, top, { align: 'right' });
         font(10, 'bold');
@@ -237,6 +242,11 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
       doc.text(`Subtotal ${KIND_LABEL[kind].toLowerCase()}`, cx.price - 30, y + 6, { align: 'right' });
       font(10.5, 'bold');
       doc.text(formatMoney(kind === 'mano' ? sum.labor : sum.materials), cx.sub, y + 6, { align: 'right' });
+      if (kind === 'material' && sum.unpriced) {
+        font(9, 'normal', MUTED);
+        doc.text('Los materiales "a cotizar" se cotizan al momento de la compra, porque sus precios varían.', cx.sub, y + 12, { align: 'right' });
+        y += 6;
+      }
     } else {
       font(9, 'normal', MUTED);
       doc.text('Precios a cotizar al momento de la compra, porque varían según el proveedor.', cx.sub, y + 6, { align: 'right' });
@@ -250,7 +260,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
     ['Mano de obra', formatMoney(sum.labor)],
     ...(sum.pct ? [[`Descuento mano de obra (${String(sum.pct).replace('.', ',')}%)`, `- ${formatMoney(sum.discount)}`] as [string, string]] : []),
     ...(sum.materials ? [['Materiales', formatMoney(sum.materials)] as [string, string]] : []),
-    ...(sum.unpriced ? [['Materiales', 'A cotizar'] as [string, string]] : []),
+    ...(sum.unpriced ? [[sum.materials ? 'Otros materiales' : 'Materiales', 'A cotizar'] as [string, string]] : []),
   ] : [];
   const totalsH = 18 + breakdown.length * 6;
   ensure(Math.max(totalsH, 28) + 4);
@@ -265,7 +275,7 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   if (breakdown.length) ty += 3;
   doc.setFillColor(...INK);
   doc.roundedRect(tx - 4, ty, W - M - tx + 4, 15, 3, 3, 'F');
-  label(sum.unpriced ? 'TOTAL MANO DE OBRA' : 'TOTAL', tx + 1, ty + 9.3, [255, 255, 255]);
+  label(sum.allUnpriced ? 'TOTAL MANO DE OBRA' : 'TOTAL', tx + 1, ty + 9.3, [255, 255, 255]);
   font(16, 'bold', [255, 255, 255]);
   doc.text(formatMoney(sum.total), W - M - 4, ty + 10, { align: 'right' });
 
@@ -313,8 +323,10 @@ export function buildPdf(kit: PdfKit, budget: Budget, issuer: Issuer): Blob {
   };
   if (budget.work.trim()) section('DETALLE DEL TRABAJO', budget.work.split(/\n+/).filter(t => t.trim()), false);
   const conditions = [
-    sum.unpriced
+    sum.allUnpriced
       ? 'Los materiales detallados no están incluidos en el total: se cotizan al momento de la compra, porque sus precios varían.'
+      : sum.unpriced
+      ? 'Los materiales "a cotizar" no están incluidos en el total: se cotizan al momento de la compra, porque sus precios varían.'
       : sum.materials ? 'Los materiales detallados están incluidos en el total.' : 'El presupuesto no incluye materiales: se cotizan aparte.',
     days > 0 ? `Presupuesto válido por ${days} días, hasta el ${formatDate(addDays(budget.date, days))}.` : '',
     budget.warranty && budget.warranty !== 'Sin garantía' ? `Garantía de ${budget.warranty} por escrito, según el sistema aplicado.` : '',

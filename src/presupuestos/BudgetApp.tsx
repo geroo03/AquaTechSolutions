@@ -168,7 +168,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
     const blob = makePdf();
     if (!blob) return;
     const first = budget.client.name.trim().split(/\s+/)[0];
-    const text = `Hola${first ? ` ${first}` : ''}, ¿cómo estás? Te paso el presupuesto N° ${formatNumber(budget.number)} de AquaTech Solutions por ${formatMoney(sum.total)}${sum.unpriced ? ' de mano de obra (los materiales se cotizan al momento de comprarlos)' : ''}. Cualquier consulta, avisame.`;
+    const text = `Hola${first ? ` ${first}` : ''}, ¿cómo estás? Te paso el presupuesto N° ${formatNumber(budget.number)} de AquaTech Solutions por ${formatMoney(sum.total)}${sum.allUnpriced ? ' de mano de obra (los materiales se cotizan al momento de comprarlos)' : sum.unpriced ? ' (los materiales sin precio se cotizan al momento de comprarlos)' : ''}. Cualquier consulta, avisame.`;
     const file = new File([blob], fileName(budget), { type: 'application/pdf' });
     const mobile = window.matchMedia('(pointer: coarse)').matches;
     if (mobile && navigator.canShare?.({ files: [file] })) {
@@ -310,7 +310,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
           {(['mano', 'material'] as Kind[]).map(kind => (
             <LinesSection key={kind} kind={kind} lines={budget.lines.filter(l => kindOf(l) === kind)}
               catalog={catalog} onOpenCatalog={() => setCatalogOpen(true)} onSaveToCatalog={saveToCatalog}
-              unpriced={kind === 'material' && Boolean(budget.materialsUnpriced)} onToggleUnpriced={value => set('materialsUnpriced', value)}
+              legacyUnpriced={kind === 'material' && Boolean(budget.materialsUnpriced)} onClearLegacy={() => set('materialsUnpriced', false)}
               onChange={setLine}
               onAdd={() => commit({ ...budget, lines: [...budget.lines, newLine({ kind, unit: kind === 'mano' ? 'm²' : 'u' })] })}
               onRemove={id => commit({ ...budget, lines: budget.lines.filter(l => l.id !== id) })} />
@@ -351,7 +351,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
                 <dt>Mano de obra</dt><dd className="text-right">{formatMoney(sum.labor)}</dd>
                 {sum.pct > 0 && <><dt>Descuento ({String(sum.pct).replace('.', ',')}%)</dt><dd className="text-right">- {formatMoney(sum.discount)}</dd></>}
                 {sum.materials > 0 && <><dt>Materiales</dt><dd className="text-right">{formatMoney(sum.materials)}</dd></>}
-                {sum.unpriced && <><dt>Materiales</dt><dd className="text-right">A cotizar</dd></>}
+                {sum.unpriced && <><dt>{sum.materials > 0 ? 'Otros materiales' : 'Materiales'}</dt><dd className="text-right">A cotizar</dd></>}
               </dl>
             )}
             <p className="mt-3 text-sm text-white/70">{budget.client.name.trim() || 'Sin cliente'} · {formatDate(budget.date)}</p>
@@ -428,7 +428,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
       )}
 
       <Modal isOpen={catalogOpen} onClose={() => setCatalogOpen(false)} label="Mis materiales" maxWidth="max-w-3xl">
-        <CatalogPanel items={catalog} onChange={updateCatalog} />
+        <CatalogPanel items={catalog} onChange={updateCatalog} onClose={() => setCatalogOpen(false)} />
       </Modal>
 
       <Modal isOpen={accountOpen} onClose={() => setAccountOpen(false)} label="Cuenta" maxWidth="max-w-md">
@@ -585,19 +585,24 @@ interface LinesProps {
   catalog: CatalogItem[];
   onOpenCatalog: () => void;
   onSaveToCatalog: (line: Line) => void;
-  unpriced: boolean;
-  onToggleUnpriced: (value: boolean) => void;
+  legacyUnpriced: boolean;
+  onClearLegacy: () => void;
   onChange: (id: string, patch: Partial<Line>) => void;
   onAdd: () => void;
   onRemove: (id: string) => void;
 }
 
 /** Una sección del presupuesto: mano de obra o materiales, con su subtotal. */
-function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, unpriced, onToggleUnpriced, onChange, onAdd, onRemove }: LinesProps) {
+function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, legacyUnpriced, onClearLegacy, onChange, onAdd, onRemove }: LinesProps) {
   const labor = kind === 'mano';
   const title = KIND_LABEL[kind];
   const listId = `frecuentes-${kind}`;
-  const subtotal = lines.reduce((sum, line) => sum + lineTotal(line), 0);
+  // Materiales: el precio es opcional; sin precio, la línea queda "a cotizar" y no suma.
+  const toQuote = (line: Line) => !labor && (legacyUnpriced || !line.price.trim());
+  const subtotal = lines.filter(l => !toQuote(l)).reduce((sum, line) => sum + lineTotal(line), 0);
+  const listed = lines.filter(l => l.description.trim());
+  const unpriced = listed.length > 0 && listed.every(toQuote);
+  const someUnpriced = listed.some(toQuote);
   const item = labor ? 'trabajo' : 'material';
   // Trabajos: lista fija. Materiales: la lista propia de Martín, editable.
   const suggestions = labor ? PRESETS.mano : catalog.filter(i => i.description.trim());
@@ -607,19 +612,18 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, un
         <h2 id={`t-${kind}`} className="font-headline text-xl font-bold">{title}</h2>
         {unpriced
           ? <p className="text-sm font-semibold text-ink" data-subtotal={kind}>A cotizar</p>
-          : <p className="text-sm text-graphite">Subtotal: <strong className="text-ink" data-subtotal={kind}>{formatMoney(subtotal)}</strong></p>}
+          : <p className="text-sm text-graphite">Subtotal: <strong className="text-ink" data-subtotal={kind}>{formatMoney(subtotal)}</strong>{someUnpriced && ' + a cotizar'}</p>}
       </div>
       <p className="mt-1 text-sm text-muted">
-        {labor ? 'Cantidad por precio unitario. En "global" va el precio total del trabajo.' : 'Si el cliente compra los materiales, dejá esta sección vacía: el PDF dice que no están incluidos.'}
+        {labor
+          ? 'Cantidad por precio unitario. En "global" va el precio total del trabajo.'
+          : 'El precio es opcional: si lo dejás vacío, el material sale "a cotizar" y no suma al total (los precios varían). Si el cliente compra todo, dejá esta sección vacía.'}
       </p>
-      {!labor && (
-        <label className="mt-4 flex items-start gap-3 rounded-2xl bg-paper ring-1 ring-line px-4 py-3 cursor-pointer">
-          <input type="checkbox" checked={unpriced} onChange={e => onToggleUnpriced(e.target.checked)} className="mt-0.5 w-5 h-5 shrink-0 accent-ink" />
-          <span className="text-[15px]">
-            <span className="font-medium">Sin precios de materiales</span>
-            <span className="block text-sm text-muted">Se listan sin precio y no suman al total: se cotizan al momento de comprar, porque los precios varían.</span>
-          </span>
-        </label>
+      {legacyUnpriced && (
+        <p className="mt-3 rounded-2xl bg-paper ring-1 ring-line px-4 py-3 text-sm text-graphite">
+          Este presupuesto tiene todos los materiales a cotizar.{' '}
+          <button type="button" onClick={onClearLegacy} className="font-semibold text-ink underline underline-offset-2">Cargar precios</button>
+        </p>
       )}
       <datalist id={listId}>
         {suggestions.map(p => <option key={p.description} value={p.description} />)}
@@ -657,16 +661,16 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, un
                       <input value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} list="unidades-material" maxLength={20} placeholder="u" className={field} />
                     )}
                   </label>
-                  {!unpriced && <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}
+                  {!(legacyUnpriced && !labor) && <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}{!labor && <span className="text-muted font-normal"> (opcional)</span>}
                     <span className="relative block">
                       <span className="absolute left-4 top-[calc(50%+3px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
-                      <input value={line.price} onChange={e => onChange(line.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${field} pl-8`} />
+                      <input value={line.price} onChange={e => onChange(line.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder={labor ? '0' : 'A cotizar'} className={`${field} pl-8`} />
                     </span>
                   </label>}
                 </div>
               </div>
               <div className="mt-3 sm:pl-9 flex items-center justify-between gap-3">
-                {unpriced
+                {toQuote(line)
                   ? <p className="text-sm text-muted whitespace-nowrap">Precio a cotizar</p>
                   : <p className="text-sm text-graphite whitespace-nowrap">Subtotal: <strong className="text-ink">{formatMoney(lineTotal(line))}</strong></p>}
                 {!labor && (
@@ -698,46 +702,61 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, un
 }
 
 /** Lista propia de materiales: nombre, unidad y precio, todo editable. Se usa para completar los presupuestos. */
-function CatalogPanel({ items, onChange }: { items: CatalogItem[]; onChange: (items: CatalogItem[]) => void }) {
+function CatalogPanel({ items, onChange, onClose }: { items: CatalogItem[]; onChange: (items: CatalogItem[]) => void; onClose: () => void }) {
   const set = (id: string, patch: Partial<CatalogItem>) => onChange(items.map(i => (i.id === id ? { ...i, ...patch } : i)));
   const small = 'mt-1 w-full rounded-xl bg-paper ring-1 ring-line px-3 py-2.5 text-[15px] outline-none focus:ring-2 focus:ring-ink';
+  const [focusId, setFocusId] = useState<string | null>(null);
+  // El nuevo va arriba de todo y con el cursor en el nombre: en el celular se ve apenas se toca "Agregar".
+  const add = () => {
+    const item = newCatalogItem();
+    setFocusId(item.id);
+    onChange([item, ...items]);
+  };
   return (
-    <div className="p-5 sm:p-8">
-      <h2 className="font-headline text-2xl font-bold pr-10">Mis materiales</h2>
-      <p className="mt-1 text-sm text-muted">Editá nombres, unidades y precios. Al elegir un material en un presupuesto se completan solos. Los cambios se guardan en tu cuenta.</p>
+    <div className="pb-5 sm:pb-8">
+      <div className="sticky top-0 bg-white px-5 sm:px-8 pt-5 sm:pt-8 pb-4 border-b border-line">
+        <h2 className="font-headline text-2xl font-bold pr-12">Mis materiales</h2>
+        <p className="mt-1 text-sm text-muted">Editá nombres, unidades y precios (el precio es opcional). Al elegir un material en un presupuesto se completan solos. Se guardan en tu cuenta.</p>
+        <div className="mt-4 flex gap-2">
+          <button type="button" onClick={add} className={`${btnDark} h-11 px-5 text-sm`}>
+            <Plus size={16} aria-hidden="true" /> Agregar material
+          </button>
+          <button type="button" onClick={onClose} className={`${btnLight} h-11 px-5 text-sm`}>Listo</button>
+        </div>
+      </div>
       <datalist id="unidades-catalogo">
         {UNITS.material.map(u => <option key={u} value={u} />)}
       </datalist>
-      {items.length === 0 ? (
-        <p className="mt-6 rounded-2xl bg-paper p-6 text-center text-sm text-graphite">Todavía no hay materiales en tu lista.</p>
-      ) : (
-        <ul className="mt-5 divide-y divide-line border-y border-line">
-          {items.map((item, i) => (
-            <li key={item.id} className="py-3 grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_110px_140px_auto] gap-x-3 gap-y-2 items-end">
-              <label className="text-xs font-medium text-muted col-span-1">Material
-                <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small} />
-              </label>
-              <button type="button" onClick={() => onChange(items.filter(x => x.id !== item.id))} className="sm:order-last mb-1 w-10 h-10 rounded-full bg-mist hover:bg-line flex items-center justify-center" aria-label={`Quitar el material ${i + 1}${item.description ? `: ${item.description}` : ''}`}>
-                <Trash2 size={16} aria-hidden="true" />
-              </button>
-              <div className="col-span-2 sm:col-span-2 grid grid-cols-[110px_1fr] sm:grid-cols-[110px_140px] gap-3">
-                <label className="text-xs font-medium text-muted">Unidad
-                  <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="u" className={small} />
+      <div className="px-5 sm:px-8">
+        {items.length === 0 ? (
+          <p className="mt-6 rounded-2xl bg-paper p-6 text-center text-sm text-graphite">Todavía no hay materiales en tu lista.</p>
+        ) : (
+          <ul className="divide-y divide-line border-b border-line">
+            {items.map((item, i) => (
+              <li key={item.id} className="py-3 grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_110px_140px_auto] gap-x-3 gap-y-2 items-end">
+                <label className="text-xs font-medium text-muted col-span-1">Material
+                  <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small}
+                    ref={el => { if (el && item.id === focusId) { el.focus(); setFocusId(null); } }} />
                 </label>
-                <label className="text-xs font-medium text-muted">Precio por {item.unit.trim() ? unitSingular(item.unit) : 'unidad'}
-                  <span className="relative block">
-                    <span className="absolute left-3 top-[calc(50%+2px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
-                    <input value={item.price} onChange={e => set(item.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="0" className={`${small} pl-7`} />
-                  </span>
-                </label>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      <button type="button" onClick={() => onChange([...items, newCatalogItem()])} className={`${btnDark} mt-5 h-11 px-5 text-sm`}>
-        <Plus size={16} aria-hidden="true" /> Agregar material
-      </button>
+                <button type="button" onClick={() => onChange(items.filter(x => x.id !== item.id))} className="sm:order-last mb-1 w-10 h-10 rounded-full bg-mist hover:bg-line flex items-center justify-center" aria-label={`Quitar el material ${i + 1}${item.description ? `: ${item.description}` : ''}`}>
+                  <Trash2 size={16} aria-hidden="true" />
+                </button>
+                <div className="col-span-2 sm:col-span-2 grid grid-cols-[110px_1fr] sm:grid-cols-[110px_140px] gap-3">
+                  <label className="text-xs font-medium text-muted">Unidad
+                    <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="u" className={small} />
+                  </label>
+                  <label className="text-xs font-medium text-muted">Precio por {item.unit.trim() ? unitSingular(item.unit) : 'unidad'} (opcional)
+                    <span className="relative block">
+                      <span className="absolute left-3 top-[calc(50%+2px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
+                      <input value={item.price} onChange={e => set(item.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="A cotizar" className={`${small} pl-7`} />
+                    </span>
+                  </label>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

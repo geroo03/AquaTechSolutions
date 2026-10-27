@@ -29,7 +29,7 @@ export interface Budget {
   discount: string; // porcentaje
   work: string; // detalle del trabajo
   materialsIncluded?: boolean; // ya no se usa: se deduce de la sección Materiales
-  materialsUnpriced?: boolean; // materiales listados sin precio: se cotizan al comprar
+  materialsUnpriced?: boolean; // versión anterior: todos los materiales sin precio (hoy es por línea)
   warranty: string;
   validityDays: string;
   notes: string;
@@ -124,19 +124,26 @@ export function parseNumber(value: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/** Material sin precio cargado (o de un presupuesto viejo marcado "sin precios"): va "a cotizar" */
+export const isToQuote = (budget: Budget, line: Line) => kindOf(line) === 'material' && (Boolean(budget.materialsUnpriced) || !line.price.trim());
+
 export const lineTotal = (line: Line) => (line.unit === 'global' && !line.qty.trim() ? 1 : parseNumber(line.qty)) * parseNumber(line.price);
 
 /** El descuento se aplica solo a la mano de obra; los materiales van al costo. */
 export function totals(budget: Budget) {
   const sumOf = (kind: Kind) => budget.lines.filter(l => kindOf(l) === kind).reduce((sum, line) => sum + lineTotal(line), 0);
   const labor = sumOf('mano');
-  const unpriced = Boolean(budget.materialsUnpriced);
-  // Sin precio: los materiales se listan pero no suman (sus precios varían y se cotizan al comprar)
-  const materials = unpriced ? 0 : sumOf('material');
-  const materialsListed = budget.lines.some(l => kindOf(l) === 'material' && l.description.trim());
+  const listed = budget.lines.filter(l => kindOf(l) === 'material' && l.description.trim());
+  // Material sin precio: se lista con su cantidad pero no suma (los precios varían y se cotizan al comprar)
+  const toQuote = listed.filter(l => isToQuote(budget, l)).length;
+  const materials = budget.lines.filter(l => kindOf(l) === 'material' && !isToQuote(budget, l)).reduce((sum, line) => sum + lineTotal(line), 0);
   const pct = Math.min(100, Math.max(0, parseNumber(budget.discount)));
   const discount = Math.round(labor * pct) / 100;
-  return { labor, materials, unpriced: unpriced && materialsListed, materialsListed, pct, discount, total: labor - discount + materials };
+  return {
+    labor, materials, pct, discount, total: labor - discount + materials,
+    unpriced: toQuote > 0, // hay materiales a cotizar
+    allUnpriced: toQuote > 0 && toQuote === listed.length, // todos los materiales están a cotizar
+  };
 }
 
 const money = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 2 });

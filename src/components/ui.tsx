@@ -171,7 +171,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, maxWidt
       data-origen={label}
     >
       <div
-        className={`relative w-full ${maxWidth} max-h-[92vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl animate-pop-in`}
+        className={`relative w-full ${maxWidth} max-h-[92dvh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl animate-pop-in`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
