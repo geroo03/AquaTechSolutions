@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { BookmarkPlus, Building2, CircleUser, ListChecks, Cloud, CloudOff, Copy, Download, Eye, FileText, FolderOpen, History, LoaderCircle, Plus, Search, Trash2, Upload, X } from 'lucide-react';
+import { BookmarkPlus, Building2, Check, CircleUser, ListChecks, Cloud, CloudOff, Copy, Download, Eye, FileText, FolderOpen, History, LoaderCircle, Plus, Search, Trash2, Upload, X } from 'lucide-react';
 import { LogoMark, WhatsAppIcon } from '../components/Brand';
 import { Modal } from '../components/ui';
 import {
   KIND_LABEL, PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS, kindOf,
   exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal, unitSingular,
-  newBudget, newLine, nextNumber, totals, waNumber,
+  newBudget, newLine, nextNumber, parseNumber, totals, waNumber,
   newCatalogItem, type Budget, type CatalogItem, type Issuer, type Kind, type Line, type Status,
 } from './model';
 import { buildPdf, loadPdfKit, type PdfKit } from './pdf';
@@ -131,6 +131,11 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
   const updateCatalog = (next: CatalogItem[]) => {
     setCatalog(next);
     queueSave([], undefined, next);
+  };
+  /** Tilde de "Mis materiales": suma ese material al presupuesto abierto, con la cantidad indicada */
+  const addFromCatalog = (item: CatalogItem, qty: string) => {
+    commit({ ...budget, lines: [...budget.lines, newLine({ kind: 'material', description: item.description.trim(), unit: item.unit.trim() || 'u', price: item.price, qty })] });
+    flash(`Agregué "${item.description.trim() || 'Material'}" al presupuesto.`);
   };
   /** Guarda (o actualiza, si ya está con el mismo nombre) un material del presupuesto en la lista propia */
   const saveToCatalog = (line: Line) => {
@@ -428,7 +433,7 @@ export default function BudgetApp({ email, initialBudgets, initialIssuer, initia
       )}
 
       <Modal isOpen={catalogOpen} onClose={() => setCatalogOpen(false)} label="Mis materiales" maxWidth="max-w-3xl">
-        <CatalogPanel items={catalog} onChange={updateCatalog} onClose={() => setCatalogOpen(false)} />
+        <CatalogPanel items={catalog} onChange={updateCatalog} onClose={() => setCatalogOpen(false)} onAddToBudget={addFromCatalog} />
       </Modal>
 
       <Modal isOpen={accountOpen} onClose={() => setAccountOpen(false)} label="Cuenta" maxWidth="max-w-md">
@@ -598,7 +603,7 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, le
   const title = KIND_LABEL[kind];
   const listId = `frecuentes-${kind}`;
   // Materiales: el precio es opcional; sin precio, la línea queda "a cotizar" y no suma.
-  const toQuote = (line: Line) => !labor && (legacyUnpriced || !line.price.trim());
+  const toQuote = (line: Line) => !labor && (legacyUnpriced || !parseNumber(line.price));
   const subtotal = lines.filter(l => !toQuote(l)).reduce((sum, line) => sum + lineTotal(line), 0);
   const listed = lines.filter(l => l.description.trim());
   const unpriced = listed.length > 0 && listed.every(toQuote);
@@ -702,24 +707,41 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, le
 }
 
 /** Lista propia de materiales: nombre, unidad y precio, todo editable. Se usa para completar los presupuestos. */
-function CatalogPanel({ items, onChange, onClose }: { items: CatalogItem[]; onChange: (items: CatalogItem[]) => void; onClose: () => void }) {
+interface CatalogProps {
+  items: CatalogItem[];
+  onChange: (items: CatalogItem[]) => void;
+  onClose: () => void;
+  onAddToBudget: (item: CatalogItem, qty: string) => void;
+}
+
+/** Lista propia de materiales: nombre, unidad y precio, todo editable. Con el tilde se suma al presupuesto abierto. */
+function CatalogPanel({ items, onChange, onClose, onAddToBudget }: CatalogProps) {
   const set = (id: string, patch: Partial<CatalogItem>) => onChange(items.map(i => (i.id === id ? { ...i, ...patch } : i)));
   const small = 'mt-1 w-full rounded-xl bg-paper ring-1 ring-line px-3 py-2.5 text-[15px] outline-none focus:ring-2 focus:ring-ink';
   const [focusId, setFocusId] = useState<string | null>(null);
-  // El nuevo va arriba de todo y con el cursor en el nombre: en el celular se ve apenas se toca "Agregar".
+  // Cantidad para agregar al presupuesto: no se guarda en la lista
+  const [qty, setQty] = useState<Record<string, string>>({});
+  const [added, setAdded] = useState<Record<string, boolean>>({});
+  // El nuevo va arriba de todo y con el cursor en el nombre: en el celular se ve apenas se toca el botón.
   const add = () => {
     const item = newCatalogItem();
     setFocusId(item.id);
     onChange([item, ...items]);
   };
+  const addToBudget = (item: CatalogItem) => {
+    onAddToBudget(item, qty[item.id] ?? '');
+    setQty(q => ({ ...q, [item.id]: '' }));
+    setAdded(a => ({ ...a, [item.id]: true }));
+    setTimeout(() => setAdded(a => ({ ...a, [item.id]: false })), 1800);
+  };
   return (
     <div className="pb-5 sm:pb-8">
-      <div className="sticky top-0 bg-white px-5 sm:px-8 pt-5 sm:pt-8 pb-4 border-b border-line">
+      <div className="sticky top-0 z-[1] bg-white px-5 sm:px-8 pt-5 sm:pt-8 pb-4 border-b border-line">
         <h2 className="font-headline text-2xl font-bold pr-12">Mis materiales</h2>
-        <p className="mt-1 text-sm text-muted">Editá nombres, unidades y precios (el precio es opcional). Al elegir un material en un presupuesto se completan solos. Se guardan en tu cuenta.</p>
+        <p className="mt-1 text-sm text-muted">Editá nombre, unidad (rollo, balde, litro…) y precio (opcional). Poné la cantidad y tocá el tilde para sumarlo al presupuesto.</p>
         <div className="mt-4 flex gap-2">
           <button type="button" onClick={add} className={`${btnDark} h-11 px-5 text-sm`}>
-            <Plus size={16} aria-hidden="true" /> Agregar material
+            <Plus size={16} aria-hidden="true" /> Nuevo material
           </button>
           <button type="button" onClick={onClose} className={`${btnLight} h-11 px-5 text-sm`}>Listo</button>
         </div>
@@ -732,28 +754,39 @@ function CatalogPanel({ items, onChange, onClose }: { items: CatalogItem[]; onCh
           <p className="mt-6 rounded-2xl bg-paper p-6 text-center text-sm text-graphite">Todavía no hay materiales en tu lista.</p>
         ) : (
           <ul className="divide-y divide-line border-b border-line">
-            {items.map((item, i) => (
-              <li key={item.id} className="py-3 grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_110px_140px_auto] gap-x-3 gap-y-2 items-end">
-                <label className="text-xs font-medium text-muted col-span-1">Material
-                  <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small}
-                    ref={el => { if (el && item.id === focusId) { el.focus(); setFocusId(null); } }} />
-                </label>
-                <button type="button" onClick={() => onChange(items.filter(x => x.id !== item.id))} className="sm:order-last mb-1 w-10 h-10 rounded-full bg-mist hover:bg-line flex items-center justify-center" aria-label={`Quitar el material ${i + 1}${item.description ? `: ${item.description}` : ''}`}>
-                  <Trash2 size={16} aria-hidden="true" />
-                </button>
-                <div className="col-span-2 sm:col-span-2 grid grid-cols-[110px_1fr] sm:grid-cols-[110px_140px] gap-3">
-                  <label className="text-xs font-medium text-muted">Unidad
-                    <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="u" className={small} />
+            {items.map((item, i) => {
+              const name = item.description.trim() || `material ${i + 1}`;
+              return (
+                <li key={item.id} className="py-4 grid grid-cols-2 sm:grid-cols-[1fr_104px_128px_76px_auto_auto] gap-x-3 gap-y-2.5 items-end">
+                  <label className="text-xs font-medium text-muted col-span-2 sm:col-span-1">Material
+                    <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small}
+                      ref={el => { if (el && item.id === focusId) { el.focus(); setFocusId(null); } }} />
                   </label>
-                  <label className="text-xs font-medium text-muted">Precio por {item.unit.trim() ? unitSingular(item.unit) : 'unidad'} (opcional)
+                  <label className="text-xs font-medium text-muted">Unidad
+                    <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="rollo, balde…" className={small} />
+                  </label>
+                  <label className="text-xs font-medium text-muted">Precio <span className="font-normal">(opcional)</span>
                     <span className="relative block">
                       <span className="absolute left-3 top-[calc(50%+2px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
                       <input value={item.price} onChange={e => set(item.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="A cotizar" className={`${small} pl-7`} />
                     </span>
                   </label>
-                </div>
-              </li>
-            ))}
+                  <label className="text-xs font-medium text-muted">Cantidad
+                    <input value={qty[item.id] ?? ''} onChange={e => setQty(q => ({ ...q, [item.id]: e.target.value }))} inputMode="decimal" maxLength={10} placeholder="1" className={small} />
+                  </label>
+                  <div className="flex items-end gap-2 sm:contents">
+                    <button type="button" onClick={() => addToBudget(item)} disabled={!item.description.trim()}
+                      className="mb-0.5 h-11 px-4 sm:w-11 sm:px-0 rounded-full bg-ink text-white hover:bg-graphite flex items-center justify-center gap-1.5 text-sm font-semibold transition-colors disabled:opacity-40"
+                      aria-label={`Agregar ${name} al presupuesto`} title="Agregar al presupuesto">
+                      <Check size={18} strokeWidth={2.4} aria-hidden="true" /><span className="sm:hidden">{added[item.id] ? 'Agregado' : 'Agregar'}</span>
+                    </button>
+                    <button type="button" onClick={() => onChange(items.filter(x => x.id !== item.id))} className="mb-0.5 w-11 h-11 shrink-0 rounded-full bg-mist hover:bg-line flex items-center justify-center" aria-label={`Quitar ${name} de la lista`} title="Quitar de la lista">
+                      <Trash2 size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

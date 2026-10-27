@@ -74,16 +74,18 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   // Lista propia de materiales: se edita y completa unidad y precio al elegirlo
   await materials.getByRole('button', { name: /Mis materiales/ }).click();
   const catalog = page.getByRole('dialog');
-  await catalog.getByRole('button', { name: 'Agregar material' }).click();
-  await catalog.getByLabel('Material', { exact: true }).last().fill('Cinta de aluminio');
-  await catalog.getByLabel('Unidad', { exact: true }).last().fill('cajas');
-  await catalog.getByLabel(/^Precio por caja/).last().fill('9500');
-  await catalog.getByRole('button', { name: 'Cerrar' }).click();
-  await materials.getByRole('button', { name: 'Agregar material' }).click();
-  await materials.getByLabel('Descripción').last().fill('Cinta de aluminio');
+  await catalog.getByRole('button', { name: 'Nuevo material' }).click();
+  await catalog.getByLabel('Material', { exact: true }).first().fill('Cinta de aluminio');
+  await catalog.getByLabel('Unidad', { exact: true }).first().fill('cajas');
+  await catalog.getByLabel(/^Precio/).first().fill('9500');
+  // Con el tilde se suma al presupuesto con la cantidad puesta
+  await catalog.getByLabel('Cantidad', { exact: true }).first().fill('2');
+  await catalog.getByRole('button', { name: 'Agregar Cinta de aluminio al presupuesto' }).click();
+  await catalog.getByRole('button', { name: 'Listo' }).click();
+  await expect(materials.getByLabel('Descripción').last()).toHaveValue('Cinta de aluminio');
   await expect(materials.getByLabel('Unidad').last()).toHaveValue('cajas');
   await expect(materials.getByLabel(/^Precio/).last()).toHaveValue('9500');
-  await materials.getByLabel('Cantidad').last().fill('2');
+  await expect(materials.getByLabel('Cantidad').last()).toHaveValue('2');
   await expect(page.locator('[data-total]')).toHaveText('$1.455.500');
   await expect.poll(() => JSON.stringify(saved)).toContain('Cinta de aluminio');
 

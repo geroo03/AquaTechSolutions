@@ -125,7 +125,7 @@ export function parseNumber(value: string): number {
 }
 
 /** Material sin precio cargado (o de un presupuesto viejo marcado "sin precios"): va "a cotizar" */
-export const isToQuote = (budget: Budget, line: Line) => kindOf(line) === 'material' && (Boolean(budget.materialsUnpriced) || !line.price.trim());
+export const isToQuote = (budget: Budget, line: Line) => kindOf(line) === 'material' && (Boolean(budget.materialsUnpriced) || !parseNumber(line.price));
 
 export const lineTotal = (line: Line) => (line.unit === 'global' && !line.qty.trim() ? 1 : parseNumber(line.qty)) * parseNumber(line.price);
 
