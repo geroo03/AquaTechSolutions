@@ -76,14 +76,16 @@ test('panel de presupuestos: pide login, calcula, guarda en la nube y genera el 
   const catalog = page.getByRole('dialog');
   await catalog.getByRole('button', { name: 'Nuevo material' }).click();
   await catalog.getByLabel('Material', { exact: true }).first().fill('Cinta de aluminio');
-  await catalog.getByLabel('Unidad', { exact: true }).first().fill('cajas');
+  await catalog.getByLabel('Se vende por').first().selectOption('otra');
+  await catalog.getByLabel('Otra unidad').first().fill('cajas 2');
+  await expect(catalog.getByLabel('Otra unidad').first()).toHaveValue('cajas '); // sin números: la cantidad va aparte
   await catalog.getByLabel(/^Precio/).first().fill('9500');
   // Con el tilde se suma al presupuesto con la cantidad puesta
   await catalog.getByLabel('Cantidad', { exact: true }).first().fill('2');
   await catalog.getByRole('button', { name: 'Agregar Cinta de aluminio al presupuesto' }).click();
   await catalog.getByRole('button', { name: 'Listo' }).click();
   await expect(materials.getByLabel('Descripción').last()).toHaveValue('Cinta de aluminio');
-  await expect(materials.getByLabel('Unidad').last()).toHaveValue('cajas');
+  await expect(materials.getByLabel('Otra unidad').last()).toHaveValue('cajas');
   await expect(materials.getByLabel(/^Precio/).last()).toHaveValue('9500');
   await expect(materials.getByLabel('Cantidad').last()).toHaveValue('2');
   await expect(page.locator('[data-total]')).toHaveText('$1.455.500');

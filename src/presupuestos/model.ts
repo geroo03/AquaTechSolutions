@@ -50,6 +50,19 @@ export const UNITS: Record<Kind, Unit[]> = {
   material: ['u', 'rollos', 'baldes', 'latas', 'litros', 'kg', 'bolsas', 'm²', 'ml', 'global'],
 };
 
+/** Cómo se vende cada material (se elige de una lista para no confundir unidad con cantidad). El valor va en plural al PDF: "4 baldes". */
+export const MATERIAL_UNITS: { value: Unit; label: string }[] = [
+  { value: 'rollos', label: 'rollo' },
+  { value: 'baldes', label: 'balde' },
+  { value: 'latas', label: 'lata' },
+  { value: 'litros', label: 'litro' },
+  { value: 'kg', label: 'kilo (kg)' },
+  { value: 'bolsas', label: 'bolsa' },
+  { value: 'metros', label: 'metro' },
+  { value: 'm²', label: 'metro cuadrado (m²)' },
+  { value: 'u', label: 'unidad' },
+];
+
 /** Un material de la lista propia de Martín (se edita desde el panel y se guarda en su cuenta) */
 export interface CatalogItem {
   id: string;
@@ -88,6 +101,18 @@ export const PRESETS: Record<Kind, { description: string; unit: Unit; price: str
 export const DEFAULT_ISSUER: Issuer = { address: '', cuit: '', phone: PHONE_DISPLAY, email: EMAIL, web: 'aquatechsolutions.com.ar' };
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+/**
+ * Ordena la unidad que se escribió a mano antes del selector: saca números ("baldes 2" → baldes,
+ * "10 metros" → metros) y reconoce el singular ("balde" → baldes). Si solo había un número, queda "u".
+ */
+export function normalizeUnit(unit: string): Unit {
+  const word = unit.replace(/[0-9.,]/g, '').trim();
+  if (!word) return 'u';
+  const lower = word.toLowerCase();
+  const match = MATERIAL_UNITS.find(u => u.value.toLowerCase() === lower || u.label.toLowerCase() === lower || unitSingular(u.value).toLowerCase() === lower);
+  return match ? match.value : word;
+}
 
 /** Lista inicial de materiales, sin precios: Martín la edita a su gusto */
 export const defaultCatalog = (): CatalogItem[] => PRESETS.material.map(p => ({ id: uid(), ...p }));
@@ -152,7 +177,7 @@ export const formatQty = (line: Line) => (line.unit === 'global' ? (line.qty.tri
 /** Para el precio unitario: "$4.500 / balde" */
 export const unitSingular = (unit: Unit) => {
   const u = unit.trim();
-  const known: Record<string, string> = { rollos: 'rollo', baldes: 'balde', latas: 'lata', litros: 'litro', bolsas: 'bolsa', unidades: 'unidad' };
+  const known: Record<string, string> = { rollos: 'rollo', baldes: 'balde', latas: 'lata', litros: 'litro', bolsas: 'bolsa', metros: 'metro', unidades: 'unidad', u: 'unidad' };
   // "cajas" → "caja", "tachos" → "tacho"; lo demás queda como está
   return known[u.toLowerCase()] ?? (/^[a-záéíóúñ]+[ao]s$/i.test(u) ? u.slice(0, -1) : u);
 };

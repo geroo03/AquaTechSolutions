@@ -5,7 +5,7 @@
  */
 import { createClient, type Session } from '@supabase/supabase-js';
 import config from './supabase.json' with { type: 'json' };
-import { DEFAULT_ISSUER, defaultCatalog, type Budget, type CatalogItem, type Issuer } from './model';
+import { DEFAULT_ISSUER, defaultCatalog, normalizeUnit, type Budget, type CatalogItem, type Issuer } from './model';
 
 export const supabase = createClient(config.url, config.publishableKey, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: 'aquatech.sesion' },
@@ -40,7 +40,7 @@ export async function fetchAll(): Promise<{ budgets: Budget[]; issuer: Issuer; c
   return {
     budgets: budgets.data.map(row => row.data as Budget).filter(b => b && b.id && Array.isArray(b.lines)),
     issuer: { ...DEFAULT_ISSUER, ...(issuer.data?.data as Partial<Issuer> | undefined) },
-    catalog: Array.isArray(items) ? items.filter(i => i && i.id) : defaultCatalog(),
+    catalog: Array.isArray(items) ? items.filter(i => i && i.id).map(i => ({ ...i, unit: normalizeUnit(String(i.unit ?? '')) })) : defaultCatalog(),
   };
 }
 

@@ -3,7 +3,7 @@ import { BookmarkPlus, Building2, Check, CircleUser, ListChecks, Cloud, CloudOff
 import { LogoMark, WhatsAppIcon } from '../components/Brand';
 import { Modal } from '../components/ui';
 import {
-  KIND_LABEL, PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS, kindOf,
+  KIND_LABEL, MATERIAL_UNITS, PRESETS, STATUSES, STATUS_LABEL, UNITS, WARRANTY_OPTIONS, kindOf,
   exportBackup, fileName, formatDate, formatMoney, formatNumber, importBackup, lineTotal, unitSingular,
   newBudget, newLine, nextNumber, parseNumber, totals, waNumber,
   newCatalogItem, type Budget, type CatalogItem, type Issuer, type Kind, type Line, type Status,
@@ -633,11 +633,6 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, le
       <datalist id={listId}>
         {suggestions.map(p => <option key={p.description} value={p.description} />)}
       </datalist>
-      {!labor && (
-        <datalist id="unidades-material">
-          {UNITS.material.map(u => <option key={u} value={u} />)}
-        </datalist>
-      )}
       {lines.length > 0 && (
         <ol className="mt-5 space-y-4">
           {lines.map((line, i) => (
@@ -657,13 +652,13 @@ function LinesSection({ kind, lines, catalog, onOpenCatalog, onSaveToCatalog, le
                   <label className={labelText}>Cantidad
                     <input value={line.qty} onChange={e => onChange(line.id, { qty: e.target.value })} inputMode="decimal" maxLength={12} placeholder={line.unit === 'global' ? '1' : '0'} className={field} />
                   </label>
-                  <label className={labelText}>Unidad
+                  <label className={labelText}>{labor ? 'Unidad' : 'Se vende por'}
                     {labor ? (
                       <select value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} className={field}>
                         {UNITS.mano.map(u => <option key={u} value={u}>{u}</option>)}
                       </select>
                     ) : (
-                      <input value={line.unit} onChange={e => onChange(line.id, { unit: e.target.value })} list="unidades-material" maxLength={20} placeholder="u" className={field} />
+                      <UnitPicker value={line.unit} onChange={unit => onChange(line.id, { unit })} className={field} />
                     )}
                   </label>
                   {!(legacyUnpriced && !labor) && <label className={`${labelText} col-span-2 sm:col-span-2`}>Precio {line.unit === 'global' ? 'total' : `por ${unitSingular(line.unit)}`}{!labor && <span className="text-muted font-normal"> (opcional)</span>}
@@ -738,7 +733,7 @@ function CatalogPanel({ items, onChange, onClose, onAddToBudget }: CatalogProps)
     <div className="pb-5 sm:pb-8">
       <div className="sticky top-0 z-[1] bg-white px-5 sm:px-8 pt-5 sm:pt-8 pb-4 border-b border-line">
         <h2 className="font-headline text-2xl font-bold pr-12">Mis materiales</h2>
-        <p className="mt-1 text-sm text-muted">Editá nombre, unidad (rollo, balde, litro…) y precio (opcional). Poné la cantidad y tocá el tilde para sumarlo al presupuesto.</p>
+        <p className="mt-1 text-sm text-muted">Para cada material: cómo se vende (rollo, balde, litro…) y su precio, si lo sabés. Para sumarlo al presupuesto, poné cuántos lleva en <strong className="font-semibold text-graphite">Cantidad</strong> y tocá el tilde.</p>
         <div className="mt-4 flex gap-2">
           <button type="button" onClick={add} className={`${btnDark} h-11 px-5 text-sm`}>
             <Plus size={16} aria-hidden="true" /> Nuevo material
@@ -746,9 +741,6 @@ function CatalogPanel({ items, onChange, onClose, onAddToBudget }: CatalogProps)
           <button type="button" onClick={onClose} className={`${btnLight} h-11 px-5 text-sm`}>Listo</button>
         </div>
       </div>
-      <datalist id="unidades-catalogo">
-        {UNITS.material.map(u => <option key={u} value={u} />)}
-      </datalist>
       <div className="px-5 sm:px-8">
         {items.length === 0 ? (
           <p className="mt-6 rounded-2xl bg-paper p-6 text-center text-sm text-graphite">Todavía no hay materiales en tu lista.</p>
@@ -762,10 +754,10 @@ function CatalogPanel({ items, onChange, onClose, onAddToBudget }: CatalogProps)
                     <input value={item.description} onChange={e => set(item.id, { description: e.target.value })} maxLength={140} placeholder="Nombre del material" className={small}
                       ref={el => { if (el && item.id === focusId) { el.focus(); setFocusId(null); } }} />
                   </label>
-                  <label className="text-xs font-medium text-muted">Unidad
-                    <input value={item.unit} onChange={e => set(item.id, { unit: e.target.value })} list="unidades-catalogo" maxLength={20} placeholder="rollo, balde…" className={small} />
+                  <label className="text-xs font-medium text-muted">Se vende por
+                    <UnitPicker value={item.unit} onChange={unit => set(item.id, { unit })} className={small} />
                   </label>
-                  <label className="text-xs font-medium text-muted">Precio <span className="font-normal">(opcional)</span>
+                  <label className="text-xs font-medium text-muted">Precio por {unitSingular(item.unit) || 'unidad'} <span className="font-normal">(opcional)</span>
                     <span className="relative block">
                       <span className="absolute left-3 top-[calc(50%+2px)] -translate-y-1/2 text-muted" aria-hidden="true">$</span>
                       <input value={item.price} onChange={e => set(item.id, { price: e.target.value })} inputMode="decimal" maxLength={16} placeholder="A cotizar" className={`${small} pl-7`} />
@@ -791,5 +783,35 @@ function CatalogPanel({ items, onChange, onClose, onAddToBudget }: CatalogProps)
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * "Se vende por": lista fija (rollo, balde, litro…) para que no se confunda con la cantidad.
+ * "Otra…" deja escribir una unidad propia, sin números (la cantidad va en su campo).
+ */
+function UnitPicker({ value, onChange, className }: { value: string; onChange: (unit: string) => void; className: string }) {
+  const known = MATERIAL_UNITS.some(u => u.value === value);
+  const [custom, setCustom] = useState(!known && value.trim() !== '');
+  const showCustom = custom || (!known && value.trim() !== '');
+  return (
+    <>
+      <select value={showCustom ? 'otra' : known ? value : 'u'} className={className} onChange={e => {
+        if (e.target.value === 'otra') {
+          setCustom(true);
+          onChange('');
+        } else {
+          setCustom(false);
+          onChange(e.target.value);
+        }
+      }}>
+        {MATERIAL_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
+        <option value="otra">Otra…</option>
+      </select>
+      {showCustom && (
+        <input value={value} onChange={e => onChange(e.target.value.replace(/[0-9]/g, '').trimStart())} maxLength={20}
+          placeholder="Ej: cajas, bidones" aria-label="Otra unidad" className={`${className} mt-2`} />
+      )}
+    </>
   );
 }
